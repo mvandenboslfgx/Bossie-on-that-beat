@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./live-catalog.css";
 
 export const metadata: Metadata = {
   title: {
@@ -42,8 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Bossie on the beat — Every Track Is A New World",
-    description:
-      "Music without boundaries. Every track is a new world.",
+    description: "Music without boundaries. Every track is a new world.",
   },
 };
 
