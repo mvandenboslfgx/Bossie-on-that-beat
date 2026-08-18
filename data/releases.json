@@ -1,0 +1,46 @@
+{
+  "artist": "Bossie on that beat",
+  "updatedAt": "2026-08-19T00:00:00+02:00",
+  "releases": [
+    {
+      "title": "CROWN OF THE ABYSS",
+      "status": "live",
+      "spotify": "https://open.spotify.com/album/2ZWAT8pIDAZwrTkcbmlBMx",
+      "hyperfollow": null,
+      "appleMusic": null,
+      "amazonMusic": null,
+      "youtube": "https://www.youtube.com/results?search_query=Bossie+on+that+beat+CROWN+OF+THE+ABYSS",
+      "artwork": null
+    },
+    {
+      "title": "One World One Dream",
+      "status": "live",
+      "spotify": null,
+      "hyperfollow": null,
+      "appleMusic": null,
+      "amazonMusic": "https://music.amazon.com/tracks/B0H6SMW3Q2",
+      "youtube": "https://www.youtube.com/results?search_query=Bossie+on+that+beat+One+World+One+Dream",
+      "artwork": null
+    },
+    {
+      "title": "Symphony Of The Storm",
+      "status": "live",
+      "spotify": null,
+      "hyperfollow": null,
+      "appleMusic": null,
+      "amazonMusic": "https://music.amazon.in/albums/B0H7NX3MVF",
+      "youtube": "https://www.youtube.com/results?search_query=Bossie+on+that+beat+Symphony+Of+The+Storm",
+      "artwork": null
+    },
+    {
+      "title": "Nul Een Acht Zes",
+      "status": "live",
+      "spotify": null,
+      "hyperfollow": null,
+      "appleMusic": null,
+      "amazonMusic": "https://music.amazon.co.uk/albums/B0H7P9852Q",
+      "youtube": "https://www.youtube.com/results?search_query=Bossie+on+that+beat+Nul+Een+Acht+Zes",
+      "artwork": null
+    }
+  ]
+}
