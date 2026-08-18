@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "./live-catalog.css";
+import "./multipage.css";
 
 export const metadata: Metadata = {
   title: {
