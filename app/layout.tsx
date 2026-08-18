@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
+import Link from "next/link";
 import "./globals.css";
 import "./live-catalog.css";
 import "./multipage.css";
 import "./request.css";
+import "./global-cta.css";
 
 export const metadata: Metadata = {
   title: {
@@ -63,7 +65,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <Link className="global-request-cta" href="/request">Request a project ↗</Link>
+      </body>
     </html>
   );
 }
