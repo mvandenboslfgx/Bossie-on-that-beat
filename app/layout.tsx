@@ -1,10 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import "./globals.css";
 import "./live-catalog.css";
 import "./multipage.css";
 import "./request.css";
-import "./global-cta.css";
 import "./v2.css";
 
 const siteUrl = "https://bossieonthatbeat.com";
@@ -33,8 +31,8 @@ export const metadata: Metadata = {
     "One World One Dream",
     "Symphony Of The Storm",
     "Nul Een Acht Zes",
+    "Gasolina",
   ],
-  alternates: { canonical: "/" },
   creator: "Bossie on the beat",
   publisher: "Bossie on the beat",
   applicationName: "Bossie on the beat",
@@ -52,7 +50,6 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    url: siteUrl,
     locale: "en_US",
     siteName: "Bossie on the beat",
     title: "Bossie on the beat | Producer, Composer & Artist",
@@ -91,7 +88,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(artistSchema) }} />
         {children}
-        <Link className="global-request-cta" href="/request">Create Your Song ↗</Link>
       </body>
     </html>
   );

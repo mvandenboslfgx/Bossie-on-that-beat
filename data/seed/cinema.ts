@@ -1,5 +1,14 @@
 import type { CinemaItem } from "@/lib/types/cinema";
 
+/** Official DistroKid / Apple artwork used as cinema stills until verified YouTube IDs exist. */
+const stills = {
+  door: "",
+  mountain:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/84/92/04/849204bd-3c69-e8ca-e4c3-7cf98b694efc/artwork.jpg/1200x1200bb.jpg",
+  club:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/65/e1/6b/65e16b42-c1c6-10b1-c4f3-6973efdcdfe1/artwork.jpg/1200x1200bb.jpg",
+} as const;
+
 export const seedCinema: CinemaItem[] = [
   {
     id: "cinema-door",
@@ -8,7 +17,7 @@ export const seedCinema: CinemaItem[] = [
     type: "short-film",
     releaseSlug: "the-door-was-never-closed",
     worldSlug: "the-door",
-    youtubeUrl: "https://www.youtube.com/results?search_query=Bossie+on+that+beat+The+Door+Was+Never+Closed",
+    thumbnailUrl: stills.door || undefined,
     description: "Prestige cinematic visual — gothic psychological cinema.",
     durationSeconds: 385,
     featured: true,
@@ -20,7 +29,7 @@ export const seedCinema: CinemaItem[] = [
     type: "music-video",
     releaseSlug: "nims-dai",
     worldSlug: "the-mountain",
-    youtubeUrl: "https://www.youtube.com/results?search_query=Bossie+on+that+beat+Nims+Dai",
+    thumbnailUrl: stills.mountain,
     description: "Mountain tribute visual.",
     featured: true,
   },
@@ -30,7 +39,7 @@ export const seedCinema: CinemaItem[] = [
     title: "BOSSIE SHORTS",
     type: "short",
     worldSlug: "the-club",
-    youtubeUrl: "https://www.youtube.com/results?search_query=Bossie+on+that+beat+shorts",
+    thumbnailUrl: stills.club,
     description: "Short-form worlds built for vertical discovery.",
   },
 ];

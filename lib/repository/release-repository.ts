@@ -5,6 +5,7 @@ import type { Release, ReleaseStatus, ReleaseWithLinks } from "@/lib/types/relea
 import type { World } from "@/lib/types/world";
 import type { CinemaItem } from "@/lib/types/cinema";
 import { attachLinks, getDb, rowToLink, rowToRelease } from "@/lib/db/client";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 
 const PUBLIC_STATUSES: ReleaseStatus[] = ["live", "announced", "upcoming", "archived"];
 
@@ -116,18 +117,22 @@ export async function getAllWorlds(): Promise<World[]> {
     try {
       const rows = await db.prepare("SELECT * FROM worlds").all();
       if (rows.results?.length) {
-        return rows.results.map((row) => ({
-          slug: String(row.slug),
-          title: String(row.title),
-          subtitle: row.subtitle ? String(row.subtitle) : undefined,
-          description: String(row.description),
-          heroImage: row.hero_image ? String(row.hero_image) : undefined,
-          video: row.video ? String(row.video) : undefined,
-          themes: JSON.parse(String(row.themes ?? "[]")),
-          aesthetic: JSON.parse(String(row.aesthetic ?? "[]")),
-          featured: Boolean(row.featured),
-          manualOverride: Boolean(row.manual_override),
-        }));
+        return rows.results.map((row) => {
+          const slug = String(row.slug);
+          const seed = getSeedWorld(slug);
+          return {
+            slug,
+            title: String(row.title),
+            subtitle: row.subtitle ? String(row.subtitle) : undefined,
+            description: String(row.description),
+            heroImage: row.hero_image ? String(row.hero_image) : seed?.heroImage,
+            video: row.video ? String(row.video) : undefined,
+            themes: JSON.parse(String(row.themes ?? "[]")),
+            aesthetic: JSON.parse(String(row.aesthetic ?? "[]")),
+            featured: Boolean(row.featured),
+            manualOverride: Boolean(row.manual_override),
+          };
+        });
       }
     } catch {
       /* fall through to seed */
@@ -147,22 +152,31 @@ export async function getAllCinema(): Promise<CinemaItem[]> {
     try {
       const rows = await db.prepare("SELECT * FROM cinema_items ORDER BY published_at DESC").all();
       if (rows.results?.length) {
-        return rows.results.map((row) => ({
-          id: String(row.id),
-          slug: String(row.slug),
-          title: String(row.title),
-          type: row.type as CinemaItem["type"],
-          releaseSlug: row.release_slug ? String(row.release_slug) : undefined,
-          worldSlug: row.world_slug ? String(row.world_slug) : undefined,
-          youtubeUrl: row.youtube_url ? String(row.youtube_url) : undefined,
-          videoUrl: row.video_url ? String(row.video_url) : undefined,
-          thumbnailUrl: row.thumbnail_url ? String(row.thumbnail_url) : undefined,
-          posterUrl: row.poster_url ? String(row.poster_url) : undefined,
-          description: row.description ? String(row.description) : undefined,
-          durationSeconds: row.duration_seconds != null ? Number(row.duration_seconds) : undefined,
-          publishedAt: row.published_at ? String(row.published_at) : undefined,
-          featured: Boolean(row.featured),
-        }));
+        return rows.results.map((row) => {
+          const slug = String(row.slug);
+          const seed = getSeedCinema(slug);
+          const youtubeRaw = row.youtube_url ? String(row.youtube_url) : undefined;
+          const youtubeUrl =
+            youtubeRaw && isVerifiedListenUrl(youtubeRaw) ? youtubeRaw : undefined;
+          return {
+            id: String(row.id),
+            slug,
+            title: String(row.title),
+            type: row.type as CinemaItem["type"],
+            releaseSlug: row.release_slug ? String(row.release_slug) : undefined,
+            worldSlug: row.world_slug ? String(row.world_slug) : undefined,
+            youtubeUrl,
+            videoUrl: row.video_url ? String(row.video_url) : undefined,
+            thumbnailUrl: row.thumbnail_url
+              ? String(row.thumbnail_url)
+              : seed?.thumbnailUrl,
+            posterUrl: row.poster_url ? String(row.poster_url) : undefined,
+            description: row.description ? String(row.description) : undefined,
+            durationSeconds: row.duration_seconds != null ? Number(row.duration_seconds) : undefined,
+            publishedAt: row.published_at ? String(row.published_at) : undefined,
+            featured: Boolean(row.featured),
+          };
+        });
       }
     } catch {
       /* fall through to seed */
@@ -181,14 +195,14 @@ export function slugifyGenre(genre: string) {
 }
 
 export function getPrimaryListenLink(release: ReleaseWithLinks) {
-  const order = ["spotify", "apple-music", "amazon-music", "youtube-music", "youtube"] as const;
+  const order = ["spotify", "apple-music", "youtube-music", "youtube", "amazon-music", "deezer", "tidal"] as const;
   for (const platform of order) {
-    const link = release.links.find((l) => l.platform === platform && l.url);
+    const link = release.links.find((l) => l.platform === platform && l.url && isVerifiedListenUrl(l.url));
     if (link) return link;
   }
-  return release.links[0];
+  return release.links.find((l) => l.url && isVerifiedListenUrl(l.url));
 }
 
 export function getWatchLink(release: ReleaseWithLinks) {
-  return release.links.find((l) => l.platform === "youtube" && l.url);
+  return release.links.find((l) => l.platform === "youtube" && l.url && isVerifiedListenUrl(l.url));
 }

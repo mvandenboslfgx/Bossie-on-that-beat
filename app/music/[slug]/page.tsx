@@ -5,6 +5,7 @@ import { getAllReleases, getReleaseBySlug, getReleasesByWorld } from "@/lib/repo
 import { ReleaseHero, PlatformLinks } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 
 const base = siteSettings.siteUrl;
 
@@ -41,7 +42,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
 
   const related = r.worldSlug ? await getReleasesByWorld(r.worldSlug) : [];
 
-  const sameAs = r.links.map((l) => l.url);
+  const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));
   const recordingSchema = {
     "@context": "https://schema.org",
     "@type": "MusicRecording",
@@ -58,7 +59,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
       url: base,
     },
     image: r.artworkUrl || undefined,
-    sameAs,
+    ...(sameAs.length ? { sameAs } : {}),
   };
 
   return (
