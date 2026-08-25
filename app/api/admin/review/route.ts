@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateCatalogPaths } from "@/lib/cache/revalidate-catalog";
 import { authorizeAdmin } from "@/lib/auth/admin";
 import {
   approveCinema,
@@ -73,5 +74,6 @@ export async function POST(request: Request) {
   }
 
   if (!ok) return NextResponse.json({ error: "Action failed or item protected" }, { status: 409 });
+  if (body.action === "approve") revalidateCatalogPaths();
   return NextResponse.json({ ok: true });
 }

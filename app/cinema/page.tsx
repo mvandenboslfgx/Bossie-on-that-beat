@@ -4,6 +4,8 @@ import { getAllCinema } from "@/lib/repository/release-repository";
 import { PageShell } from "@/components/SiteChrome";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Cinema",
   description: "Bossie Cinema — music videos, short films and visual worlds from Bossie on the beat.",

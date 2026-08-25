@@ -156,6 +156,12 @@ curl -sS https://bossieonthatbeat.com/api/admin/review \
 
 `CRON_SECRET` does **not** grant admin access. Missing or wrong `x-admin-secret` → `401`.
 
+### Catalog truth (single source)
+
+All public catalog routes read D1 at **request time** via `getCatalog()` in `lib/repository/catalog.ts`. Seed data is dev-only fallback when D1 is unavailable at build.
+
+After sync or admin approve, catalog pages revalidate automatically (`POST /api/revalidate` or inline after `/api/sync`).
+
 ## Routes (P0)
 
 | Route | Description |

@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getLiveReleases } from "@/lib/repository/release-repository";
+import { BossieLogo } from "@/components/brand/BossieLogo";
+import { BossieMark } from "@/components/brand/BossieMark";
+import { FollowSocialBlock, ListenSocialBlock } from "@/components/brand/SocialLinks";
+import { getDownloadableBrandAssets } from "@/lib/brand/assets";
+import { getCatalog } from "@/lib/repository/catalog";
+import { getAllCinema } from "@/lib/repository/release-repository";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { platformDisplayNames, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "EPK / Press",
@@ -14,9 +20,24 @@ export const metadata: Metadata = {
 };
 
 export default async function EpkPage() {
-  const live = await getLiveReleases();
-  const streaming = Object.entries(siteSettings.streaming).filter(([, href]) => isVerifiedListenUrl(href));
+  const { live } = await getCatalog();
+  const cinema = await getAllCinema();
+  const brandDownloads = getDownloadableBrandAssets();
 
+  const curatedSlugs = [
+    "crown-of-the-abyss",
+    "gasolina",
+    "nachtgeld",
+    "symphony-of-the-storm",
+    "one-world-one-dream",
+    "the-mountain-remembers",
+  ];
+  const selectedReleases = curatedSlugs
+    .map((slug) => live.find((r) => r.slug === slug))
+    .filter((r): r is (typeof live)[number] => Boolean(r))
+    .slice(0, 6);
+  const picks = selectedReleases.length ? selectedReleases : live.slice(0, 6);
+  const selectedCinema = cinema.slice(0, 3);
   const facts: Array<[string, string]> = [
     ["Artist / producer", siteSettings.artistName],
     ["Positioning", "Producer · Composer · Artist · World Builder"],
@@ -27,17 +48,14 @@ export default async function EpkPage() {
 
   return (
     <PageShell>
-      <section className="page-hero compact-hero">
+      <section className="page-hero compact-hero epk-hero">
+        <BossieLogo variant="primary" href="/" className="epk-hero-logo" />
         <p className="eyebrow">Electronic press kit</p>
         <h1>EPK</h1>
-        <p className="epk-role">Artist / producer</p>
+        <p className="epk-role">Producer · Composer · Artist</p>
         <h2 className="epk-artist-name">{siteSettings.artistName}</h2>
-        <p>One professional destination for media, labels, curators, collaborators and brands.</p>
-        <p className="epk-download-note">
-          Press assets are listed below. A packaged press kit download will appear here when a complete ZIP is available.
-        </p>
+        <p>Curated press destination for media, labels, curators and collaborators.</p>
       </section>
-
       <section className="section-pad epk-layout">
         <div className="epk-statement">
           <p className="eyebrow">Artist overview</p>
@@ -66,10 +84,9 @@ export default async function EpkPage() {
       </section>
 
       <section className="section-pad">
-        <p className="eyebrow">Selected music</p>
+        <p className="eyebrow">Selected work</p>
         <div className="epk-release-grid">
-          {live.map((r) => {
-            const listen = r.links.find((l) => isVerifiedListenUrl(l.url));
+          {picks.map((r) => {            const listen = r.links.find((l) => isVerifiedListenUrl(l.url));
             return (
               <article key={r.id} className="epk-release-card">
                 <ReleaseArtwork release={r} />
@@ -91,54 +108,48 @@ export default async function EpkPage() {
 
       <section className="section-pad">
         <p className="eyebrow">Selected cinema</p>
-        <p>
-          Visual worlds and release cinema live on{" "}
-          <Link className="text-link" href="/cinema">
-            Bossie Cinema
-          </Link>
-          .
-        </p>
-      </section>
-
-      <section className="section-pad">
-        <p className="eyebrow">Genres</p>
-        <div className="meta-row">
-          {["Cinematic", "Orchestral", "Metal", "Electronic", "Latin", "World", "Pop"].map((g) => (
-            <span key={g} className="meta-chip">
-              {g}
-            </span>
+        <div className="epk-release-grid">
+          {selectedCinema.map((item) => (
+            <article key={item.id} className="epk-release-card">
+              {item.thumbnailUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.thumbnailUrl} alt="" className="epk-cinema-thumb" />
+              ) : null}
+              <h3>{item.title}</h3>
+              <Link className="text-link" href={`/cinema/${item.slug}`}>
+                View ↗
+              </Link>
+            </article>
           ))}
         </div>
       </section>
 
-      {streaming.length > 0 && (
-        <section className="section-pad">
-          <p className="eyebrow">Official links</p>
-          <div className="links-grid">
-            {streaming.map(([key, href]) => (
-              <a key={key} href={href} target="_blank" rel="noreferrer">
-                {platformDisplayNames[key] ?? key} ↗
-              </a>
-            ))}
-            <Link href="/links">All links ↗</Link>
-          </div>
-        </section>
-      )}
-
       <section className="section-pad">
-        <p className="eyebrow">Media assets</p>
-        <div className="epk-asset-grid">
-          {live
-            .filter((r) => r.artworkUrl)
-            .map((r) => (
-              <a key={r.id} className="epk-asset" href={r.artworkUrl!} target="_blank" rel="noreferrer">
-                <ReleaseArtwork release={r} />
-                <span>{r.title} artwork ↗</span>
-              </a>
-            ))}
+        <p className="eyebrow">Brand assets</p>
+        <div className="epk-brand-grid">
+          {brandDownloads.map((asset) => (
+            <a key={asset.variant} className="epk-brand-asset" href={asset.src} download target="_blank" rel="noreferrer">
+              {asset.variant === "primary" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={asset.src} alt={asset.alt} className="epk-brand-preview" />
+              ) : (
+                <BossieMark size="lg" decorative={false} />
+              )}
+              <span>{asset.downloadLabel} ↗</span>
+            </a>
+          ))}
         </div>
       </section>
 
+      <ListenSocialBlock title="Official links — Listen" />
+      <FollowSocialBlock title="Official links — Follow" />
+
+      <section className="section-pad">
+        <p className="eyebrow">Website</p>
+        <a className="text-link" href={siteSettings.siteUrl}>
+          {siteSettings.domain} ↗
+        </a>
+      </section>
       <section className="section-pad">
         <p className="eyebrow">Contact</p>
         <p>For press, sync and collaboration enquiries:</p>

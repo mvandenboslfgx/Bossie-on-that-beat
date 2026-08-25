@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { getLiveReleases } from "@/lib/repository/release-repository";
+import { getCatalog } from "@/lib/repository/catalog";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { siteSettings } from "@/lib/site-settings";
+
+export const dynamic = "force-dynamic";
 
 type CuratedRelease = {
   title: string;
@@ -20,7 +22,7 @@ type CuratedRelease = {
  * Never call Spotify/Apple live on pageview/API GET.
  */
 export async function GET() {
-  const live = await getLiveReleases();
+  const { live, refreshedAt } = await getCatalog();
 
   const releases: CuratedRelease[] = live.map((release) => {
     const links = Object.fromEntries(
@@ -47,11 +49,11 @@ export async function GET() {
       releases,
       automatic: true,
       source: "d1",
-      refreshedAt: new Date().toISOString(),
+      refreshedAt,
     },
     {
       headers: {
-        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=86400",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
       },
     },
   );

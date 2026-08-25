@@ -1,9 +1,11 @@
-import { getUpcomingReleases } from "@/lib/repository/release-repository";
+import { getCatalog } from "@/lib/repository/catalog";
 import { ReleaseCard } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 
+export const dynamic = "force-dynamic";
+
 export default async function MusicUpcomingPage() {
-  const upcoming = await getUpcomingReleases();
+  const { upcoming } = await getCatalog();
 
   return (
     <PageShell>

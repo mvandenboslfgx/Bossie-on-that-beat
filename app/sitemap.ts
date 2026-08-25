@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { getAllReleases, getAllWorlds, getAllCinema, getAllGenres, slugifyGenre } from "@/lib/repository/release-repository";
 import { siteSettings } from "@/lib/site-settings";
 
+export const dynamic = "force-dynamic";
+
 const base = siteSettings.siteUrl;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

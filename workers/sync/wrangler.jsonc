@@ -19,6 +19,7 @@
     "crons": ["0 */6 * * *"]
   },
   "vars": {
-    "SYNC_INTERVAL_HOURS": "6"
+    "SYNC_INTERVAL_HOURS": "6",
+    "SITE_URL": "https://bossieonthatbeat.com"
   }
 }

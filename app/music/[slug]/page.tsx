@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllReleases, getReleaseBySlug, getReleasesByWorld } from "@/lib/repository/release-repository";
+import { FollowSocialBlock } from "@/components/brand/SocialLinks";
+import { ShareRelease } from "@/components/brand/ShareRelease";
+import { getReleaseBySlug, getReleasesByWorld, getWatchLink } from "@/lib/repository/release-repository";
 import { ReleaseHero, PlatformLinks } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
-const base = siteSettings.siteUrl;
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const releases = await getAllReleases();
-  return releases.map((r) => ({ slug: r.slug }));
-}
+const base = siteSettings.siteUrl;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -41,6 +41,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
   if (!r || r.status === "pending_review" || r.status === "project") notFound();
 
   const related = r.worldSlug ? await getReleasesByWorld(r.worldSlug) : [];
+  const watch = getWatchLink(r);
 
   const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));
   const recordingSchema = {
@@ -68,7 +69,22 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
       <ReleaseHero release={r} />
 
       <section className="section-pad release-detail-section">
+        <p className="eyebrow">Listen</p>
         <PlatformLinks release={r} smartlink />
+      </section>
+
+      {watch && (
+        <section className="section-pad">
+          <p className="eyebrow">Watch</p>
+          <a className="button button-ghost" href={watch.url} target="_blank" rel="noreferrer">
+            YouTube ↗
+          </a>
+        </section>
+      )}
+
+      <section className="section-pad release-social-section">
+        <FollowSocialBlock title="Follow Bossie" />
+        <ShareRelease title={r.title} slug={r.slug} />
       </section>
 
       {r.story && (

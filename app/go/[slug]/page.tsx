@@ -2,20 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import {
-  getAllReleases,
   getReleaseBySlug,
   getLatestRelease,
   getPrimaryListenLink,
 } from "@/lib/repository/release-repository";
+import { BossieLogo } from "@/components/brand/BossieLogo";
+import { FollowSocialBlock } from "@/components/brand/SocialLinks";
 import { ReleaseArtwork, PlatformLinks } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
-export async function generateStaticParams() {
-  const releases = await getAllReleases();
-  return [...releases.map((r) => ({ slug: r.slug })), { slug: "latest" }];
-}
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -66,6 +65,7 @@ export default async function GoPage({
   return (
     <PageShell>
       <section className="smartlink-page section-pad">
+        <BossieLogo variant="primary" href="/" className="smartlink-logo" />
         <ReleaseArtwork release={release} large />
         <div className="smartlink-copy">
           <h1>{release.title}</h1>
@@ -76,6 +76,7 @@ export default async function GoPage({
             </a>
           )}
           <PlatformLinks release={release} />
+          <FollowSocialBlock title="Follow Bossie" />
           <div className="smartlink-secondary">
             <Link className="text-link" href={`/music/${release.slug}`}>
               Explore release ↗

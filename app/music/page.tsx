@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  getLiveReleases,
-  getUpcomingReleases,
-  getAllGenres,
-  slugifyGenre,
-} from "@/lib/repository/release-repository";
+import { getCatalog } from "@/lib/repository/catalog";
+import { slugifyGenre } from "@/lib/repository/release-repository";
 import { ReleaseCard } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Music",
@@ -16,11 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MusicPage() {
-  const [live, upcoming, genres] = await Promise.all([
-    getLiveReleases(),
-    getUpcomingReleases(),
-    getAllGenres(),
-  ]);
+  const { live, upcoming, genres } = await getCatalog();
 
   return (
     <PageShell>

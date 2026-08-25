@@ -600,3 +600,209 @@
     transition: none;
   }
 }
+
+/* —— Brand V3 —— */
+.bossie-logo-link {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.bossie-logo-mark {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+}
+
+.bossie-logo-primary {
+  max-width: min(280px, 72vw);
+  height: auto;
+  object-fit: contain;
+}
+
+.bossie-logo-wordmark {
+  font: 800 13px "Manrope", Arial, sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.bossie-logo-wordmark span {
+  color: var(--gold);
+}
+
+.bossie-mark {
+  display: inline-grid;
+  place-items: center;
+  font-family: "Manrope", Arial, sans-serif;
+  font-weight: 800;
+  color: var(--gold);
+  opacity: 0.35;
+  user-select: none;
+}
+
+.bossie-mark-sm { font-size: 2rem; }
+.bossie-mark-md { font-size: 3.5rem; }
+.bossie-mark-lg { font-size: 5rem; }
+.bossie-mark-xl { font-size: clamp(4rem, 18vw, 9rem); }
+
+.header-social-strip {
+  justify-self: center;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a847a;
+}
+
+.header-social-item a:hover {
+  color: var(--gold);
+}
+
+.header-social-sep {
+  margin: 0 0.45rem;
+  opacity: 0.5;
+}
+
+.mobile-nav-logo.bossie-logo-primary {
+  max-width: 180px;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
+.mobile-social-links {
+  margin: 1rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.site-footer {
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.footer-brand-block {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.footer-tagline {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: #716b62;
+  text-transform: uppercase;
+}
+
+.footer-social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.5rem;
+}
+
+.footer-social-heading {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  margin-bottom: 0.65rem;
+}
+
+.social-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.social-links a {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #a9a398;
+}
+
+.social-links-compact a {
+  font-size: 9px;
+}
+
+.social-block {
+  margin: 1.5rem 0;
+}
+
+.links-hub {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.links-hub-logo {
+  margin: 0 auto 2rem;
+  display: block;
+}
+
+.links-current-signal h1 {
+  font-size: clamp(2rem, 8vw, 3rem);
+  margin: 0.5rem 0 1.25rem;
+}
+
+.links-divider {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 2rem 0;
+}
+
+.links-hub-artist {
+  margin-top: 2rem;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #716b62;
+}
+
+.smartlink-logo {
+  margin: 0 auto 1.5rem;
+  display: block;
+}
+
+.home-hero-logo {
+  margin-bottom: 1rem;
+  max-width: 200px;
+}
+
+.epk-hero-logo {
+  margin-bottom: 1.25rem;
+  max-width: 220px;
+}
+
+.epk-brand-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.epk-brand-asset {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  text-align: center;
+}
+
+.epk-brand-preview {
+  max-width: 100%;
+  height: auto;
+  max-height: 140px;
+  object-fit: contain;
+}
+
+.error-mark {
+  display: block;
+  text-align: center;
+  margin: 2rem auto 0;
+}
+
+.share-block .share-actions {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 900px) {
+  .header-social-strip {
+    display: none;
+  }
+}

@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
-import { platformDisplayNames, siteSettings } from "@/lib/site-settings";
-import { isVerifiedListenUrl } from "@/lib/links/url";
+import { BossieLogo } from "@/components/brand/BossieLogo";
+import { FooterSocialGrid, HeaderSocialStrip, MobileSocialLinks } from "@/components/brand/SocialLinks";
+import { getListenSocials } from "@/lib/brand/socials";
+import { siteSettings } from "@/lib/site-settings";
 
 const primaryNav = [
   ["Music", "/music"],
@@ -21,24 +23,13 @@ const secondaryNav = [
 ] as const;
 
 function listenHref() {
-  const preferred = ["spotify", "appleMusic", "youtube", "youtubeMusic"] as const;
-  for (const key of preferred) {
-    const href = siteSettings.streaming[key] || siteSettings.social[key];
-    if (href && isVerifiedListenUrl(href)) return href;
-  }
-  const entries = [...Object.values(siteSettings.streaming), ...Object.values(siteSettings.social)].filter(
-    isVerifiedListenUrl,
-  );
-  return entries[0] ?? "/go/latest";
+  const first = getListenSocials()[0];
+  return first?.href ?? "/go/latest";
 }
 
 function listenLabel() {
-  const preferred = ["spotify", "appleMusic", "youtube", "youtubeMusic"] as const;
-  for (const key of preferred) {
-    const href = siteSettings.streaming[key] || siteSettings.social[key];
-    if (href && isVerifiedListenUrl(href)) return platformDisplayNames[key] ?? "Listen";
-  }
-  return "Listen";
+  const first = getListenSocials()[0];
+  return first?.label ?? "Listen";
 }
 
 export function SiteNav() {
@@ -75,9 +66,9 @@ export function SiteNav() {
   return (
     <nav className="site-nav" aria-label="Primary navigation">
       <div className="nav-inner">
-        <Link className="site-brand" href="/">
-          BOSSIE <span>ON THE BEAT</span>
-        </Link>
+        <BossieLogo variant="mark" href="/" />
+
+        <HeaderSocialStrip />
 
         <div className="site-links desktop-nav" aria-hidden={open}>
           {primaryNav.map(([label, itemHref]) => (
@@ -125,6 +116,7 @@ export function SiteNav() {
             <button ref={closeBtnRef} type="button" className="mobile-nav-close" onClick={() => setOpen(false)}>
               Close
             </button>
+            <BossieLogo variant="primary" href="/" className="mobile-nav-logo" />
             <ul className="mobile-nav-list">
               {[...primaryNav, ...secondaryNav].map(([label, itemHref]) => (
                 <li key={itemHref}>
@@ -134,6 +126,7 @@ export function SiteNav() {
                 </li>
               ))}
             </ul>
+            <MobileSocialLinks />
             <a
               className="button button-gold mobile-nav-listen"
               href={href}
@@ -153,13 +146,12 @@ export function SiteNav() {
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div>
-        <strong>BOSSIE</strong>
-        <span>ON THE BEAT</span>
+      <div className="footer-brand-block">
+        <BossieLogo variant="wordmark" href="/" />
+        <p className="footer-tagline">{siteSettings.slogan}</p>
       </div>
+      <FooterSocialGrid />
       <div className="footer-copy">
-        {siteSettings.slogan}
-        <br />
         <small>
           © 2026 BOSSIE ON THE BEAT · <Link href="/privacy">PRIVACY</Link>
         </small>

@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  getFeaturedRelease,
-  getLatestRelease,
-  getLiveReleases,
-  getAllWorlds,
-  getAllCinema,
-  getProjectReleases,
-} from "@/lib/repository/release-repository";
+import { getCatalog } from "@/lib/repository/catalog";
+import { getAllWorlds, getAllCinema, getProjectReleases } from "@/lib/repository/release-repository";
+import { BossieLogo } from "@/components/brand/BossieLogo";
+import { getSameAsUrls } from "@/lib/brand/socials";
 import { ReleaseArtwork, ReleaseActions, ReleaseCard, StatusBadge } from "@/components/release/ReleaseUI";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: { absolute: siteSettings.defaultSeo.title },
@@ -39,14 +36,13 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const [featured, latest, live, worlds, cinema, projects] = await Promise.all([
-    getFeaturedRelease(),
-    getLatestRelease(),
-    getLiveReleases(),
+  const [catalog, worlds, cinema, projects] = await Promise.all([
+    getCatalog(),
     getAllWorlds(),
     getAllCinema(),
     getProjectReleases(),
   ]);
+  const { featured, latest, live } = catalog;
 
   const featuredIsLatest = Boolean(featured && latest && featured.slug === latest.slug);
   const catalogue = live.filter((r) => r.slug !== featured?.slug && r.slug !== latest?.slug);
@@ -60,7 +56,7 @@ export default async function HomePage() {
     alternateName: siteSettings.artistAltName,
     url: siteSettings.siteUrl,
     description: siteSettings.defaultSeo.description,
-    sameAs: streaming.map((e) => e.href),
+    sameAs: getSameAsUrls(),
   };
 
   return (
@@ -73,11 +69,7 @@ export default async function HomePage() {
         <header className={`universe-hero section-pad world-accent-${featured.worldSlug ?? "default"}`}>
           <div className="universe-hero-grid">
             <div className="universe-hero-copy">
-              <p className="eyebrow">BOSSIE ON THE BEAT</p>
-              <h1>
-                BOSSIE
-                <span> ON THE BEAT</span>
-              </h1>
+              <BossieLogo variant="primary" href="/" className="home-hero-logo" priority />
               <p className="hero-manifesto">{siteSettings.slogan}</p>
               <StatusBadge status={featured.status} />
               <p className="hero-release-label">{featuredIsLatest ? "Featured & latest" : "Featured release"}</p>

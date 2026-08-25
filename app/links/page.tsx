@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getLatestRelease, getLiveReleases } from "@/lib/repository/release-repository";
+import { BossieLogo } from "@/components/brand/BossieLogo";
+import { FollowSocialBlock, ListenSocialBlock } from "@/components/brand/SocialLinks";
+import { getCatalog } from "@/lib/repository/catalog";
 import { ReleaseArtwork, ReleaseActions } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
-import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
-import { isVerifiedListenUrl } from "@/lib/links/url";
+import { siteSettings } from "@/lib/site-settings";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Links",
@@ -13,80 +16,49 @@ export const metadata: Metadata = {
 };
 
 export default async function LinksPage() {
-  const [latest, live] = await Promise.all([getLatestRelease(), getLiveReleases()]);
-  const streaming = getOfficialProfileEntries("streaming").filter((e) => isVerifiedListenUrl(e.href));
-  const social = getOfficialProfileEntries("social").filter((e) => isVerifiedListenUrl(e.href));
+  const { latest } = await getCatalog();
 
   return (
     <PageShell>
-      <section className="page-hero compact-hero links-hero">
-        <p className="eyebrow">BOSSIE LINK</p>
-        <h1>LINKS</h1>
-        <p>Official gateway into the Bossie universe.</p>
-      </section>
+      <section className="links-hub section-pad">
+        <BossieLogo variant="primary" href="/" className="links-hub-logo" priority />
 
-      {latest && (
-        <section className="section-pad links-latest">
-          <ReleaseArtwork release={latest} large />
-          <div>
-            <p className="eyebrow">LATEST RELEASE</p>
-            <h2>{latest.title}</h2>
-            <p>{siteSettings.artistName}</p>
+        {latest && (
+          <div className="links-current-signal">
+            <p className="eyebrow">CURRENT SIGNAL</p>
+            <h1>{latest.title}</h1>
+            <ReleaseArtwork release={latest} large />
             <ReleaseActions release={latest} />
           </div>
+        )}
+
+        <ListenSocialBlock title="Listen" />
+
+        <hr className="links-divider" />
+
+        <FollowSocialBlock title="Follow Bossie" />
+
+        <hr className="links-divider" />
+
+        <section className="social-block">
+          <p className="eyebrow">ENTER THE UNIVERSE</p>
+          <ul className="social-links">
+            <li>
+              <Link href="/music">Music ↗</Link>
+            </li>
+            <li>
+              <Link href="/worlds">Worlds ↗</Link>
+            </li>
+            <li>
+              <Link href="/cinema">Cinema ↗</Link>
+            </li>
+            <li>
+              <Link href="/request">Create Your Song ↗</Link>
+            </li>
+          </ul>
         </section>
-      )}
 
-      {streaming.length > 0 && (
-        <section className="section-pad links-section">
-          <h2>Listen</h2>
-          <div className="links-grid">
-          {streaming.map(({ key, href, label }) => (
-            <a key={key} href={href} target="_blank" rel="noreferrer">
-              {label} ↗
-            </a>
-          ))}
-            {live.slice(0, 3).map((r) => (
-              <Link key={r.id} href={`/go/${r.slug}`}>
-                {r.title} ↗
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      <section className="section-pad links-section">
-        <h2>Watch</h2>
-        <div className="links-grid">
-          <Link href="/cinema">Bossie Cinema ↗</Link>
-        </div>
-      </section>
-
-      {social.length > 0 && (
-        <section className="section-pad links-section">
-          <h2>Follow</h2>
-          <div className="links-grid">
-          {social.map(({ key, href, label }) => (
-            <a key={key} href={href} target="_blank" rel="noreferrer">
-              {label} ↗
-            </a>
-          ))}
-          </div>
-        </section>
-      )}
-
-      <section className="section-pad links-section">
-        <h2>Explore</h2>
-        <div className="links-grid">
-          <Link href="/music">Music ↗</Link>
-          <Link href="/worlds">Worlds ↗</Link>
-          <Link href="/cinema">Cinema ↗</Link>
-          <Link href="/request">Create Your Song ↗</Link>
-          <Link href="/go/latest">Latest Release ↗</Link>
-          <Link href="/about">About ↗</Link>
-          <Link href="/epk">EPK ↗</Link>
-          <Link href="/industry">Industry ↗</Link>
-        </div>
+        <p className="links-hub-artist">{siteSettings.artistName}</p>
       </section>
     </PageShell>
   );

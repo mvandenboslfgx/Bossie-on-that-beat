@@ -1,3 +1,5 @@
+import { isVerifiedListenUrl } from "@/lib/links/url";
+
 export const siteSettings = {
   artistName: "Bossie on the beat",
   artistAltName: "Bossie on that beat",
@@ -15,20 +17,33 @@ export const siteSettings = {
    * but UI/profile URLs always come from here (never search URLs).
    */
   identities: {
-    /** Proven from Crown of the Abyss album page music:musician meta. */
     spotifyArtistId: "4mNxC22iSgkO0uLp1dL4Fp",
     appleMusicArtistId: "6784857602",
-    /** Official @bossie_on_that_beat — channel ID lives in Worker secret YOUTUBE_CHANNEL_ID. */
     youtubeChannelId: "" as string,
   },
   /**
-   * Only official profile/store URLs. Empty = do not render a button.
-   * Search / results URLs are forbidden in production UI.
+   * Single source for all official streaming + social profiles.
+   * Empty string = unknown → never render. Search URLs forbidden.
    */
+  socials: {
+    spotify: "https://open.spotify.com/artist/4mNxC22iSgkO0uLp1dL4Fp",
+    appleMusic: "https://music.apple.com/nl/artist/bossie-on-that-beat/6784857602",
+    youtube: "https://www.youtube.com/@bossie_on_that_beat",
+    youtubeMusic: "",
+    tiktok: "",
+    instagram: "",
+    facebook: "",
+    amazonMusic: "",
+    deezer: "",
+    tidal: "",
+    soundcloud: "",
+  } as Record<string, string>,
+  /** @deprecated Use socials — kept for sync code paths that reference streaming keys. */
   streaming: {
     spotify: "https://open.spotify.com/artist/4mNxC22iSgkO0uLp1dL4Fp",
     appleMusic: "https://music.apple.com/nl/artist/bossie-on-that-beat/6784857602",
   } as Record<string, string>,
+  /** @deprecated Use socials */
   social: {
     youtube: "https://www.youtube.com/@bossie_on_that_beat",
   } as Record<string, string>,
@@ -62,27 +77,25 @@ export const platformDisplayNames: Record<string, string> = {
   tiktok: "TikTok",
   instagram: "Instagram",
   facebook: "Facebook",
+  soundcloud: "SoundCloud",
 };
 
-/** Official listen/follow profile entries that pass production URL rules. */
+/** @deprecated Prefer getListenSocials / getFollowSocials from lib/brand/socials */
 export function getOfficialProfileEntries(
   group: "streaming" | "social" | "all" = "all",
 ): Array<{ key: string; href: string; label: string }> {
-  const bags =
-    group === "streaming"
-      ? [siteSettings.streaming]
-      : group === "social"
-        ? [siteSettings.social]
-        : [siteSettings.streaming, siteSettings.social];
+  const listenKeys = ["spotify", "appleMusic", "youtubeMusic", "amazonMusic", "deezer", "tidal", "soundcloud"];
+  const followKeys = ["youtube", "tiktok", "instagram", "facebook"];
+  const keys =
+    group === "streaming" ? listenKeys : group === "social" ? followKeys : [...listenKeys, ...followKeys];
 
   const out: Array<{ key: string; href: string; label: string }> = [];
   const seen = new Set<string>();
-  for (const bag of bags) {
-    for (const [key, href] of Object.entries(bag)) {
-      if (!href || seen.has(key)) continue;
-      seen.add(key);
-      out.push({ key, href, label: platformDisplayNames[key] ?? key });
-    }
+  for (const key of keys) {
+    const href = siteSettings.socials[key];
+    if (!href || seen.has(key) || !isVerifiedListenUrl(href)) continue;
+    seen.add(key);
+    out.push({ key, href, label: platformDisplayNames[key] ?? key });
   }
   return out;
 }

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateCatalogPaths } from "@/lib/cache/revalidate-catalog";
 import { getServerEnv } from "@/lib/env";
 import { getDb } from "@/lib/db/client";
 import { runReleaseSync } from "@/lib/release-sync/sync";
@@ -25,5 +26,6 @@ export async function POST(request: Request) {
     YOUTUBE_CHANNEL_ID: env.YOUTUBE_CHANNEL_ID,
   });
 
+  revalidateCatalogPaths();
   return NextResponse.json(result);
 }

@@ -3,7 +3,25 @@ import { runReleaseSync, type SyncEnv } from "../../../lib/release-sync/sync";
 
 export interface Env extends SyncEnv {
   CRON_SECRET?: string;
+  /** Main site URL — used to bust catalog cache after sync. */
+  SITE_URL?: string;
   DB: D1Database;
+}
+
+async function revalidateMainCatalog(env: Env) {
+  const base = (env.SITE_URL ?? "https://bossieonthatbeat.com").replace(/\/$/, "");
+  if (!env.CRON_SECRET) return;
+  try {
+    const response = await fetch(`${base}/api/revalidate`, {
+      method: "POST",
+      headers: { "x-cron-secret": env.CRON_SECRET },
+    });
+    if (!response.ok) {
+      console.warn("[bossie-sync] catalog revalidate failed", response.status);
+    }
+  } catch (error) {
+    console.warn("[bossie-sync] catalog revalidate error", error);
+  }
 }
 
 export default {
@@ -13,6 +31,7 @@ export default {
       return;
     }
     const result = await runReleaseSync(env);
+    await revalidateMainCatalog(env);
     console.log("[bossie-sync] completed", JSON.stringify(result));
   },
 
@@ -33,6 +52,7 @@ export default {
         return Response.json({ error: "DB binding missing" }, { status: 503 });
       }
       const result = await runReleaseSync(env);
+      await revalidateMainCatalog(env);
       return Response.json(result);
     }
 

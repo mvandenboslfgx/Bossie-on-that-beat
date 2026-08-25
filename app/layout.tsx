@@ -4,8 +4,12 @@ import "./live-catalog.css";
 import "./multipage.css";
 import "./request.css";
 import "./v2.css";
+import { getBrandAssetUrl } from "@/lib/brand/assets";
+import { getSameAsUrls } from "@/lib/brand/socials";
+import { siteSettings } from "@/lib/site-settings";
 
-const siteUrl = "https://bossieonthatbeat.com";
+const siteUrl = siteSettings.siteUrl;
+const ogImage = getBrandAssetUrl("socialShare", siteUrl);
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -55,11 +59,13 @@ export const metadata: Metadata = {
     title: "Bossie on the beat | Producer, Composer & Artist",
     description:
       "Official Bossie on the beat website. Music without genre boundaries — every track is a new world.",
+    ...(ogImage ? { images: [{ url: ogImage, alt: "Bossie on the beat official logo" }] } : {}),
   },
   twitter: {
     card: "summary_large_image",
     title: "Bossie on the beat | Producer, Composer & Artist",
     description: "Official website. Music without boundaries. Every track is a new world.",
+    ...(ogImage ? { images: [ogImage] } : {}),
   },
 };
 
@@ -75,12 +81,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     "@context": "https://schema.org",
     "@type": "MusicGroup",
     "@id": `${siteUrl}/#artist`,
-    name: "Bossie on the beat",
-    alternateName: "Bossie on that beat",
+    name: siteSettings.artistName,
+    alternateName: siteSettings.artistAltName,
     url: siteUrl,
     description:
       "Independent producer, composer and artist creating cinematic, orchestral, metal, electronic, rap and global music.",
     genre: ["Cinematic", "Orchestral", "Metal", "Electronic", "Rap", "Global Music"],
+    sameAs: getSameAsUrls(),
+    ...(ogImage ? { logo: ogImage, image: ogImage } : {}),
   };
 
   return (

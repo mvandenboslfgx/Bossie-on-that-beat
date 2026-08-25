@@ -3,10 +3,8 @@ import { getAllGenres, getReleasesByGenre, slugifyGenre } from "@/lib/repository
 import { ReleaseCard } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 
-export async function generateStaticParams() {
-  const genres = await getAllGenres();
-  return genres.map((g) => ({ slug: slugifyGenre(g) }));
-}
+export const dynamic = "force-dynamic";
+export const dynamicParams = true;
 
 export default async function GenrePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
