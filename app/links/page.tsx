@@ -5,60 +5,50 @@ import { FollowSocialBlock, ListenSocialBlock } from "@/components/brand/SocialL
 import { getCatalog } from "@/lib/repository/catalog";
 import { ReleaseArtwork, ReleaseActions } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
-import { siteSettings } from "@/lib/site-settings";
+import { CatalogProof } from "@/components/v3/BossieV3";
+import { getTransmissionNumber } from "@/lib/catalog/transmission";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Links",
-  description: "Official Bossie on the beat links — listen, watch, follow and explore the universe.",
+  description: "Official Bossie on the beat hub — current signal, listen and enter the universe.",
   alternates: { canonical: "/links" },
 };
 
 export default async function LinksPage() {
-  const { latest } = await getCatalog();
+  const catalog = await getCatalog();
+  const { latest, live, refreshedAt } = catalog;
+  const tx = latest ? getTransmissionNumber(live, latest.slug) : "000";
 
   return (
     <PageShell>
-      <section className="links-hub section-pad">
+      <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
+      <section className="links-hub links-hub-v3 section-pad">
         <BossieLogo variant="primary" href="/" className="links-hub-logo" priority />
 
         {latest && (
-          <div className="links-current-signal">
-            <p className="eyebrow">CURRENT SIGNAL</p>
-            <h1>{latest.title}</h1>
+          <>
+            <p className="links-signal-label">CURRENT SIGNAL // {tx}</p>
+            <h1 className="links-signal-title">{latest.title}</h1>
             <ReleaseArtwork release={latest} large />
             <ReleaseActions release={latest} />
-          </div>
+          </>
         )}
 
-        <ListenSocialBlock title="Listen" />
-
-        <hr className="links-divider" />
-
-        <FollowSocialBlock title="Follow Bossie" />
-
-        <hr className="links-divider" />
+        <ListenSocialBlock title="Listen now" />
 
         <section className="social-block">
           <p className="eyebrow">ENTER THE UNIVERSE</p>
           <ul className="social-links">
-            <li>
-              <Link href="/music">Music ↗</Link>
-            </li>
-            <li>
-              <Link href="/worlds">Worlds ↗</Link>
-            </li>
-            <li>
-              <Link href="/cinema">Cinema ↗</Link>
-            </li>
-            <li>
-              <Link href="/request">Create Your Song ↗</Link>
-            </li>
+            <li><Link href="/music">Music ↗</Link></li>
+            <li><Link href="/worlds">Worlds ↗</Link></li>
+            <li><Link href="/cinema">Cinema ↗</Link></li>
+            <li><Link href="/request">Create Your Song ↗</Link></li>
           </ul>
         </section>
 
-        <p className="links-hub-artist">{siteSettings.artistName}</p>
+        <FollowSocialBlock title="Follow the signal" />
       </section>
     </PageShell>
   );

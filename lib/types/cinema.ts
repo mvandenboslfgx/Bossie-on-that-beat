@@ -1,6 +1,7 @@
 export type CinemaCategory =
   | "film"
   | "music-video"
+  | "official-audio"
   | "visualizer"
   | "lyric-video"
   | "short-film"
@@ -21,7 +22,10 @@ export interface CinemaItem {
   videoUrl?: string;
   thumbnailUrl?: string;
   posterUrl?: string;
+  /** @deprecated Public UI uses editorialSummary via getPublicCinemaSummary */
   description?: string;
+  providerDescriptionRaw?: string;
+  editorialSummary?: string;
   durationSeconds?: number;
   publishedAt?: string;
   featured?: boolean;

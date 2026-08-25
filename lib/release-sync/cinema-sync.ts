@@ -1,6 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import type { CinemaCategory } from "@/lib/types/cinema";
 import { normalizeTitle } from "@/lib/release-sync/match";
+import { generateCinemaEditorialSummary } from "@/lib/cinema/editorial";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
@@ -55,6 +56,7 @@ function parseIsoDuration(value?: string): number | undefined {
 /** Classify YouTube titles into Bossie Cinema categories. */
 export function classifyCinemaType(title: string, durationSeconds?: number): CinemaCategory {
   const t = title.toLowerCase();
+  if (/\b(official audio)\b/.test(t)) return "official-audio";
   if (/\b(short film|shortfilm)\b/.test(t)) return "short-film";
   if (/\b(lyric\s*video|lyrics?\s*video)\b/.test(t)) return "lyric-video";
   if (/\bvisualizer\b/.test(t)) return "visualizer";
@@ -191,6 +193,9 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
 
       if (existing?.manual_override) continue;
 
+      const rawDescription = video.snippet?.description ?? null;
+      const editorialSummary = generateCinemaEditorialSummary(title, type);
+
       if (existing) {
         await env.DB
           .prepare(
@@ -204,6 +209,8 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
               release_slug = CASE WHEN manual_override = 1 THEN release_slug WHEN ? IS NOT NULL THEN ? ELSE release_slug END,
               world_slug = CASE WHEN manual_override = 1 THEN world_slug WHEN ? IS NOT NULL THEN ? ELSE world_slug END,
               review_status = CASE WHEN manual_override = 1 THEN review_status ELSE ? END,
+              provider_description_raw = CASE WHEN manual_override = 1 THEN provider_description_raw ELSE ? END,
+              editorial_summary = CASE WHEN manual_override = 1 THEN editorial_summary ELSE ? END,
               updated_at = ?
              WHERE id = ?`,
           )
@@ -219,6 +226,8 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
             worldSlug ?? null,
             worldSlug ?? null,
             status,
+            rawDescription,
+            editorialSummary,
             now,
             existing.id,
           )
@@ -229,8 +238,9 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
           .prepare(
             `INSERT INTO cinema_items (
               id, slug, title, type, release_slug, world_slug, youtube_url, youtube_video_id,
-              thumbnail_url, description, duration_seconds, published_at, featured, review_status, manual_override
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0)`,
+              thumbnail_url, description, provider_description_raw, editorial_summary,
+              duration_seconds, published_at, featured, review_status, manual_override
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0)`,
           )
           .bind(
             id,
@@ -242,7 +252,9 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
             youtubeUrl,
             videoId,
             thumbnail,
-            video.snippet?.description?.slice(0, 500) ?? null,
+            editorialSummary,
+            rawDescription,
+            editorialSummary,
             durationSeconds ?? null,
             video.snippet?.publishedAt ?? null,
             status,

@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { FollowSocialBlock } from "@/components/brand/SocialLinks";
 import { ShareRelease } from "@/components/brand/ShareRelease";
+import { ReleaseMiniWorld, ReleaseSignalBlock } from "@/components/v3/ReleaseMiniWorld";
+import { getCatalog } from "@/lib/repository/catalog";
 import { getReleaseBySlug, getReleasesByWorld, getWatchLink } from "@/lib/repository/release-repository";
-import { ReleaseHero, PlatformLinks } from "@/components/release/ReleaseUI";
+import { PlatformLinks } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
@@ -40,7 +42,11 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
   const r = await getReleaseBySlug(slug);
   if (!r || r.status === "pending_review" || r.status === "project") notFound();
 
-  const related = r.worldSlug ? await getReleasesByWorld(r.worldSlug) : [];
+  const [catalog, relatedWorld] = await Promise.all([
+    getCatalog(),
+    r.worldSlug ? getReleasesByWorld(r.worldSlug) : Promise.resolve([]),
+  ]);
+  const related = relatedWorld;
   const watch = getWatchLink(r);
 
   const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));
@@ -64,9 +70,10 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
   };
 
   return (
-    <PageShell>
+    <PageShell worldSlug={r.worldSlug}>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(recordingSchema) }} />
-      <ReleaseHero release={r} />
+      <ReleaseMiniWorld release={r} live={catalog.live} />
+      <ReleaseSignalBlock release={r} />
 
       <section className="section-pad release-detail-section">
         <p className="eyebrow">Listen</p>
@@ -120,7 +127,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
 
       {r.worldSlug && (
         <section className="section-pad">
-          <p className="eyebrow">ENTER THIS WORLD</p>
+          <p className="eyebrow">ENTER THE WORLD</p>
           <Link className="button button-ghost" href={`/worlds/${r.worldSlug}`}>
             Explore {r.worldSlug.replace(/-/g, " ")} ↗
           </Link>
@@ -129,7 +136,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
 
       {related.filter((item) => item.slug !== r.slug).length > 0 && (
         <section className="section-pad">
-          <p className="eyebrow">RELATED RELEASES</p>
+          <p className="eyebrow">RELATED TRANSMISSIONS</p>
           <div className="related-list">
             {related
               .filter((item) => item.slug !== r.slug)

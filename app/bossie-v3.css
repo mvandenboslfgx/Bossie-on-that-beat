@@ -1,0 +1,510 @@
+/* Bossie Art Direction V3 — B-mark DNA, world skins, editorial layouts */
+
+.world-skin-the-abyss {
+  --world-accent: #8b1a1a;
+  --world-glow: rgba(180, 120, 40, 0.35);
+  --bossie-mark-opacity: 0.12;
+}
+
+.world-skin-the-night {
+  --world-accent: #3d6bff;
+  --world-glow: rgba(61, 107, 255, 0.28);
+  --bossie-mark-opacity: 0.1;
+}
+
+.world-skin-the-club {
+  --world-accent: #ff6a2b;
+  --world-glow: rgba(255, 106, 43, 0.32);
+  --bossie-mark-opacity: 0.11;
+}
+
+.world-skin-the-mountain {
+  --world-accent: #a8c4d9;
+  --world-glow: rgba(168, 196, 217, 0.22);
+  --bossie-mark-opacity: 0.07;
+  --ink: #e8e4dc;
+}
+
+.world-skin-the-storm {
+  --world-accent: #9aa8b8;
+  --world-glow: rgba(154, 168, 184, 0.3);
+  --bossie-mark-opacity: 0.1;
+}
+
+.world-skin-the-door {
+  --world-accent: #5c4a6e;
+  --world-glow: rgba(92, 74, 110, 0.28);
+  --bossie-mark-opacity: 0.1;
+}
+
+.world-skin-the-streets {
+  --world-accent: #c9a227;
+  --world-glow: rgba(201, 162, 39, 0.22);
+  --bossie-mark-opacity: 0.09;
+}
+
+.world-skin-global,
+.world-skin-default {
+  --world-accent: var(--gold);
+  --world-glow: rgba(217, 179, 95, 0.22);
+  --bossie-mark-opacity: 0.08;
+}
+
+.page-world-skin {
+  --gold-soft: var(--world-accent, var(--gold));
+}
+
+.page-world-skin .bossie-mark {
+  opacity: var(--bossie-mark-opacity, 0.1);
+  color: var(--world-accent, var(--gold));
+}
+
+.page-world-skin.world-tone-light {
+  background: #f4f2ed;
+  color: #121212;
+}
+
+.current-world-hero {
+  position: relative;
+  min-height: min(92vh, 920px);
+  display: grid;
+  align-content: end;
+  padding: max(6vh, 80px) max(4vw, 22px) 0;
+  background-color: #050505;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.current-world-watermark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  opacity: var(--bossie-mark-opacity, 0.08);
+  font-size: clamp(12rem, 42vw, 28rem);
+  transform: translateY(-8%);
+}
+
+.current-world-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  padding-bottom: 5rem;
+}
+
+.current-world-logo {
+  max-width: min(220px, 56vw) !important;
+  margin-bottom: 1.5rem;
+}
+
+.current-world-title {
+  font-size: clamp(2.8rem, 9vw, 5.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin: 0.35rem 0;
+}
+
+.current-world-world {
+  font-size: 0.75rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--world-accent, var(--gold));
+  margin-bottom: 0.35rem;
+}
+
+.current-world-meta {
+  color: #9a948a;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.transmission-bar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 1.25rem;
+  padding: 0.85rem max(4vw, 22px);
+  border-top: 1px solid var(--line);
+  background: rgba(5, 5, 5, 0.88);
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.transmission-bar-label {
+  color: var(--gold);
+}
+
+.transmission-bar-title {
+  font-weight: 800;
+}
+
+.transmission-bar-link {
+  color: #a9a398;
+}
+
+.transmission-bar-link:hover {
+  color: var(--gold);
+}
+
+.music-editorial-archive {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.music-editorial-item {
+  position: relative;
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+@media (min-width: 900px) {
+  .music-editorial-hero {
+    grid-template-columns: 1.2fr 1fr;
+    align-items: center;
+  }
+
+  .music-editorial-alt {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+
+  .music-editorial-alt .music-editorial-visual {
+    order: 2;
+  }
+
+  .music-editorial-alt .music-editorial-copy {
+    order: 1;
+  }
+}
+
+.music-editorial-mark {
+  position: absolute;
+  top: 0.5rem;
+  right: 0;
+  pointer-events: none;
+  opacity: var(--bossie-mark-opacity, 0.08);
+}
+
+.music-editorial-num {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--world-accent, var(--gold));
+}
+
+.music-editorial-item h2 {
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  margin: 0.25rem 0;
+}
+
+.music-editorial-item h2 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.music-editorial-meta {
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a847a;
+}
+
+.music-editorial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cinema-editorial-card {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 760px) {
+  .cinema-editorial-featured {
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+.cinema-editorial-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--line);
+}
+
+.cinema-play-mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0.35;
+  font-size: 3rem;
+}
+
+.cinema-play-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.cinema-editorial-thumb-link:hover .cinema-play-label {
+  opacity: 1;
+}
+
+.cinema-editorial-meta {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--gold-soft);
+  margin-bottom: 0.35rem;
+}
+
+.cinema-editorial-quote {
+  margin: 0.75rem 0 0;
+  padding-left: 0.85rem;
+  border-left: 2px solid var(--world-accent, var(--gold));
+  color: #b5afa4;
+  font-style: normal;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  max-width: 48ch;
+}
+
+.links-hub-v3 {
+  min-height: 80vh;
+  display: grid;
+  align-content: center;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.links-signal-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+}
+
+.release-mini-world {
+  position: relative;
+  min-height: 70vh;
+  display: grid;
+  align-content: end;
+  padding: max(5rem, 12vh) max(4vw, 22px) 2rem;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.release-mini-world .bossie-mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(10rem, 35vw, 22rem);
+  opacity: var(--bossie-mark-opacity, 0.07);
+  pointer-events: none;
+}
+
+.release-signal-block blockquote {
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--world-accent, var(--gold));
+  color: #b5afa4;
+}
+
+.request-v3-layout {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 960px) {
+  .request-v3-layout {
+    grid-template-columns: 1.2fr 0.8fr;
+    align-items: start;
+  }
+}
+
+.bossie-project-card {
+  position: sticky;
+  top: 5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--line-strong);
+  background: linear-gradient(160deg, rgba(217, 179, 95, 0.06), rgba(5, 5, 5, 0.95));
+}
+
+.bossie-project-card dl {
+  display: grid;
+  gap: 0.65rem;
+  margin: 1rem 0 0;
+}
+
+.bossie-project-card dt {
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  color: #7a746a;
+}
+
+.bossie-project-card dd {
+  margin: 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.manifesto-hero {
+  position: relative;
+  min-height: 70vh;
+  display: grid;
+  align-content: center;
+  padding: 6rem max(4vw, 22px) 3rem;
+  overflow: hidden;
+}
+
+.manifesto-hero .bossie-mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(11rem, 38vw, 24rem);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.manifesto-hero h1 {
+  position: relative;
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 1.05;
+  max-width: 14ch;
+}
+
+.cinema-editorial-stack {
+  display: grid;
+  gap: 2rem;
+}
+
+.section-mark {
+  opacity: 0.12;
+  margin-bottom: 0.5rem;
+}
+
+.world-card-mark {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  opacity: 0.15;
+}
+
+.world-card-v2 {
+  position: relative;
+}
+
+.about-statements {
+  display: grid;
+  gap: 2rem;
+}
+
+.about-statements article {
+  position: relative;
+  padding-left: 1rem;
+  border-left: 2px solid var(--line-strong);
+}
+
+.project-id {
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  margin: 0.5rem 0 1rem;
+}
+
+.project-forming {
+  margin-top: 1.25rem;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+}
+
+.request-hero-logo {
+  max-width: 180px;
+  margin-bottom: 1rem;
+}
+
+.epk-seal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+}
+
+.cinema-editorial-quote {
+  max-width: 42ch;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  color: var(--muted);
+  border-left: 2px solid var(--gold);
+  padding-left: 1rem;
+  margin: 1rem 0;
+}
+
+.industry-capabilities {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .industry-capabilities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.industry-capabilities article {
+  position: relative;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+}
+
+.industry-showcase-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .industry-showcase-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.industry-showcase-card {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+}
+
+.industry-showcase-art {
+  aspect-ratio: 1;
+  background-size: cover;
+  background-position: center;
+}

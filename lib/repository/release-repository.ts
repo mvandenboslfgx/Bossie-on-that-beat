@@ -175,7 +175,13 @@ export async function getAllCinema(): Promise<CinemaItem[]> {
               videoUrl: row.video_url ? String(row.video_url) : undefined,
               thumbnailUrl: row.thumbnail_url ? String(row.thumbnail_url) : seed?.thumbnailUrl,
               posterUrl: row.poster_url ? String(row.poster_url) : undefined,
-              description: row.description ? String(row.description) : undefined,
+              providerDescriptionRaw: row.provider_description_raw
+                ? String(row.provider_description_raw)
+                : row.description
+                  ? String(row.description)
+                  : undefined,
+              editorialSummary: row.editorial_summary ? String(row.editorial_summary) : undefined,
+              description: undefined,
               durationSeconds: row.duration_seconds != null ? Number(row.duration_seconds) : undefined,
               publishedAt: row.published_at ? String(row.published_at) : undefined,
               featured: Boolean(row.featured),

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { CATALOG_HTML_HEADERS, isCatalogHtmlPath } from "@/lib/cache/catalog-headers";
 
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
@@ -22,7 +23,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 301);
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (isCatalogHtmlPath(request.nextUrl.pathname)) {
+    for (const [key, value] of Object.entries(CATALOG_HTML_HEADERS)) {
+      response.headers.set(key, value);
+    }
+  }
+  return response;
 }
 
 export const config = {

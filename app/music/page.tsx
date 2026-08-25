@@ -2,26 +2,31 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
 import { slugifyGenre } from "@/lib/repository/release-repository";
-import { ReleaseCard } from "@/components/release/ReleaseUI";
+import { MusicEditorialArchive } from "@/components/v3/MusicEditorialArchive";
+import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
+import { CatalogProof } from "@/components/v3/BossieV3";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Music",
-  description: "Official Bossie on the beat music catalogue — live releases, worlds and streaming links.",
+  description: "Official Bossie on the beat music archive — live releases, worlds and streaming links.",
   alternates: { canonical: "/music" },
 };
 
 export default async function MusicPage() {
-  const { live, upcoming, genres } = await getCatalog();
+  const catalog = await getCatalog();
+  const { live, upcoming, genres, refreshedAt, latest } = catalog;
 
   return (
     <PageShell>
+      <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
       <section className="page-hero compact-hero">
-        <p className="eyebrow">THE COMPLETE CATALOGUE</p>
+        <BossieMark size="lg" className="section-mark" />
+        <p className="eyebrow">THE COMPLETE ARCHIVE</p>
         <h1>MUSIC</h1>
-        <p>Live releases with verified listen links. Every track is a new world.</p>
+        <p>{live.length} live transmissions. Every track is a new world.</p>
       </section>
 
       <section className="music-filters section-pad">
@@ -38,27 +43,13 @@ export default async function MusicPage() {
       </section>
 
       <section className="section-pad">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">LIVE NOW</p>
-            <h2>Out now worldwide.</h2>
-          </div>
-        </div>
-        <div className="release-grid-v2">{live.map((r) => <ReleaseCard key={r.id} release={r} withListen />)}</div>
+        <MusicEditorialArchive live={live} />
       </section>
 
       {upcoming.length > 0 && (
         <section className="section-pad upcoming-section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">COMING NEXT</p>
-              <h2>Next transmissions.</h2>
-            </div>
-            <Link className="text-link" href="/music/upcoming">
-              All upcoming ↗
-            </Link>
-          </div>
-          <div className="release-grid-v2">{upcoming.map((r) => <ReleaseCard key={r.id} release={r} />)}</div>
+          <p className="eyebrow">COMING NEXT</p>
+          <p className="empty-state">{upcoming.length} upcoming transmissions — <Link href="/music/upcoming">view all ↗</Link></p>
         </section>
       )}
     </PageShell>

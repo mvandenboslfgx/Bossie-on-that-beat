@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
-import { getAllWorlds, getAllCinema, getProjectReleases } from "@/lib/repository/release-repository";
-import { BossieLogo } from "@/components/brand/BossieLogo";
+import { getAllWorlds, getAllCinema } from "@/lib/repository/release-repository";
 import { getSameAsUrls } from "@/lib/brand/socials";
-import { ReleaseArtwork, ReleaseActions, ReleaseCard, StatusBadge } from "@/components/release/ReleaseUI";
+import { CatalogProof, CurrentWorldHero } from "@/components/v3/BossieV3";
+import { CinemaEditorialCard } from "@/components/v3/CinemaEditorialCard";
+import { MusicEditorialArchive } from "@/components/v3/MusicEditorialArchive";
+import { BossieMark } from "@/components/brand/BossieMark";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { getBrandAssetUrl } from "@/lib/brand/assets";
+
 export const dynamic = "force-dynamic";
+
+const ogArt = getBrandAssetUrl("socialShare", siteSettings.siteUrl);
 
 export const metadata: Metadata = {
   title: { absolute: siteSettings.defaultSeo.title },
@@ -18,36 +24,15 @@ export const metadata: Metadata = {
     url: siteSettings.siteUrl,
     title: siteSettings.defaultSeo.title,
     description: siteSettings.defaultSeo.description,
-    images: [
-      {
-        url: "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/24/9e/40/249e402f-305e-2b06-2d76-5ace0447c80b/artwork.jpg/1200x1200bb.jpg",
-        alt: "CROWN OF THE ABYSS — Bossie on the beat",
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: siteSettings.defaultSeo.title,
-    description: siteSettings.defaultSeo.description,
-    images: [
-      "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/24/9e/40/249e402f-305e-2b06-2d76-5ace0447c80b/artwork.jpg/1200x1200bb.jpg",
-    ],
+    ...(ogArt ? { images: [{ url: ogArt, alt: "Bossie on the beat official logo" }] } : {}),
   },
 };
 
 export default async function HomePage() {
-  const [catalog, worlds, cinema, projects] = await Promise.all([
-    getCatalog(),
-    getAllWorlds(),
-    getAllCinema(),
-    getProjectReleases(),
-  ]);
-  const { featured, latest, live } = catalog;
-
-  const featuredIsLatest = Boolean(featured && latest && featured.slug === latest.slug);
-  const catalogue = live.filter((r) => r.slug !== featured?.slug && r.slug !== latest?.slug);
+  const [catalog, worlds, cinema] = await Promise.all([getCatalog(), getAllWorlds(), getAllCinema()]);
+  const { latest, live, refreshedAt } = catalog;
+  const current = latest ?? catalog.featured;
   const streaming = getOfficialProfileEntries("streaming").filter((e) => isVerifiedListenUrl(e.href));
-  const nextWorld = projects[0];
 
   const schema = {
     "@context": "https://schema.org",
@@ -61,57 +46,25 @@ export default async function HomePage() {
 
   return (
     <main>
+      <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <div className="grain" aria-hidden="true" />
       <SiteNav />
 
-      {featured && (
-        <header className={`universe-hero section-pad world-accent-${featured.worldSlug ?? "default"}`}>
-          <div className="universe-hero-grid">
-            <div className="universe-hero-copy">
-              <BossieLogo variant="primary" href="/" className="home-hero-logo" priority />
-              <p className="hero-manifesto">{siteSettings.slogan}</p>
-              <StatusBadge status={featured.status} />
-              <p className="hero-release-label">{featuredIsLatest ? "Featured & latest" : "Featured release"}</p>
-              <h2 className="featured-title">{featured.title}</h2>
-              <ReleaseActions release={featured} />
-            </div>
-            <ReleaseArtwork release={featured} large />
-          </div>
-        </header>
-      )}
-
-      {!featuredIsLatest && latest && (
-        <section className="section-pad home-section">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">LATEST RELEASE</p>
-              <h2>{latest.title}</h2>
-              <p>{latest.tagline ?? latest.description}</p>
-            </div>
-            <ReleaseActions release={latest} />
-          </div>
-          <div className="latest-spotlight">
-            <ReleaseArtwork release={latest} />
-          </div>
-        </section>
-      )}
+      {current && <CurrentWorldHero release={current} live={live} />}
 
       <section className="section-pad home-section">
         <div className="section-heading">
+          <BossieMark size="md" className="section-mark" />
           <div>
-            <p className="eyebrow">EXPLORE MUSIC</p>
-            <h2>Live catalogue.</h2>
+            <p className="eyebrow">MUSIC ARCHIVE</p>
+            <h2>Signals from every world.</h2>
           </div>
           <Link className="text-link" href="/music">
-            Full catalogue ↗
+            Full archive ↗
           </Link>
         </div>
-        <div className="release-grid-v2">
-          {(catalogue.length ? catalogue : live.slice(0, 4)).map((r) => (
-            <ReleaseCard key={r.id} release={r} withListen />
-          ))}
-        </div>
+        <MusicEditorialArchive live={live.slice(0, 4)} />
       </section>
 
       <section className="section-pad home-section worlds-home">
@@ -129,8 +82,9 @@ export default async function HomePage() {
             <Link
               key={world.slug}
               href={`/worlds/${world.slug}`}
-              className={`world-card-v2 world-theme-${world.slug}`}
+              className={`world-card-v2 world-theme-${world.slug} world-skin-${world.slug}`}
             >
+              <BossieMark size="sm" className="world-card-mark" />
               <span className="world-label">{world.subtitle}</span>
               <h3>{world.title}</h3>
               <p>{world.description}</p>
@@ -150,61 +104,25 @@ export default async function HomePage() {
             Bossie Cinema ↗
           </Link>
         </div>
-        <div className="cinema-grid-v2">
-          {cinema.slice(0, 3).map((item) => (
-            <Link key={item.id} href={`/cinema/${item.slug}`} className="cinema-card-v2">
-              {item.thumbnailUrl ? (
-                <div
-                  className="cinema-thumb"
-                  style={{ backgroundImage: `url(${item.thumbnailUrl})` }}
-                  role="img"
-                  aria-label={`${item.title} thumbnail`}
-                />
-              ) : (
-                <div className="cinema-thumb cinema-thumb-empty" aria-hidden="true" />
-              )}
-              <span className="cinema-type">{item.type.replace("-", " ")}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
-            </Link>
+        <div className="cinema-editorial-stack">
+          {cinema.slice(0, 3).map((item, i) => (
+            <CinemaEditorialCard key={item.id} item={item} featured={i === 0} />
           ))}
         </div>
       </section>
 
-      {nextWorld && (
-        <section className="section-pad home-section upcoming-home">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">NEXT WORLD</p>
-              <h2>{nextWorld.title}</h2>
-              <p>{nextWorld.tagline ?? nextWorld.description}</p>
-            </div>
-            <Link className="button button-ghost" href={`/music/${nextWorld.slug}`}>
-              Explore project ↗
-            </Link>
-          </div>
-        </section>
-      )}
-
       <section className="section-pad home-section cta-section">
-        <p className="eyebrow">CREATE YOUR SONG</p>
-        <h2>
-          Your story.
-          <br />
-          <span>Your track.</span>
-        </h2>
-        <p>Custom songs and soundtracks produced as complete Bossie worlds.</p>
-        <div className="cta-row">
-          <Link className="button button-gold" href="/request">
-            Start your song ↗
-          </Link>
-        </div>
+        <BossieMark size="lg" className="section-mark" />
+        <p className="eyebrow">BUILD YOUR WORLD</p>
+        <h2>Your story. Your track. Your universe.</h2>
+        <Link className="button button-gold" href="/request">
+          Start your song ↗
+        </Link>
       </section>
 
       {streaming.length > 0 && (
         <section className="section-pad home-section stream-section">
           <p className="eyebrow">LISTEN</p>
-          <h2>Official artist profiles.</h2>
           <div className="platform-grid-v2">
             {streaming.map(({ key, href, label }) => (
               <a key={key} href={href} target="_blank" rel="noreferrer">
@@ -214,15 +132,6 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-
-      <section className="section-pad home-section industry-teaser">
-        <p className="eyebrow">INDUSTRY</p>
-        <h2>Work with Bossie.</h2>
-        <p>Licensing, collaborations, soundtracks and custom music production.</p>
-        <Link className="button button-ghost" href="/industry">
-          Work with Bossie ↗
-        </Link>
-      </section>
 
       <SiteFooter />
     </main>

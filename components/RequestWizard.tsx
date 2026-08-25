@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
+import { BossieMark } from "@/components/brand/BossieMark";
 
 const songTypes = [
   "Personal Song",
@@ -181,9 +182,11 @@ export default function RequestWizard() {
   }
 
   const genresLabel = Array.isArray(form.genres) && form.genres.length ? form.genres.join(", ") : "";
+  const projectId = useMemo(() => String(2900 + step + (form.songType ? 1 : 0)), [step, form.songType]);
 
   return (
-    <div className="request-wizard">
+    <div className="request-v3-layout">
+      <div className="request-wizard">
       <div className="request-process">
         <p className="eyebrow">HOW IT WORKS</p>
         <ol>
@@ -446,6 +449,36 @@ export default function RequestWizard() {
           </button>
         </p>
       )}
+    </div>
+
+      <aside className="bossie-project-card" aria-live="polite">
+        <BossieMark size="md" decorative={false} />
+        <p className="eyebrow">YOUR WORLD</p>
+        <p className="project-id">PROJECT {projectId}</p>
+        <dl>
+          <div>
+            <dt>Type</dt>
+            <dd>{String(form.songType || "—")}</dd>
+          </div>
+          <div>
+            <dt>Genre</dt>
+            <dd>{genresLabel || "—"}</dd>
+          </div>
+          <div>
+            <dt>Voice</dt>
+            <dd>{String(form.vocals || "—")}</dd>
+          </div>
+          <div>
+            <dt>Language</dt>
+            <dd>{String(form.language || "—")}</dd>
+          </div>
+          <div>
+            <dt>Mood</dt>
+            <dd>{String(form.emotions || "Forming…")}</dd>
+          </div>
+        </dl>
+        <p className="project-forming">{status === "sent" ? "Brief transmitted." : "YOUR WORLD IS FORMING…"}</p>
+      </aside>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
 import { ReleaseCard } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { getPublicCinemaSummary } from "@/lib/cinema/editorial";
 
 export async function generateStaticParams() {
   const worlds = await getAllWorlds();
@@ -42,7 +43,7 @@ export default async function WorldDetailPage({ params }: { params: Promise<{ sl
   const visual = world.heroImage ?? releases.find((r) => r.artworkUrl)?.artworkUrl;
 
   return (
-    <PageShell>
+    <PageShell worldSlug={slug}>
       <section
         className={`page-hero world-hero world-theme-${world.slug}`}
         style={
@@ -99,7 +100,7 @@ export default async function WorldDetailPage({ params }: { params: Promise<{ sl
                   />
                 )}
                 <h3>{item.title}</h3>
-                <p>{item.description}</p>
+                <p>{getPublicCinemaSummary(item)}</p>
                 {item.youtubeUrl && isVerifiedListenUrl(item.youtubeUrl) && (
                   <span className="text-link">Watch ↗</span>
                 )}

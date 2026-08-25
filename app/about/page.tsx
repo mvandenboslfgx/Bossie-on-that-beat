@@ -1,57 +1,53 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
   title: "About",
-  description:
-    "About Bossie on the beat — independent producer, composer and artist building music as complete cinematic worlds.",
+  description: "Bossie on the beat — I don't build a genre. I build worlds.",
   alternates: { canonical: "/about" },
 };
 
 export default function AboutPage() {
   return (
     <PageShell>
-      <section className="page-hero compact-hero">
-        <p className="eyebrow">ABOUT THE PRODUCER</p>
-        <h1>ABOUT</h1>
-        <p>
-          {siteSettings.artistName} is an independent producer, composer and artist project built around contrast,
-          cinematic thinking and world-building rather than one fixed genre.
-        </p>
+      <section className="manifesto-hero">
+        <BossieMark size="xl" />
+        <p className="eyebrow">MANIFESTO</p>
+        <h1>
+          I DON&apos;T BUILD A GENRE.
+          <br />I BUILD WORLDS.
+        </h1>
       </section>
 
-      <section className="about-page">
-        <div>
-          <p className="eyebrow">THE PHILOSOPHY</p>
-          <h2>Every track is a new world.</h2>
-        </div>
-        <div>
-          <p>
-            From orchestral darkness and metal to electronic music, cinematic tribute records and global club energy, the
-            sound is allowed to change whenever the idea demands it.
-          </p>
-          <p>
-            The constant is the identity: scale, emotion, visual storytelling and a production mindset that treats every
-            release as a complete creative system — music, world and cinema together.
-          </p>
-          <p>
-            That is why the catalogue is organized as Worlds: The Abyss, The Mountain, The Club, The Streets and beyond —
-            each with its own atmosphere, not as marketing labels but as creative homes.
-          </p>
-          <blockquote>“Never make the next track because it sounds like the last one.”</blockquote>
-          <div className="cta-row">
-            <Link className="button button-ghost" href="/music">
-              Explore music ↗
-            </Link>
-            <Link className="button button-ghost" href="/worlds">
-              Enter worlds ↗
-            </Link>
-            <Link className="button button-gold" href="/request">
-              Create your song ↗
-            </Link>
-          </div>
+      <section className="section-pad about-statements">
+        <article>
+          <BossieMark size="sm" />
+          <h2>SOUND CHANGES. IDENTITY DOESN&apos;T.</h2>
+          <p>Metal today. Cinematic tomorrow. Club at midnight. The lane shifts — the Bossie lens stays.</p>
+        </article>
+        <article>
+          <BossieMark size="sm" />
+          <h2>MUSIC NEEDS AN IMAGE.</h2>
+          <p>Every release is sound, world and cinema together — not a track with a JPEG attached.</p>
+        </article>
+        <article>
+          <BossieMark size="sm" />
+          <h2>EVERY RELEASE STARTS FROM ZERO.</h2>
+          <p>{siteSettings.slogan}. No copy-paste formulas. No sequel-by-default thinking.</p>
+        </article>
+      </section>
+
+      <section className="section-pad">
+        <div className="cta-row">
+          <Link className="button button-ghost" href="/worlds">
+            Enter worlds ↗
+          </Link>
+          <Link className="button button-gold" href="/request">
+            Build your world ↗
+          </Link>
         </div>
       </section>
     </PageShell>

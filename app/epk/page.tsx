@@ -49,6 +49,10 @@ export default async function EpkPage() {
   return (
     <PageShell>
       <section className="page-hero compact-hero epk-hero">
+        <div className="epk-seal">
+          <BossieMark size="sm" decorative={false} />
+          <span>OFFICIAL BOSSIE PRESS MATERIAL</span>
+        </div>
         <BossieLogo variant="primary" href="/" className="epk-hero-logo" />
         <p className="eyebrow">Electronic press kit</p>
         <h1>EPK</h1>

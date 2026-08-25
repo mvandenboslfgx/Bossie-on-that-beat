@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllCinema, getCinemaBySlug } from "@/lib/repository/release-repository";
+import { getCinemaBySlug } from "@/lib/repository/release-repository";
+import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
+import { getCinemaCategoryLabel, getPublicCinemaSummary } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
-export async function generateStaticParams() {
-  const items = await getAllCinema();
-  return items.map((c) => ({ slug: c.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const item = await getCinemaBySlug(slug);
   if (!item) return {};
+  const summary = getPublicCinemaSummary(item);
   return {
     title: `${item.title} — Cinema`,
-    description: item.description ?? `${item.title} from Bossie Cinema.`,
+    description: summary,
     alternates: { canonical: `/cinema/${item.slug}` },
     openGraph: {
       title: item.title,
-      description: item.description,
+      description: summary,
       images: item.thumbnailUrl ? [{ url: item.thumbnailUrl }] : undefined,
     },
   };
@@ -37,6 +37,8 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
       : null;
 
   const canWatch = Boolean(item.youtubeUrl && isVerifiedListenUrl(item.youtubeUrl));
+  const summary = getPublicCinemaSummary(item);
+  const categoryLabel = getCinemaCategoryLabel(item.type);
 
   const videoSchema =
     canWatch && item.youtubeUrl
@@ -44,7 +46,7 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
           "@context": "https://schema.org",
           "@type": "VideoObject",
           name: item.title,
-          description: item.description,
+          description: summary,
           thumbnailUrl: item.thumbnailUrl,
           uploadDate: item.publishedAt,
           duration: item.durationSeconds ? `PT${item.durationSeconds}S` : undefined,
@@ -58,18 +60,18 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
       )}
       <section className="page-hero cinema-detail-hero">
+        <BossieMark size="lg" className="section-mark" />
         {item.thumbnailUrl && (
           <div
-            className="cinema-featured-visual"
+            className="cinema-featured-visual cinema-detail-visual"
             style={{ backgroundImage: `url(${item.thumbnailUrl})` }}
             role="img"
             aria-label={`${item.title} still`}
           />
         )}
-        <p className="eyebrow">{item.type.replace("-", " ").toUpperCase()}</p>
+        <p className="eyebrow">{categoryLabel.toUpperCase()}{duration ? ` · ${duration}` : ""}</p>
         <h1>{item.title}</h1>
-        {duration && <p className="cinema-duration">{duration}</p>}
-        {item.description && <p>{item.description}</p>}
+        {summary && <blockquote className="cinema-editorial-quote">{summary}</blockquote>}
         <div className="cinema-actions">
           {canWatch && (
             <a className="button button-gold" href={item.youtubeUrl!} target="_blank" rel="noreferrer">
