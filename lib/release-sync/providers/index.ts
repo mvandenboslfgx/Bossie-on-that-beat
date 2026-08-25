@@ -104,7 +104,7 @@ async function spotifyGet<T>(url: string, token: string): Promise<T> {
 async function fetchAllArtistAlbums(token: string, artistId: string): Promise<SpotifyAlbum[]> {
   const albums: SpotifyAlbum[] = [];
   let url: string | null =
-    `https://api.spotify.com/v1/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&market=NL&limit=50`;
+    `https://api.spotify.com/v1/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&market=NL&limit=10`;
 
   while (url) {
     const page: SpotifyAlbumsPage = await spotifyGet<SpotifyAlbumsPage>(url, token);

@@ -49,11 +49,11 @@ export function scoreMatch(existing: MatchCandidate, incoming: MatchCandidate): 
   return 0;
 }
 
-export function findBestMatch<T extends MatchCandidate & { id?: string; manualOverride?: boolean }>(
+export function findBestMatchWithScore<T extends MatchCandidate & { id?: string; manualOverride?: boolean }>(
   candidates: T[],
   incoming: MatchCandidate,
   threshold = 0.75,
-): T | undefined {
+): { item: T; score: number } | undefined {
   let best: { item: T; score: number } | undefined;
   for (const item of candidates) {
     const score = scoreMatch(item, incoming);
@@ -61,5 +61,26 @@ export function findBestMatch<T extends MatchCandidate & { id?: string; manualOv
       best = { item, score };
     }
   }
-  return best?.item;
+  return best;
+}
+
+export function findBestMatch<T extends MatchCandidate & { id?: string; manualOverride?: boolean }>(
+  candidates: T[],
+  incoming: MatchCandidate,
+  threshold = 0.75,
+): T | undefined {
+  return findBestMatchWithScore(candidates, incoming, threshold)?.item;
+}
+
+export function hasAmbiguousMatch(
+  candidates: MatchCandidate[],
+  incoming: MatchCandidate,
+  threshold = 0.75,
+): boolean {
+  let hits = 0;
+  for (const item of candidates) {
+    if (scoreMatch(item, incoming) >= threshold) hits++;
+    if (hits > 1) return true;
+  }
+  return false;
 }

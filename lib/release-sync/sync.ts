@@ -1,7 +1,8 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import { seedReleases } from "@/data/seed/releases";
 import { classifyRelease, mergeClassification } from "@/lib/release-sync/classify";
-import { findBestMatch, slugFromTitle } from "@/lib/release-sync/match";
+import { findBestMatchWithScore, hasAmbiguousMatch, slugFromTitle } from "@/lib/release-sync/match";
+import { buildReleaseSeo, buildTagline, resolveIngestStatus } from "@/lib/release-sync/publish";
 import { mergeLinks } from "@/lib/release-sync/providers/base";
 import { createAppleMusicProvider, createSpotifyProvider } from "@/lib/release-sync/providers";
 import type { ProviderRelease } from "@/lib/release-sync/providers/base";
@@ -188,18 +189,44 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
     if (seenIncomingKeys.has(dedupeKey)) continue;
     seenIncomingKeys.add(dedupeKey);
 
-    const match = findBestMatch(existing, item);
+    const ambiguousMatch = hasAmbiguousMatch(existing, item);
+    const matched = findBestMatchWithScore(existing, item);
+    const match = matched?.item;
+    const matchScore = matched?.score;
+
     const now = new Date().toISOString();
     const classification = classifyRelease({
       title: item.title,
       genres: item.genres,
     });
+    const ingestStatus = resolveIngestStatus({
+      item,
+      classification,
+      matchScore,
+      ambiguousMatch,
+    });
+    const seo = buildReleaseSeo(item.title, classification);
+    const tagline = buildTagline(item.title, classification);
+    const autoEnrich = classification.confidence >= siteSettings.sync.confidenceHigh;
 
     if (match) {
       const merged = match.manualOverride ? {} : mergeClassification(match, classification);
+      const enrich = autoEnrich && !match.manualOverride;
       const mergedLinks = mergeLinks(linksByRelease.get(match.id) ?? [], item.links, match.id);
       const fillArtwork = !match.artworkUrl && Boolean(item.artworkUrl);
       const genreJson = JSON.stringify(merged.genres ?? classification.genres);
+      const subgenreJson = JSON.stringify(
+        enrich ? merged.subgenres ?? classification.subgenres : match.subgenres ?? classification.subgenres,
+      );
+      const moodJson = JSON.stringify(enrich ? merged.moods ?? classification.moods : match.moods ?? classification.moods);
+      const langJson = JSON.stringify(enrich ? classification.languages : match.languages ?? []);
+      const seoJson = JSON.stringify(seo);
+      const nextStatus = (() => {
+        if (match.manualOverride || match.status === "project") return match.status;
+        if (ingestStatus === "live") return "live";
+        if (match.status === "pending_review" || match.status === "upcoming") return ingestStatus;
+        return match.status;
+      })();
 
       await db
         .prepare(
@@ -215,6 +242,16 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
             isrc = COALESCE(isrc, ?),
             upc = COALESCE(upc, ?),
             genres = CASE WHEN manual_override = 1 THEN genres WHEN ? != '[]' THEN ? ELSE genres END,
+            subgenres = CASE WHEN manual_override = 1 THEN subgenres WHEN ? != '[]' THEN ? ELSE subgenres END,
+            moods = CASE WHEN manual_override = 1 THEN moods WHEN ? != '[]' THEN ? ELSE moods END,
+            languages = CASE WHEN manual_override = 1 THEN languages WHEN ? != '[]' THEN ? ELSE languages END,
+            energy = CASE WHEN manual_override = 1 THEN energy WHEN ? IS NOT NULL THEN ? ELSE energy END,
+            world_slug = CASE WHEN manual_override = 1 THEN world_slug WHEN ? IS NOT NULL THEN ? ELSE world_slug END,
+            tagline = CASE WHEN manual_override = 1 THEN tagline WHEN tagline IS NULL OR tagline = '' THEN ? ELSE tagline END,
+            description = CASE WHEN manual_override = 1 THEN description WHEN description IS NULL OR description = '' THEN ? ELSE description END,
+            seo = CASE WHEN manual_override = 1 THEN seo WHEN seo IS NULL OR seo = '{}' THEN ? ELSE seo END,
+            classification_confidence = ?,
+            status = CASE WHEN manual_override = 1 THEN status ELSE ? END,
             last_synced_at = ?,
             updated_at = ?
            WHERE id = ?`,
@@ -229,6 +266,21 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           item.upc ?? null,
           genreJson,
           genreJson,
+          subgenreJson,
+          subgenreJson,
+          moodJson,
+          moodJson,
+          langJson,
+          langJson,
+          autoEnrich ? classification.energy ?? null : null,
+          autoEnrich ? classification.energy ?? null : null,
+          autoEnrich ? classification.worldSlug ?? null : null,
+          autoEnrich ? classification.worldSlug ?? null : null,
+          enrich ? tagline : null,
+          enrich ? seo.description ?? null : null,
+          enrich ? seoJson : "{}",
+          classification.confidence,
+          nextStatus,
           now,
           now,
           match.id,
@@ -269,6 +321,7 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           upc: existing[idx].upc ?? item.upc,
           artworkUrl: existing[idx].artworkUrl || item.artworkUrl || "",
           releaseDate: existing[idx].releaseDate ?? item.releaseDate,
+          status: match.manualOverride ? existing[idx].status : nextStatus,
         };
       }
       linksByRelease.set(match.id, mergedLinks);
@@ -276,20 +329,34 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
     } else if (classification.confidence >= 0.75 || item.links.some((l) => l.verified)) {
       const slug = slugFromTitle(item.title);
       const id = `release-${slug}`;
+      const status = ingestStatus;
+      const seoJson = JSON.stringify(seo);
+      const subgenreJson = JSON.stringify(classification.subgenres);
+      const moodJson = JSON.stringify(classification.moods);
+      const langJson = JSON.stringify(classification.languages);
 
       const insert = await db
         .prepare(
-          `INSERT OR IGNORE INTO releases (id, slug, title, artist, type, status, release_date, artwork_url, genres, spotify_id, apple_music_id, isrc, upc, classification_confidence, first_seen_at, last_synced_at)
-           VALUES (?, ?, ?, ?, 'single', 'pending_review', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT OR IGNORE INTO releases (id, slug, title, artist, type, status, release_date, artwork_url, genres, subgenres, moods, languages, energy, world_slug, tagline, description, seo, spotify_id, apple_music_id, isrc, upc, classification_confidence, first_seen_at, last_synced_at)
+           VALUES (?, ?, ?, ?, 'single', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           id,
           slug,
           item.title,
           siteSettings.artistName,
+          status,
           item.releaseDate ?? null,
           item.artworkUrl ?? "",
           JSON.stringify(classification.genres),
+          subgenreJson,
+          moodJson,
+          langJson,
+          autoEnrich ? classification.energy ?? null : null,
+          autoEnrich ? classification.worldSlug ?? null : null,
+          autoEnrich ? tagline : null,
+          autoEnrich ? seo.description ?? null : null,
+          autoEnrich ? seoJson : "{}",
           item.spotifyId ?? null,
           item.appleMusicId ?? null,
           item.isrc ?? null,
@@ -316,10 +383,13 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           title: item.title,
           artist: siteSettings.artistName,
           type: "single",
-          status: "pending_review",
+          status,
           releaseDate: item.releaseDate,
           artworkUrl: item.artworkUrl ?? "",
           genres: classification.genres,
+          subgenres: classification.subgenres,
+          moods: classification.moods,
+          languages: classification.languages,
           spotifyId: item.spotifyId,
           appleMusicId: item.appleMusicId,
           isrc: item.isrc,

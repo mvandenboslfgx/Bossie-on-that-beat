@@ -17,7 +17,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const r = await getReleaseBySlug(slug);
-  if (!r) return {};
+  if (!r || r.status === "pending_review" || r.status === "project") return {};
   const description =
     r.seo?.description ??
     `${r.title} by ${r.artist} — ${r.tagline ?? r.description ?? ""}. Listen, watch and explore the official release page.`;
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ReleasePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const r = await getReleaseBySlug(slug);
-  if (!r) notFound();
+  if (!r || r.status === "pending_review" || r.status === "project") notFound();
 
   const related = r.worldSlug ? await getReleasesByWorld(r.worldSlug) : [];
 

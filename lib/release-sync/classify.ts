@@ -33,6 +33,21 @@ const MOOD_KEYWORDS: Record<string, string[]> = {
   Aggressive: ["storm", "metal", "power"],
 };
 
+const WORLD_KEYWORDS: Record<string, string[]> = {
+  "the-abyss": ["abyss", "crown", "gothic", "cathedral", "metal"],
+  "the-club": ["gasolina", "club", "cuba", "party", "reggaeton"],
+  "the-mountain": ["mountain", "nims", "nepal", "albania", "altitude"],
+  "the-door": ["door", "psychological", "memory", "war"],
+  "the-storm": ["storm", "symphony", "orchestral"],
+};
+
+const LANGUAGE_HINTS: Record<string, string[]> = {
+  Dutch: ["nul", "een", "acht", "zes", "nederland", "klaaswaal", "gedachtens"],
+  Albanian: ["albania", "shqiper", "rise albania"],
+  English: ["world", "dream", "symphony", "crown"],
+  Spanish: ["gasolina", "cuba"],
+};
+
 export function classifyRelease(input: {
   title: string;
   tagline?: string;
@@ -57,11 +72,31 @@ export function classifyRelease(input: {
     if (keywords.some((k) => text.includes(k))) moods.add(mood);
   }
 
+  let worldSlug: string | undefined;
+  for (const [world, keywords] of Object.entries(WORLD_KEYWORDS)) {
+    if (keywords.some((k) => text.includes(k))) {
+      worldSlug = world;
+      break;
+    }
+  }
+
+  const languages = new Set<string>(input.languages ?? []);
+  for (const [lang, keywords] of Object.entries(LANGUAGE_HINTS)) {
+    if (keywords.some((k) => text.includes(k))) languages.add(lang);
+  }
+  if (!languages.size && /[a-z]/i.test(input.title)) languages.add("English");
+
+  if (genres.has("Metal") && !subgenres.size) subgenres.add("Orchestral Metal");
+  if (genres.has("Electronic") && !subgenres.size) subgenres.add("Uptempo");
+  if (genres.has("Latin") && !subgenres.size) subgenres.add("Reggaeton");
+
   let confidence = 0.5;
   if (genres.size) confidence += 0.15;
   if (moods.size) confidence += 0.1;
-  if (input.subgenres?.length) confidence += 0.15;
-  confidence = Math.min(confidence, 0.92);
+  if (subgenres.size) confidence += 0.12;
+  if (worldSlug) confidence += 0.08;
+  if (input.genres?.length) confidence += 0.05;
+  confidence = Math.min(confidence, 0.94);
 
   const shouldPublish = confidence >= siteSettings.sync.confidenceMedium;
 
@@ -69,9 +104,10 @@ export function classifyRelease(input: {
     genres: shouldPublish ? [...genres] : input.genres?.length ? input.genres : [],
     subgenres: shouldPublish ? [...subgenres] : input.subgenres ?? [],
     moods: shouldPublish ? [...moods] : [],
-    languages: input.languages ?? [],
+    languages: shouldPublish ? [...languages] : input.languages ?? [],
     vocalTypes: [],
-    energy: moods.has("Party") ? "high" : moods.has("Emotional") ? "medium" : undefined,
+    energy: moods.has("Party") || genres.has("Electronic") ? "high" : moods.has("Emotional") ? "medium" : "medium-high",
+    worldSlug: shouldPublish && confidence >= siteSettings.sync.confidenceHigh ? worldSlug : undefined,
     confidence,
   };
 }
@@ -84,6 +120,9 @@ export function mergeClassification(existing: Release, incoming: ClassificationR
     genres: incoming.confidence >= siteSettings.sync.confidenceHigh ? incoming.genres : existing.genres,
     subgenres: incoming.subgenres.length ? incoming.subgenres : existing.subgenres,
     moods: incoming.moods.length ? incoming.moods : existing.moods,
+    languages: incoming.languages.length ? incoming.languages : existing.languages,
+    energy: incoming.energy ?? existing.energy,
+    worldSlug: incoming.worldSlug ?? existing.worldSlug,
     classificationConfidence: incoming.confidence,
   };
 }

@@ -21,6 +21,8 @@ export async function POST(request: Request) {
     SPOTIFY_CLIENT_ID: env.SPOTIFY_CLIENT_ID,
     SPOTIFY_CLIENT_SECRET: env.SPOTIFY_CLIENT_SECRET,
     SPOTIFY_ARTIST_ID: env.SPOTIFY_ARTIST_ID,
+    YOUTUBE_API_KEY: env.YOUTUBE_API_KEY,
+    YOUTUBE_CHANNEL_ID: env.YOUTUBE_CHANNEL_ID,
   });
 
   return NextResponse.json(result);

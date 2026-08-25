@@ -1563,3 +1563,84 @@ main {
     transition-duration: 0.01ms !important;
   }
 }
+
+.admin-auth,
+.admin-queue {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.admin-auth label {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.admin-auth input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--bg-soft);
+  color: var(--ink);
+}
+
+.admin-queue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.admin-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 16px;
+}
+
+.admin-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-card-main {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.admin-card-main img {
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.admin-card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-card-actions button,
+.admin-card-actions a,
+.admin-queue-header button,
+.admin-auth button {
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--gold-soft);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.admin-empty {
+  color: var(--muted);
+}
