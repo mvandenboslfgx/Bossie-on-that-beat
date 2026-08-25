@@ -38,7 +38,7 @@ export function createAppleMusicProvider(): MusicProvider {
       const params = new URLSearchParams({
         term: "Bossie on that beat",
         entity: "album",
-        limit: "100",
+        limit: "50",
         country: "NL",
       });
       const response = await fetchAppleSearch(`https://itunes.apple.com/search?${params.toString()}`);

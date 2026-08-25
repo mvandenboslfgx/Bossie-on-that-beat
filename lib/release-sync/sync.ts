@@ -78,8 +78,41 @@ async function discover(env: SyncEnv): Promise<{ discovered: ProviderRelease[]; 
   const discovered: ProviderRelease[] = [];
   const errors: string[] = [];
 
+  // Cool down Apple after recent rate-limits; skip full refresh when last Apple success is fresh.
+  let skipApple = false;
+  try {
+    const recent = await env.DB.prepare(
+      `SELECT status, errors, releases_found, started_at FROM sync_logs ORDER BY started_at DESC LIMIT 8`,
+    ).all<{ status: string; errors: string; releases_found: number; started_at: string }>();
+    const rows = recent.results ?? [];
+    const now = Date.now();
+    for (const row of rows) {
+      const ageMs = now - Date.parse(row.started_at);
+      if (!Number.isFinite(ageMs) || ageMs < 0) continue;
+      const errText = row.errors ?? "";
+      if (ageMs < 6 * 60 * 60 * 1000 && /apple-music HTTP 429|apple-music HTTP 403/i.test(errText)) {
+        skipApple = true;
+        errors.push("apple-music: skipped (cooldown after recent 429/403)");
+        break;
+      }
+      if (
+        ageMs < 24 * 60 * 60 * 1000 &&
+        row.releases_found > 0 &&
+        row.status === "ok" &&
+        !/apple-music:/i.test(errText)
+      ) {
+        skipApple = true;
+        errors.push("apple-music: skipped (stable data within 24h TTL)");
+        break;
+      }
+    }
+  } catch {
+    // If log lookup fails, continue with providers as usual.
+  }
+
   for (const provider of providers) {
     if (!provider) continue;
+    if (skipApple && provider.name === "apple-music") continue;
     try {
       const items = await provider.findReleases();
       discovered.push(...items);

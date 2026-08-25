@@ -24,8 +24,9 @@ export default {
     }
 
     if (url.pathname === "/sync" && request.method === "POST") {
+      // Fail closed: HTTP sync always requires CRON_SECRET. Cron `scheduled` bypasses this.
       const secret = request.headers.get("x-cron-secret");
-      if (env.CRON_SECRET && secret !== env.CRON_SECRET) {
+      if (!env.CRON_SECRET || secret !== env.CRON_SECRET) {
         return Response.json({ error: "Unauthorized" }, { status: 401 });
       }
       if (!env.DB) {

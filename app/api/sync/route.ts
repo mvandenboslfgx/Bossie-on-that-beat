@@ -5,8 +5,9 @@ import { runReleaseSync } from "@/lib/release-sync/sync";
 
 export async function POST(request: Request) {
   const env = getServerEnv();
+  // Fail closed: HTTP sync always requires CRON_SECRET.
   const secret = request.headers.get("x-cron-secret");
-  if (env.CRON_SECRET && secret !== env.CRON_SECRET) {
+  if (!env.CRON_SECRET || secret !== env.CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
