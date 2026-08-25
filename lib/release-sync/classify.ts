@@ -17,11 +17,12 @@ const GENRE_KEYWORDS: Record<string, string[]> = {
   Metal: ["metal", "orchestral metal", "growl", "choir"],
   Cinematic: ["cinematic", "orchestral", "soundtrack", "film", "prestige"],
   Electronic: ["electronic", "edm", "techno", "club", "neon"],
-  Rap: ["rap", "hip-hop", "hip hop"],
-  World: ["global", "world", "anthem", "world cup"],
-  Latin: ["latin", "reggaeton", "gasolina", "club"],
+  Rap: ["rap", "hip-hop", "hip hop", "drill"],
+  World: ["global", "world", "anthem", "world cup", "albania", "nepal", "shqiper"],
+  Latin: ["latin", "reggaeton", "gasolina", "club", "cuba"],
   Classical: ["symphony", "classical", "orchestral power"],
   Pop: ["pop", "anthem"],
+  Uptempo: ["uptempo", "hardstyle", "200bpm", "obliteration", "earthshaker"],
 };
 
 const MOOD_KEYWORDS: Record<string, string[]> = {
@@ -34,17 +35,17 @@ const MOOD_KEYWORDS: Record<string, string[]> = {
 };
 
 const WORLD_KEYWORDS: Record<string, string[]> = {
-  "the-abyss": ["abyss", "crown", "gothic", "cathedral", "metal"],
-  "the-club": ["gasolina", "club", "cuba", "party", "reggaeton"],
-  "the-mountain": ["mountain", "nims", "nepal", "albania", "altitude"],
-  "the-door": ["door", "psychological", "memory", "war"],
-  "the-storm": ["storm", "symphony", "orchestral"],
+  "the-abyss": ["abyss", "crown", "gothic", "cathedral", "metal", "vessel", "storm", "seals", "commandments", "ash"],
+  "the-club": ["gasolina", "club", "cuba", "party", "reggaeton", "nachtgeld", "stress"],
+  "the-mountain": ["mountain", "nims", "nepal", "albania", "altitude", "rise albania", "shqiper"],
+  "the-door": ["door", "psychological", "memory", "war", "gedachtens"],
+  "the-storm": ["storm", "symphony", "orchestral", "vessel"],
 };
 
 const LANGUAGE_HINTS: Record<string, string[]> = {
-  Dutch: ["nul", "een", "acht", "zes", "nederland", "klaaswaal", "gedachtens"],
-  Albanian: ["albania", "shqiper", "rise albania"],
-  English: ["world", "dream", "symphony", "crown"],
+  Dutch: ["nul", "een", "acht", "zes", "nederland", "klaaswaal", "gedachtens", "nooit", "rust", "stress", "bro", "uitgespeeld", "tot ik"],
+  Albanian: ["albania", "shqiper", "rise albania", "shdiperia"],
+  English: ["world", "dream", "symphony", "crown", "earthshaker", "obliteration", "vessel", "mountain"],
   Spanish: ["gasolina", "cuba"],
 };
 

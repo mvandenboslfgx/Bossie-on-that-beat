@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerEnv } from "@/lib/env";
+import { authorizeAdmin } from "@/lib/auth/admin";
 import {
   approveCinema,
   approveRelease,
@@ -8,27 +8,25 @@ import {
   rejectCinema,
   rejectRelease,
 } from "@/lib/repository/admin-repository";
-
-function authorize(request: Request) {
-  const env = getServerEnv();
-  const secret = request.headers.get("x-cron-secret");
-  if (!env.CRON_SECRET || secret !== env.CRON_SECRET) {
-    return false;
-  }
-  return true;
-}
+import { getLiveReleases } from "@/lib/repository/release-repository";
+import { scoreAllReleases } from "@/lib/release-sync/quality";
 
 export async function GET(request: Request) {
-  if (!authorize(request)) {
+  if (!authorizeAdmin(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const [releases, cinema] = await Promise.all([getPendingReviewReleases(), getPendingReviewCinema()]);
-  return NextResponse.json({ releases, cinema });
+  const [releases, cinema, live] = await Promise.all([
+    getPendingReviewReleases(),
+    getPendingReviewCinema(),
+    getLiveReleases(),
+  ]);
+  const quality = scoreAllReleases(live);
+  return NextResponse.json({ releases, cinema, quality });
 }
 
 export async function POST(request: Request) {
-  if (!authorize(request)) {
+  if (!authorizeAdmin(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

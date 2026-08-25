@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { CinemaItem } from "@/lib/types/cinema";
+import type { ReleaseQualityScore } from "@/lib/release-sync/quality";
 import type { ReleaseWithLinks } from "@/lib/types/release";
 
 export function AdminReviewQueue() {
@@ -9,6 +10,7 @@ export function AdminReviewQueue() {
   const [authed, setAuthed] = useState(false);
   const [releases, setReleases] = useState<ReleaseWithLinks[]>([]);
   const [cinema, setCinema] = useState<CinemaItem[]>([]);
+  const [quality, setQuality] = useState<ReleaseQualityScore[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -17,16 +19,21 @@ export function AdminReviewQueue() {
     setError(null);
     try {
       const response = await fetch("/api/admin/review", {
-        headers: { "x-cron-secret": token },
+        headers: { "x-admin-secret": token },
       });
       if (!response.ok) throw new Error("Unauthorized");
-      const data = (await response.json()) as { releases: ReleaseWithLinks[]; cinema: CinemaItem[] };
+      const data = (await response.json()) as {
+        releases: ReleaseWithLinks[];
+        cinema: CinemaItem[];
+        quality: ReleaseQualityScore[];
+      };
       setReleases(data.releases);
       setCinema(data.cinema);
+      setQuality(data.quality ?? []);
       setAuthed(true);
       sessionStorage.setItem("bossie_admin_secret", token);
     } catch {
-      setError("Invalid secret or API unavailable.");
+      setError("Invalid admin secret or API unavailable.");
       setAuthed(false);
     } finally {
       setBusy(false);
@@ -47,7 +54,7 @@ export function AdminReviewQueue() {
     try {
       const response = await fetch("/api/admin/review", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-cron-secret": secret },
+        headers: { "Content-Type": "application/json", "x-admin-secret": secret },
         body: JSON.stringify({ action, kind, id }),
       });
       if (!response.ok) throw new Error("failed");
@@ -70,9 +77,9 @@ export function AdminReviewQueue() {
       >
         <p className="eyebrow">ADMIN ACCESS</p>
         <h2>Review queue</h2>
-        <p>Enter the Bossie cron secret to manage pending releases and cinema items.</p>
+        <p>Enter the Bossie admin secret (separate from the sync cron secret).</p>
         <label>
-          Secret
+          Admin secret
           <input type="password" value={secret} onChange={(e) => setSecret(e.target.value)} autoComplete="off" />
         </label>
         <button type="submit" disabled={busy || !secret}>
@@ -82,6 +89,8 @@ export function AdminReviewQueue() {
       </form>
     );
   }
+
+  const lowQuality = quality.filter((q) => q.overall < 75).slice(0, 12);
 
   return (
     <div className="admin-queue">
@@ -98,6 +107,49 @@ export function AdminReviewQueue() {
       {error && <p className="form-error">{error}</p>}
 
       <section>
+        <h2>Live catalogue quality ({quality.length})</h2>
+        <p className="admin-empty">Lowest scores first — tune classification and metadata from here.</p>
+        <div className="admin-quality-wrap">
+          <table className="admin-quality-table">
+            <thead>
+              <tr>
+                <th>Release</th>
+                <th>Overall</th>
+                <th>Meta</th>
+                <th>Art</th>
+                <th>Spotify</th>
+                <th>Apple</th>
+                <th>YT</th>
+                <th>Class</th>
+                <th>World</th>
+                <th>Flags</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lowQuality.map((row) => (
+                <tr key={row.slug}>
+                  <td>
+                    <a href={`/music/${row.slug}`} target="_blank" rel="noreferrer">
+                      {row.title}
+                    </a>
+                  </td>
+                  <td>{row.overall}%</td>
+                  <td>{row.metadata}%</td>
+                  <td>{row.artwork}%</td>
+                  <td>{row.spotify}%</td>
+                  <td>{row.apple}%</td>
+                  <td>{row.youtube}%</td>
+                  <td>{row.classification}%</td>
+                  <td>{row.world}%</td>
+                  <td>{row.flags.join(", ") || "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
         <h2>Releases needing review ({releases.length})</h2>
         {releases.length === 0 ? (
           <p className="admin-empty">No pending releases.</p>
@@ -112,20 +164,13 @@ export function AdminReviewQueue() {
                   ) : null}
                   <div>
                     <strong>{release.title}</strong>
-                    <p>{release.status} · confidence {release.classificationConfidence?.toFixed(2) ?? "—"}</p>
-                    <p>{release.genres.join(", ") || "No genres"}</p>
                     <p>
-                      Links:{" "}
-                      {release.links.length
-                        ? release.links.map((l) => l.platform).join(", ")
-                        : "missing platform links"}
+                      {release.status} · confidence {release.classificationConfidence?.toFixed(2) ?? "—"}
                     </p>
+                    <p>{release.genres.join(", ") || "No genres"}</p>
                   </div>
                 </div>
                 <div className="admin-card-actions">
-                  <a href={`/music/${release.slug}`} target="_blank" rel="noreferrer">
-                    Preview
-                  </a>
                   <button type="button" onClick={() => void act("approve", "release", release.id)} disabled={busy}>
                     Approve
                   </button>

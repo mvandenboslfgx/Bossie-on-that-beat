@@ -1644,3 +1644,26 @@ main {
 .admin-empty {
   color: var(--muted);
 }
+
+.admin-quality-wrap {
+  overflow-x: auto;
+  margin: 16px 0 32px;
+}
+
+.admin-quality-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-quality-table th,
+.admin-quality-table td {
+  border: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.admin-quality-table a {
+  color: var(--gold-soft);
+}

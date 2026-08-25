@@ -11,4 +11,5 @@ export interface CloudflareEnv {
   YOUTUBE_API_KEY?: string;
   YOUTUBE_CHANNEL_ID?: string;
   CRON_SECRET?: string;
+  ADMIN_SECRET?: string;
 }

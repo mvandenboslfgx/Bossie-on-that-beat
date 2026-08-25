@@ -10,6 +10,7 @@ const serverSchema = z.object({
   YOUTUBE_API_KEY: z.string().optional(),
   YOUTUBE_CHANNEL_ID: z.string().optional(),
   CRON_SECRET: z.string().optional(),
+  ADMIN_SECRET: z.string().optional(),
   SITE_URL: z.string().url().optional(),
   SYNC_INTERVAL_HOURS: z.coerce.number().optional(),
 });

@@ -138,6 +138,24 @@ curl -X POST https://bossie-on-that-beat-sync.bossie-on-that-beat.workers.dev/sy
   -H "x-cron-secret: $CRON_SECRET"
 ```
 
+### Admin review queue
+
+Admin uses a **separate** secret from sync (`ADMIN_SECRET` on the **main** Worker only):
+
+```bash
+npx wrangler secret put ADMIN_SECRET   # main Worker — never on sync worker
+```
+
+```bash
+# GET pending releases, cinema, and live quality scores
+curl -sS https://bossieonthatbeat.com/api/admin/review \
+  -H "x-admin-secret: $ADMIN_SECRET"
+
+# Browser UI: /admin (unlock with admin secret in the form)
+```
+
+`CRON_SECRET` does **not** grant admin access. Missing or wrong `x-admin-secret` → `401`.
+
 ## Routes (P0)
 
 | Route | Description |

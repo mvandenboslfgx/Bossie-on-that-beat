@@ -18,7 +18,7 @@ export const siteSettings = {
     /** Proven from Crown of the Abyss album page music:musician meta. */
     spotifyArtistId: "4mNxC22iSgkO0uLp1dL4Fp",
     appleMusicArtistId: "6784857602",
-    /** Set when official Bossie YouTube channel ID is confirmed. */
+    /** Official @bossie_on_that_beat — channel ID lives in Worker secret YOUTUBE_CHANNEL_ID. */
     youtubeChannelId: "" as string,
   },
   /**
@@ -30,7 +30,7 @@ export const siteSettings = {
     appleMusic: "https://music.apple.com/nl/artist/bossie-on-that-beat/6784857602",
   } as Record<string, string>,
   social: {
-    // Add only verified official profiles. Unknown platforms stay omitted.
+    youtube: "https://www.youtube.com/@bossie_on_that_beat",
   } as Record<string, string>,
   contact: {
     requestPath: "/request",
