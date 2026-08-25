@@ -5,6 +5,7 @@ import "./live-catalog.css";
 import "./multipage.css";
 import "./request.css";
 import "./global-cta.css";
+import "./v2.css";
 
 const siteUrl = "https://bossieonthatbeat.com";
 
@@ -90,7 +91,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(artistSchema) }} />
         {children}
-        <Link className="global-request-cta" href="/request">Request a project ↗</Link>
+        <Link className="global-request-cta" href="/request">Create Your Song ↗</Link>
       </body>
     </html>
   );

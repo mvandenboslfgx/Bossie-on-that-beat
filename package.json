@@ -1,21 +1,33 @@
 {
   "name": "bossie-on-that-beat",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "cf:build": "opennextjs-cloudflare build",
+    "cf:preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "cf:deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "sync:worker:deploy": "wrangler deploy --config workers/sync/wrangler.jsonc",
+    "db:migrate:local": "wrangler d1 migrations apply bossie-platform --local",
+    "db:migrate:remote": "wrangler d1 migrations apply bossie-platform --remote"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.6.5",
     "next": "^16.0.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zod": "^4.1.5"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260820.1",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "wrangler": "^4.33.0"
   }
 }

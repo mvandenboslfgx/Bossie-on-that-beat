@@ -1,6 +1,47 @@
-import { SiteFooter, SiteNav } from "@/components/SiteChrome";
-const videos=[
-["THE DOOR WAS NEVER CLOSED","Prestige cinematic visual","https://www.youtube.com/results?search_query=Bossie+on+that+beat+The+Door+Was+Never+Closed"],
-["NIMS DAI","Mountain tribute visual","https://www.youtube.com/results?search_query=Bossie+on+that+beat+Nims+Dai"],
-["BOSSIE SHORTS","Short-form worlds","https://www.youtube.com/results?search_query=Bossie+on+that+beat+shorts"]];
-export default function CinemaPage(){return <><SiteNav/><main className="subpage"><section className="page-hero"><p className="eyebrow">VISUAL PRODUCTION</p><h1>CINEMA</h1><p>Music videos, lyric films, trailers and vertical worlds. Every major Bossie release is designed to carry a visual identity as strong as the track.</p></section><section className="cinema-page-grid">{videos.map((v,i)=><a className="cinema-page-card" key={v[0]} href={v[2]} target="_blank" rel="noreferrer"><div className={`cinema-poster poster-${i+1}`}><span>▶</span></div><small>{v[1]}</small><h2>{v[0]}</h2><b>Watch / discover ↗</b></a>)}</section></main><SiteFooter/></>}
+import Link from "next/link";
+import { getAllCinema } from "@/lib/repository/release-repository";
+import { PageShell } from "@/components/SiteChrome";
+
+const categoryLabels: Record<string, string> = {
+  film: "Films",
+  "music-video": "Music Videos",
+  visualizer: "Visualizers",
+  "short-film": "Short Films",
+  short: "Shorts",
+  teaser: "Teasers",
+  trailer: "Trailers",
+  "behind-the-scenes": "Behind the Scenes",
+};
+
+export default async function CinemaPage() {
+  const items = await getAllCinema();
+  const categories = [...new Set(items.map((i) => i.type))];
+
+  return (
+    <PageShell>
+      <section className="page-hero">
+        <p className="eyebrow">BOSSIE CINEMA</p>
+        <h1>CINEMA</h1>
+        <p>Music is only half the story.</p>
+      </section>
+
+      {categories.map((cat) => {
+        const filtered = items.filter((i) => i.type === cat);
+        return (
+          <section key={cat} className="section-pad">
+            <p className="eyebrow">{categoryLabels[cat] ?? cat}</p>
+            <div className="cinema-grid-v2">
+              {filtered.map((item) => (
+                <Link key={item.id} href={`/cinema/${item.slug}`} className="cinema-card-v2">
+                  <span className="cinema-type">{item.type.replace("-", " ")}</span>
+                  <h3>{item.title}</h3>
+                  <p>{item.description}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </PageShell>
+  );
+}

@@ -1,83 +1,135 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { releases, getRelease } from "@/data/catalog";
-import { ReleaseCover } from "@/components/ReleaseCard";
-import { SiteFooter, SiteNav } from "@/components/SiteChrome";
+import Link from "next/link";
+import { getAllReleases, getReleaseBySlug, getReleasesByWorld } from "@/lib/repository/release-repository";
+import { ReleaseHero, PlatformLinks } from "@/components/release/ReleaseUI";
+import { PageShell } from "@/components/SiteChrome";
+import { siteSettings } from "@/lib/site-settings";
 
-const base = "https://bossieonthatbeat.com";
+const base = siteSettings.siteUrl;
 
-export function generateStaticParams(){ return releases.map(r=>({slug:r.slug})); }
+export async function generateStaticParams() {
+  const releases = await getAllReleases();
+  return releases.map((r) => ({ slug: r.slug }));
+}
 
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const r = getRelease(slug);
+  const r = await getReleaseBySlug(slug);
   if (!r) return {};
-  const description = `${r.title} by Bossie on the beat — ${r.subtitle}. ${r.mood} from the ${r.world} world. Listen, watch and explore the official release page.`;
+  const description =
+    r.seo?.description ??
+    `${r.title} by ${r.artist} — ${r.tagline ?? r.description ?? ""}. Listen, watch and explore the official release page.`;
   return {
-    title: `${r.title} — Official Release`,
+    title: r.seo?.title ?? `${r.title} — Official Release`,
     description,
     alternates: { canonical: `/music/${r.slug}` },
     openGraph: {
       type: "music.song",
       url: `${base}/music/${r.slug}`,
-      title: `${r.title} | Bossie on the beat`,
+      title: `${r.title} | ${siteSettings.artistName}`,
       description,
-      images: r.artwork ? [{ url: r.artwork, alt: `${r.title} cover artwork` }] : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `${r.title} | Bossie on the beat`,
-      description,
-      images: r.artwork ? [r.artwork] : undefined,
+      images: r.artworkUrl ? [{ url: r.artworkUrl, alt: `${r.title} cover artwork` }] : undefined,
     },
   };
 }
 
-export default async function ReleasePage({params}:{params:Promise<{slug:string}>}){
-  const {slug}=await params;
-  const r=getRelease(slug);
-  if(!r) notFound();
+export default async function ReleasePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const r = await getReleaseBySlug(slug);
+  if (!r) notFound();
 
-  const sameAs = [r.spotify, r.youtube, r.amazon].filter(Boolean);
+  const related = r.worldSlug ? await getReleasesByWorld(r.worldSlug) : [];
+
+  const sameAs = r.links.map((l) => l.url);
   const recordingSchema = {
     "@context": "https://schema.org",
     "@type": "MusicRecording",
     "@id": `${base}/music/${r.slug}#recording`,
     name: r.title,
     url: `${base}/music/${r.slug}`,
-    datePublished: r.year,
-    genre: r.mood,
-    description: `${r.subtitle}. ${r.mood} from the ${r.world} world by Bossie on the beat.`,
+    datePublished: r.releaseDate,
+    genre: r.genres,
+    description: r.description,
     byArtist: {
       "@type": "MusicGroup",
       "@id": `${base}/#artist`,
-      name: "Bossie on the beat",
+      name: siteSettings.artistName,
       url: base,
     },
-    image: r.artwork || undefined,
+    image: r.artworkUrl || undefined,
     sameAs,
   };
 
-  return <>
-    <SiteNav/>
-    <main className="subpage release-detail">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(recordingSchema)}} />
-      <section className="release-detail-grid">
-        <ReleaseCover release={r}/>
-        <div className="release-detail-copy">
-          <p className="eyebrow">{r.status === "live" ? "OFFICIAL RELEASE" : "BOSSIE WORLD"}</p>
-          <h1>{r.title}</h1>
-          <p className="release-world">{r.mood} · {r.year}</p>
-          <p>{r.subtitle}. Part of the {r.world} world within Bossie on the beat. This official page collects the release context, listening destinations and visual identity in one canonical location.</p>
-          <div className="release-actions">
-            {r.spotify&&<a href={r.spotify} target="_blank" rel="noreferrer">Spotify ↗</a>}
-            {r.youtube&&<a href={r.youtube} target="_blank" rel="noreferrer">YouTube ↗</a>}
-            {r.amazon&&<a href={r.amazon} target="_blank" rel="noreferrer">Amazon Music ↗</a>}
-          </div>
-          <a className="back-link" href="/music">← Back to catalogue</a>
-        </div>
+  return (
+    <PageShell>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(recordingSchema) }} />
+      <ReleaseHero release={r} />
+
+      <section className="section-pad release-detail-section">
+        <PlatformLinks release={r} smartlink />
       </section>
-    </main>
-    <SiteFooter/>
-  </>
+
+      {r.story && (
+        <section className="section-pad release-story">
+          <p className="eyebrow">THE STORY</p>
+          <h2>Where this world begins.</h2>
+          <p>{r.story}</p>
+        </section>
+      )}
+
+      {r.credits && r.credits.length > 0 && (
+        <section className="section-pad">
+          <p className="eyebrow">CREDITS</p>
+          <div className="credits-grid">
+            {r.credits.map((c) => (
+              <div key={`${c.role}-${c.name}`}>
+                <span>{c.role}</span>
+                <strong>{c.name}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {r.lyrics && (
+        <section className="section-pad">
+          <details className="lyrics-block">
+            <summary>Lyrics</summary>
+            <pre>{r.lyrics}</pre>
+          </details>
+        </section>
+      )}
+
+      {r.worldSlug && (
+        <section className="section-pad">
+          <p className="eyebrow">ENTER THIS WORLD</p>
+          <Link className="button button-ghost" href={`/worlds/${r.worldSlug}`}>
+            Explore {r.worldSlug.replace(/-/g, " ")} ↗
+          </Link>
+        </section>
+      )}
+
+      {related.filter((item) => item.slug !== r.slug).length > 0 && (
+        <section className="section-pad">
+          <p className="eyebrow">RELATED RELEASES</p>
+          <div className="related-list">
+            {related
+              .filter((item) => item.slug !== r.slug)
+              .map((item) => (
+                <Link key={item.id} href={`/music/${item.slug}`}>
+                  {item.title} ↗
+                </Link>
+              ))}
+          </div>
+        </section>
+      )}
+
+      <section className="section-pad">
+        <Link className="back-link" href="/music">
+          ← Back to catalogue
+        </Link>
+      </section>
+    </PageShell>
+  );
 }
