@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "bossie-platform",
-      "database_id": "00000000-0000-0000-0000-000000000001",
+      "database_id": "9d0c83d3-6b84-4782-8c9f-7070d195a5f8",
       "migrations_dir": "../../migrations"
     }
   ],

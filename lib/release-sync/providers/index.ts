@@ -10,33 +10,34 @@ export function createAppleMusicProvider(): MusicProvider {
   return {
     name: "apple-music",
     async findReleases(): Promise<ProviderRelease[]> {
-      try {
-        const params = new URLSearchParams({
-          term: "Bossie on that beat",
-          entity: "album",
-          limit: "100",
-          country: "NL",
-        });
-        const response = await fetch(`https://itunes.apple.com/search?${params}`, {
-          headers: { Accept: "application/json" },
-        });
-        if (!response.ok) return [];
-        const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
-        return (json.results ?? [])
-          .filter((item) => isBossieArtist(String(item.artistName ?? "")))
-          .map((item) => ({
-            title: String(item.collectionName ?? ""),
-            releaseDate: item.releaseDate ? String(item.releaseDate) : undefined,
-            artworkUrl: highResArtwork(item.artworkUrl100 ? String(item.artworkUrl100) : undefined),
-            appleMusicId: String(item.collectionId ?? ""),
-            genres: item.primaryGenreName ? [String(item.primaryGenreName)] : [],
-            links: item.collectionViewUrl
-              ? [{ platform: "apple-music" as const, url: String(item.collectionViewUrl), verified: true }]
-              : [],
-          }));
-      } catch {
-        return [];
+      const params = new URLSearchParams({
+        term: "Bossie on that beat",
+        entity: "album",
+        limit: "100",
+        country: "NL",
+      });
+      const response = await fetch(`https://itunes.apple.com/search?${params.toString()}`, {
+        headers: {
+          Accept: "application/json",
+          "User-Agent": "BossieReleaseSync/1.0 (+https://bossieonthatbeat.com)",
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`apple-music HTTP ${response.status}`);
       }
+      const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
+      return (json.results ?? [])
+        .filter((item) => isBossieArtist(String(item.artistName ?? "")))
+        .map((item) => ({
+          title: String(item.collectionName ?? ""),
+          releaseDate: item.releaseDate ? String(item.releaseDate) : undefined,
+          artworkUrl: highResArtwork(item.artworkUrl100 ? String(item.artworkUrl100) : undefined),
+          appleMusicId: String(item.collectionId ?? ""),
+          genres: item.primaryGenreName ? [String(item.primaryGenreName)] : [],
+          links: item.collectionViewUrl
+            ? [{ platform: "apple-music" as const, url: String(item.collectionViewUrl), verified: true }]
+            : [],
+        }));
     },
   };
 }
