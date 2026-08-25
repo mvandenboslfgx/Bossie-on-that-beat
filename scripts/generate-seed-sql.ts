@@ -33,7 +33,7 @@ for (const c of seedCinema) {
   );
 }
 
-writeFileSync("migrations/seed-bootstrap.sql", lines.join("\n"));
+writeFileSync("data/seed-bootstrap.sql", lines.join("\n"));
 console.log("seed sql statements:", lines.length);
 console.log(
   "statuses:",

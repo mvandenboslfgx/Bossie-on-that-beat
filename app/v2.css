@@ -237,7 +237,7 @@
   }
 
   .site-links.secondary {
-    display: none;
+    opacity: 0.75;
   }
 }
 

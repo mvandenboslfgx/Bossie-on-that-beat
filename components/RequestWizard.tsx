@@ -48,6 +48,7 @@ type FormData = Record<string, string | string[] | boolean>;
 export default function RequestWizard() {
   const [step, setStep] = useState(0);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("Could not send request. Please try again later.");
   const [form, setForm] = useState<FormData>({
     genres: [],
     songType: "",
@@ -106,7 +107,14 @@ export default function RequestWizard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) throw new Error("failed");
+      if (!response.ok) {
+        setErrorMessage(
+          response.status === 503
+            ? "Mail delivery is not configured yet. Your request was not sent."
+            : "Could not send request. Please try again later.",
+        );
+        throw new Error("failed");
+      }
       setStatus("sent");
     } catch {
       setStatus("error");
@@ -115,6 +123,8 @@ export default function RequestWizard() {
 
   function next(event?: FormEvent) {
     event?.preventDefault();
+    if (step === 0 && !String(form.songType || "").trim()) return;
+    if (step === 3 && (!String(form.name || "").trim() || !String(form.email || "").trim())) return;
     if (step < steps.length - 1) setStep(step + 1);
     else submit();
   }
@@ -296,7 +306,7 @@ export default function RequestWizard() {
       </div>
 
       {status === "sent" && <p className="form-success">Request received. Bossie will review your brief.</p>}
-      {status === "error" && <p className="form-error">Could not send request. Please try again later.</p>}
+      {status === "error" && <p className="form-error">{errorMessage}</p>}
     </div>
   );
 }

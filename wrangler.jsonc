@@ -4,6 +4,7 @@
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-08-24",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
@@ -22,5 +23,9 @@
   "vars": {
     "SITE_URL": "https://bossieonthatbeat.com",
     "SYNC_INTERVAL_HOURS": "6"
-  }
+  },
+  "routes": [
+    { "pattern": "bossieonthatbeat.com/*", "zone_name": "bossieonthatbeat.com" },
+    { "pattern": "www.bossieonthatbeat.com/*", "zone_name": "bossieonthatbeat.com" }
+  ]
 }

@@ -113,9 +113,14 @@ curl -X POST https://<sync-worker>/sync -H "x-cron-secret: $CRON_SECRET"
 
 ## DNS / domain
 
-Point `bossieonthatbeat.com` to Cloudflare Worker custom domain after successful `cf:deploy`.
+Production runs on Cloudflare Workers + D1.
 
-Vercel config (`vercel.json`) is kept until Cloudflare production is verified.
+- Apex: `https://bossieonthatbeat.com`
+- Worker: `bossie-on-that-beat`
+- D1: `bossie-platform`
+- Sync: `bossie-on-that-beat-sync` (`0 */6 * * *`)
+
+`www.bossieonthatbeat.com` redirects to the apex.
 
 ## Troubleshooting
 

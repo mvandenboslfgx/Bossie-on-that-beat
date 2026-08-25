@@ -45,8 +45,17 @@ export function StatusBadge({ status }: { status: ReleaseWithLinks["status"] }) 
   return <span className={`status-badge status-${status}`}>{labels[status] ?? status}</span>;
 }
 
+function isPublicHttpUrl(url: string) {
+  try {
+    const parsed = new URL(url);
+    return (parsed.protocol === "https:" || parsed.protocol === "http:") && Boolean(parsed.hostname) && parsed.pathname !== "#";
+  } catch {
+    return false;
+  }
+}
+
 export function PlatformLinks({ release, smartlink }: { release: ReleaseWithLinks; smartlink?: boolean }) {
-  const links = release.links.filter((l) => l.url);
+  const links = release.links.filter((l) => l.url && l.url !== "#" && isPublicHttpUrl(l.url));
   if (!links.length) return null;
 
   return (

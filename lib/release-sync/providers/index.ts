@@ -6,6 +6,31 @@ function highResArtwork(url?: string) {
   return url.replace(/100x100bb/, "1200x1200bb");
 }
 
+const APPLE_MAX_RETRIES = 2;
+const APPLE_MAX_BACKOFF_MS = 8000;
+
+async function fetchAppleSearch(url: string): Promise<Response> {
+  let lastResponse: Response | undefined;
+  for (let attempt = 0; attempt <= APPLE_MAX_RETRIES; attempt++) {
+    lastResponse = await fetch(url, {
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "BossieReleaseSync/1.0 (+https://bossieonthatbeat.com)",
+      },
+    });
+    if (lastResponse.status !== 429 || attempt === APPLE_MAX_RETRIES) {
+      return lastResponse;
+    }
+    const retryAfter = Number(lastResponse.headers.get("Retry-After"));
+    const delayMs =
+      Number.isFinite(retryAfter) && retryAfter > 0
+        ? Math.min(retryAfter * 1000, APPLE_MAX_BACKOFF_MS)
+        : Math.min(1000 * 2 ** attempt, APPLE_MAX_BACKOFF_MS);
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+  return lastResponse!;
+}
+
 export function createAppleMusicProvider(): MusicProvider {
   return {
     name: "apple-music",
@@ -16,12 +41,10 @@ export function createAppleMusicProvider(): MusicProvider {
         limit: "100",
         country: "NL",
       });
-      const response = await fetch(`https://itunes.apple.com/search?${params.toString()}`, {
-        headers: {
-          Accept: "application/json",
-          "User-Agent": "BossieReleaseSync/1.0 (+https://bossieonthatbeat.com)",
-        },
-      });
+      const response = await fetchAppleSearch(`https://itunes.apple.com/search?${params.toString()}`);
+      if (response.status === 429) {
+        throw new Error("apple-music HTTP 429 (rate limited after bounded retry)");
+      }
       if (!response.ok) {
         throw new Error(`apple-music HTTP ${response.status}`);
       }
