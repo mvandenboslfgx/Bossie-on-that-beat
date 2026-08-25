@@ -10,19 +10,11 @@ export const siteSettings = {
     description:
       "Official website of Bossie on the beat — cinematic, orchestral, metal, electronic, rap and global music. Every track is a new world.",
   },
+  /** Only official profile/store URLs. Search URLs are forbidden in production UI. */
   streaming: {
-    spotify: "https://open.spotify.com/search/Bossie%20on%20that%20beat",
-    appleMusic: "https://music.apple.com/us/search?term=Bossie%20on%20that%20beat",
-    youtube: "https://www.youtube.com/results?search_query=Bossie+on+that+beat",
-    youtubeMusic: "https://music.youtube.com/search?q=Bossie+on+that+beat",
-    amazonMusic: "https://music.amazon.com/tracks/B0H6SMW3Q2",
-  },
-  social: {
-    tiktok: "https://www.tiktok.com/search?q=Bossie%20on%20that%20beat",
-    instagram: "https://www.instagram.com/explore/search/keyword/?q=bossie%20on%20that%20beat",
-    youtube: "https://www.youtube.com/results?search_query=Bossie+on+that+beat",
-    facebook: "https://www.facebook.com/search/top?q=bossie%20on%20that%20beat",
-  },
+    appleMusic: "https://music.apple.com/nl/artist/bossie-on-that-beat/6784857602",
+  } as Record<string, string>,
+  social: {} as Record<string, string>,
   contact: {
     requestPath: "/request",
     industryPath: "/industry",
@@ -37,3 +29,20 @@ export const siteSettings = {
 } as const;
 
 export type SiteSettings = typeof siteSettings;
+
+export const platformDisplayNames: Record<string, string> = {
+  spotify: "Spotify",
+  "apple-music": "Apple Music",
+  appleMusic: "Apple Music",
+  youtube: "YouTube",
+  "youtube-music": "YouTube Music",
+  youtubeMusic: "YouTube Music",
+  "amazon-music": "Amazon Music",
+  amazonMusic: "Amazon Music",
+  deezer: "Deezer",
+  tidal: "TIDAL",
+  qobuz: "Qobuz",
+  tiktok: "TikTok",
+  instagram: "Instagram",
+  facebook: "Facebook",
+};

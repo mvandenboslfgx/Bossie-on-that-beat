@@ -1,21 +1,23 @@
 import Link from "next/link";
 import type { ReleaseWithLinks } from "@/lib/types/release";
 import { getPrimaryListenLink, getWatchLink } from "@/lib/repository/release-repository";
+import { platformDisplayNames } from "@/lib/site-settings";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 
-const platformLabels: Record<string, string> = {
-  spotify: "Spotify",
-  "apple-music": "Apple Music",
-  youtube: "YouTube",
-  "youtube-music": "YouTube Music",
-  "amazon-music": "Amazon Music",
-  deezer: "Deezer",
-  tidal: "TIDAL",
-  qobuz: "Qobuz",
-};
+const platformOrder = [
+  "spotify",
+  "apple-music",
+  "youtube-music",
+  "youtube",
+  "amazon-music",
+  "deezer",
+  "tidal",
+  "qobuz",
+] as const;
 
 export function ReleaseArtwork({ release, large }: { release: ReleaseWithLinks; large?: boolean }) {
   const className = large ? "release-artwork large" : "release-artwork";
-  if (release.artworkUrl) {
+  if (release.artworkUrl && isVerifiedListenUrl(release.artworkUrl)) {
     return (
       <div
         className={className}
@@ -45,17 +47,24 @@ export function StatusBadge({ status }: { status: ReleaseWithLinks["status"] }) 
   return <span className={`status-badge status-${status}`}>{labels[status] ?? status}</span>;
 }
 
-function isPublicHttpUrl(url: string) {
-  try {
-    const parsed = new URL(url);
-    return (parsed.protocol === "https:" || parsed.protocol === "http:") && Boolean(parsed.hostname) && parsed.pathname !== "#";
-  } catch {
-    return false;
-  }
+function verifiedLinks(release: ReleaseWithLinks) {
+  const seen = new Set<string>();
+  const links = release.links.filter((l) => l.url && isVerifiedListenUrl(l.url));
+  const ordered = [
+    ...platformOrder.flatMap((platform) => links.filter((l) => l.platform === platform)),
+    ...links.filter((l) => !platformOrder.includes(l.platform as (typeof platformOrder)[number])),
+  ];
+  return ordered.filter((link) => {
+    const key = `${link.platform}:${link.url}`;
+    if (seen.has(key) || seen.has(link.platform)) return false;
+    seen.add(key);
+    seen.add(link.platform);
+    return true;
+  });
 }
 
 export function PlatformLinks({ release, smartlink }: { release: ReleaseWithLinks; smartlink?: boolean }) {
-  const links = release.links.filter((l) => l.url && l.url !== "#" && isPublicHttpUrl(l.url));
+  const links = verifiedLinks(release);
   if (!links.length) return null;
 
   return (
@@ -68,7 +77,7 @@ export function PlatformLinks({ release, smartlink }: { release: ReleaseWithLink
           target={smartlink ? undefined : "_blank"}
           rel={smartlink ? undefined : "noreferrer"}
         >
-          {platformLabels[link.platform] ?? link.platform} ↗
+          {platformDisplayNames[link.platform] ?? link.platform} ↗
         </a>
       ))}
     </div>
@@ -83,7 +92,7 @@ export function ReleaseActions({ release }: { release: ReleaseWithLinks }) {
     <div className="release-actions-v2">
       {listen && (
         <Link className="button button-gold" href={`/go/${release.slug}`}>
-          PLAY NOW ↗
+          LISTEN NOW ↗
         </Link>
       )}
       {watch && (
@@ -93,33 +102,47 @@ export function ReleaseActions({ release }: { release: ReleaseWithLinks }) {
       )}
       {release.worldSlug && (
         <Link className="button button-ghost" href={`/worlds/${release.worldSlug}`}>
-          ENTER THE WORLD ↗
+          ENTER WORLD ↗
         </Link>
       )}
     </div>
   );
 }
 
-export function ReleaseCard({ release }: { release: ReleaseWithLinks }) {
+export function ReleaseCard({ release, withListen }: { release: ReleaseWithLinks; withListen?: boolean }) {
+  const listen = withListen ? getPrimaryListenLink(release) : null;
+
   return (
-    <Link href={`/music/${release.slug}`} className="release-card-v2">
-      <ReleaseArtwork release={release} />
-      <div className="release-card-body">
-        <StatusBadge status={release.status} />
-        <h3>{release.title}</h3>
-        <p>{release.tagline ?? release.description}</p>
-        <span className="release-meta">
-          {release.genres.slice(0, 2).join(" · ")}
-          {release.releaseDate ? ` · ${release.releaseDate.slice(0, 4)}` : ""}
-        </span>
-      </div>
-    </Link>
+    <article className={`release-card-v2 world-accent-${release.worldSlug ?? "default"}`}>
+      <Link href={`/music/${release.slug}`} className="release-card-link">
+        <ReleaseArtwork release={release} />
+        <div className="release-card-body">
+          <StatusBadge status={release.status} />
+          <h3>{release.title}</h3>
+          <p>{release.tagline ?? release.description}</p>
+          <span className="release-meta">
+            {release.genres.slice(0, 2).join(" · ")}
+            {release.releaseDate ? ` · ${release.releaseDate.slice(0, 4)}` : ""}
+          </span>
+        </div>
+      </Link>
+      {withListen && listen && (
+        <div className="release-card-actions">
+          <Link className="button button-gold" href={`/go/${release.slug}`}>
+            LISTEN ↗
+          </Link>
+          <Link className="text-link" href={`/music/${release.slug}`}>
+            Explore ↗
+          </Link>
+        </div>
+      )}
+    </article>
   );
 }
 
 export function ReleaseHero({ release }: { release: ReleaseWithLinks }) {
   return (
-    <section className="release-hero section-pad">
+    <section className={`release-hero section-pad world-accent-${release.worldSlug ?? "default"}`}>
       <div className="release-hero-grid">
         <ReleaseArtwork release={release} large />
         <div className="release-hero-copy">
@@ -134,6 +157,7 @@ export function ReleaseHero({ release }: { release: ReleaseWithLinks }) {
                 {g}
               </span>
             ))}
+            {release.releaseDate && <span className="meta-chip">{release.releaseDate}</span>}
           </div>
           <ReleaseActions release={release} />
         </div>

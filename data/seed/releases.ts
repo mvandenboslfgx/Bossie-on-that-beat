@@ -1,4 +1,4 @@
-import type { Release, ReleaseLink, ReleaseWithLinks } from "@/lib/types/release";
+import type { ReleaseLink, ReleaseWithLinks } from "@/lib/types/release";
 import { siteSettings } from "@/lib/site-settings";
 
 function id(slug: string) {
@@ -21,6 +21,22 @@ function link(releaseId: string, platform: ReleaseLink["platform"], url: string)
 
 const now = "2026-01-01T00:00:00.000Z";
 
+/** Official Apple Music / DistroKid artwork (1200px). */
+const art = {
+  crown:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/24/9e/40/249e402f-305e-2b06-2d76-5ace0447c80b/artwork.jpg/1200x1200bb.jpg",
+  oneWorld:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/6f/95/50/6f9550f4-4ee7-7441-beab-8714a2eeb234/artwork.jpg/1200x1200bb.jpg",
+  symphony:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music221/v4/a4/e3/56/a4e3566a-6c03-9af9-44af-cd2a28d0403a/artwork.jpg/1200x1200bb.jpg",
+  nul:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/d3/e5/ee/d3e5eeff-e69f-f97c-67f1-07cf76e027e6/artwork.jpg/1200x1200bb.jpg",
+  gasolina:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/65/e1/6b/65e16b42-c1c6-10b1-c4f3-6973efdcdfe1/artwork.jpg/1200x1200bb.jpg",
+  nims:
+    "https://is1-ssl.mzstatic.com/image/thumb/Music211/v4/84/92/04/849204bd-3c69-e8ca-e4c3-7cf98b694efc/artwork.jpg/1200x1200bb.jpg",
+} as const;
+
 export const seedReleases: ReleaseWithLinks[] = [
   {
     id: id("crown-of-the-abyss"),
@@ -30,13 +46,16 @@ export const seedReleases: ReleaseWithLinks[] = [
     type: "single",
     status: "live",
     releaseDate: "2026-01-15",
-    artworkUrl: "",
+    artworkUrl: art.crown,
+    appleMusicId: "6785206018",
     genres: ["Metal", "Cinematic"],
     subgenres: ["Orchestral Metal"],
     moods: ["Epic", "Dark"],
     tagline: "Orchestral metal statement",
-    description: "Angelic voices collide with subterranean vocals, monumental choirs and cathedral-scale production.",
-    story: "A dark orchestral metal world built for maximum cinematic impact — destroyed worlds, angelic voices and massive choirs.",
+    description:
+      "Angelic voices collide with subterranean vocals, monumental choirs and cathedral-scale production.",
+    story:
+      "A dark orchestral metal world built for maximum cinematic impact — destroyed worlds, angelic voices and massive choirs.",
     worldSlug: "the-abyss",
     featured: true,
     priority: 100,
@@ -45,7 +64,7 @@ export const seedReleases: ReleaseWithLinks[] = [
     lastSyncedAt: now,
     links: [
       link(id("crown-of-the-abyss"), "spotify", "https://open.spotify.com/album/2ZWAT8pIDAZwrTkcbmlBMx"),
-      link(id("crown-of-the-abyss"), "youtube", "https://www.youtube.com/results?search_query=Bossie+on+that+beat+CROWN+OF+THE+ABYSS"),
+      link(id("crown-of-the-abyss"), "apple-music", "https://music.apple.com/nl/album/crown-of-the-abyss-single/6785206018"),
     ],
   },
   {
@@ -56,7 +75,8 @@ export const seedReleases: ReleaseWithLinks[] = [
     type: "single",
     status: "live",
     releaseDate: "2026-02-01",
-    artworkUrl: "",
+    artworkUrl: art.oneWorld,
+    appleMusicId: "6785294600",
     genres: ["World", "Pop"],
     subgenres: ["Global Anthem"],
     moods: ["Epic", "Uplifting"],
@@ -68,8 +88,12 @@ export const seedReleases: ReleaseWithLinks[] = [
     firstSeenAt: now,
     lastSyncedAt: now,
     links: [
+      link(
+        id("one-world-one-dream"),
+        "apple-music",
+        "https://music.apple.com/nl/album/one-world-one-dream-world-cup-song-2026-single/6785294600",
+      ),
       link(id("one-world-one-dream"), "amazon-music", "https://music.amazon.com/tracks/B0H6SMW3Q2"),
-      link(id("one-world-one-dream"), "youtube", "https://www.youtube.com/results?search_query=Bossie+on+that+beat+One+World+One+Dream"),
     ],
   },
   {
@@ -80,11 +104,12 @@ export const seedReleases: ReleaseWithLinks[] = [
     type: "single",
     status: "live",
     releaseDate: "2026-02-10",
-    artworkUrl: "",
+    artworkUrl: art.symphony,
+    appleMusicId: "6787258907",
     genres: ["Cinematic", "Classical"],
     subgenres: ["Orchestral Power"],
     moods: ["Epic", "Aggressive"],
-    tagline: "Single",
+    tagline: "Orchestral power",
     description: "Orchestral power built around storm-scale dynamics and cinematic force.",
     worldSlug: "the-storm",
     priority: 80,
@@ -92,6 +117,11 @@ export const seedReleases: ReleaseWithLinks[] = [
     firstSeenAt: now,
     lastSyncedAt: now,
     links: [
+      link(
+        id("symphony-of-the-storm"),
+        "apple-music",
+        "https://music.apple.com/nl/album/symphony-of-the-storm-single/6787258907",
+      ),
       link(id("symphony-of-the-storm"), "amazon-music", "https://music.amazon.in/albums/B0H7NX3MVF"),
     ],
   },
@@ -103,12 +133,13 @@ export const seedReleases: ReleaseWithLinks[] = [
     type: "single",
     status: "live",
     releaseDate: "2026-02-15",
-    artworkUrl: "",
+    artworkUrl: art.nul,
+    appleMusicId: "6795139930",
     genres: ["Electronic", "Pop"],
     subgenres: ["Dutch Energy"],
     moods: ["Party", "Aggressive"],
     languages: ["Dutch"],
-    tagline: "Single",
+    tagline: "Dutch club energy",
     description: "High-energy Dutch production with club-ready velocity.",
     worldSlug: "the-streets",
     priority: 70,
@@ -116,6 +147,7 @@ export const seedReleases: ReleaseWithLinks[] = [
     firstSeenAt: now,
     lastSyncedAt: now,
     links: [
+      link(id("nul-een-acht-zes"), "apple-music", "https://music.apple.com/nl/album/nul-een-acht-zes-single/6795139930"),
       link(id("nul-een-acht-zes"), "amazon-music", "https://music.amazon.co.uk/albums/B0H7P9852Q"),
     ],
   },
@@ -131,14 +163,14 @@ export const seedReleases: ReleaseWithLinks[] = [
     subgenres: ["Gothic Psychological Cinema"],
     moods: ["Dark", "Cinematic"],
     tagline: "Prestige cinematic world",
-    description: "A dark prestige universe of memory, war, ritual, loss and a door that was never meant to keep anything out.",
-    story: "Prestige gothic cinema meets psychological horror, war-memory fragments, ritual voices and monumental sound design.",
+    description:
+      "A dark prestige universe of memory, war, ritual, loss and a door that was never meant to keep anything out.",
+    story:
+      "Prestige gothic cinema meets psychological horror, war-memory fragments, ritual voices and monumental sound design.",
     worldSlug: "the-door",
     manualOverride: true,
     firstSeenAt: now,
-    links: [
-      link(id("the-door-was-never-closed"), "youtube", "https://www.youtube.com/results?search_query=Bossie+on+that+beat+The+Door+Was+Never+Closed"),
-    ],
+    links: [],
   },
   {
     id: id("nims-dai"),
@@ -147,7 +179,8 @@ export const seedReleases: ReleaseWithLinks[] = [
     artist: siteSettings.artistName,
     type: "single",
     status: "project",
-    artworkUrl: "",
+    artworkUrl: art.nims,
+    appleMusicId: "6797184055",
     genres: ["Cinematic"],
     subgenres: ["Cinematic Tribute"],
     moods: ["Emotional", "Cinematic"],
@@ -157,7 +190,7 @@ export const seedReleases: ReleaseWithLinks[] = [
     manualOverride: true,
     firstSeenAt: now,
     links: [
-      link(id("nims-dai"), "youtube", "https://www.youtube.com/results?search_query=Bossie+on+that+beat+Nims+Dai"),
+      link(id("nims-dai"), "apple-music", "https://music.apple.com/nl/album/the-mountain-remembers-single/6797184055"),
     ],
   },
   {
@@ -167,7 +200,7 @@ export const seedReleases: ReleaseWithLinks[] = [
     artist: siteSettings.artistName,
     type: "single",
     status: "project",
-    artworkUrl: "",
+    artworkUrl: art.nims,
     genres: ["Cinematic"],
     moods: ["Emotional", "Cinematic"],
     tagline: "The Mountain Remembers",
@@ -205,7 +238,8 @@ export const seedReleases: ReleaseWithLinks[] = [
     status: "live",
     releaseDate: "2026-08-14",
     announcementDate: "2026-03-01",
-    artworkUrl: "",
+    artworkUrl: art.gasolina,
+    appleMusicId: "6801632250",
     genres: ["Latin", "Electronic"],
     subgenres: ["Latin / Club"],
     moods: ["Party"],
@@ -215,7 +249,9 @@ export const seedReleases: ReleaseWithLinks[] = [
     priority: 95,
     manualOverride: true,
     firstSeenAt: now,
-    links: [],
+    links: [
+      link(id("gasolina"), "apple-music", "https://music.apple.com/nl/album/gasolina-cuba-libre-single/6801632250"),
+    ],
   },
 ];
 

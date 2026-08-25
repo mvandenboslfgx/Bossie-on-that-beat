@@ -1,6 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  getAllReleases,
   getLiveReleases,
   getUpcomingReleases,
   getAllGenres,
@@ -8,6 +8,12 @@ import {
 } from "@/lib/repository/release-repository";
 import { ReleaseCard } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
+
+export const metadata: Metadata = {
+  title: "Music",
+  description: "Official Bossie on the beat music catalogue — live releases, worlds and streaming links.",
+  alternates: { canonical: "/music" },
+};
 
 export default async function MusicPage() {
   const [live, upcoming, genres] = await Promise.all([
@@ -18,14 +24,14 @@ export default async function MusicPage() {
 
   return (
     <PageShell>
-      <section className="page-hero">
+      <section className="page-hero compact-hero">
         <p className="eyebrow">THE COMPLETE CATALOGUE</p>
         <h1>MUSIC</h1>
-        <p>Every Bossie release and world in one place. Live releases carry verified store links.</p>
+        <p>Live releases with verified listen links. Every track is a new world.</p>
       </section>
 
       <section className="music-filters section-pad">
-        <div className="filter-row">
+        <div className="filter-row" role="navigation" aria-label="Genre filters">
           <Link className="filter-chip active" href="/music">
             All
           </Link>
@@ -44,7 +50,7 @@ export default async function MusicPage() {
             <h2>Out now worldwide.</h2>
           </div>
         </div>
-        <div className="release-grid-v2">{live.map((r) => <ReleaseCard key={r.id} release={r} />)}</div>
+        <div className="release-grid-v2">{live.map((r) => <ReleaseCard key={r.id} release={r} withListen />)}</div>
       </section>
 
       {upcoming.length > 0 && (

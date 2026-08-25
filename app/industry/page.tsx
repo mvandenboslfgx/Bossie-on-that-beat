@@ -1,2 +1,58 @@
-import { SiteFooter, SiteNav } from "@/components/SiteChrome";
-export default function IndustryPage(){return <><SiteNav/><main className="subpage"><section className="page-hero"><p className="eyebrow">INDUSTRY / COLLABORATION</p><h1>INDUSTRY</h1><p>A focused destination for labels, media, playlist curators, visual collaborators, brands and production opportunities.</p></section><section className="industry-page"><article><span>01</span><h2>Production</h2><p>Original cross-genre production, cinematic sound, concept development and release-world creation.</p></article><article><span>02</span><h2>Press / EPK</h2><p>Selected work, artist positioning, release references and visual direction in one professional destination.</p></article><article><span>03</span><h2>Collaboration</h2><p>For serious creative, label, sync, brand and artist enquiries. Contact details can be connected here when the official channel is finalized.</p></article></section></main><SiteFooter/></>}
+import type { Metadata } from "next";
+import Link from "next/link";
+import { PageShell } from "@/components/SiteChrome";
+
+export const metadata: Metadata = {
+  title: "Industry",
+  description:
+    "Music licensing, custom production and collaborations with Bossie on the beat for film, advertising, games and brands.",
+  alternates: { canonical: "/industry" },
+};
+
+export default function IndustryPage() {
+  return (
+    <PageShell>
+      <section className="page-hero compact-hero">
+        <p className="eyebrow">INDUSTRY / COLLABORATION</p>
+        <h1>INDUSTRY</h1>
+        <p>Licensing, custom music and collaborations for serious creative partners.</p>
+        <Link className="button button-gold" href="/request">
+          Work with Bossie ↗
+        </Link>
+      </section>
+
+      <section className="industry-page">
+        <article>
+          <span>01</span>
+          <h2>Music licensing</h2>
+          <p>Original music for:</p>
+          <ul>
+            <li>Film</li>
+            <li>Advertising</li>
+            <li>Games</li>
+            <li>Digital projects</li>
+          </ul>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>Custom music</h2>
+          <p>Original songs, soundtracks and release-world production tailored to the brief.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>Collaborations</h2>
+          <p>For artists, vocalists, producers, creators, labels and brands ready to build a complete world together.</p>
+        </article>
+      </section>
+
+      <section className="section-pad">
+        <p className="eyebrow">NEXT STEP</p>
+        <h2>Start with a clear brief.</h2>
+        <p>Use the request form with business context. Response scope is confirmed per project.</p>
+        <Link className="button button-gold" href="/request">
+          Work with Bossie ↗
+        </Link>
+      </section>
+    </PageShell>
+  );
+}

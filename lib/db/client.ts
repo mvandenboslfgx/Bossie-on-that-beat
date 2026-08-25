@@ -1,6 +1,8 @@
 import type { D1Database, Fetcher } from "@cloudflare/workers-types";
 import type { Release, ReleaseLink, ReleaseWithLinks } from "@/lib/types/release";
 import type { CloudflareEnv } from "@/lib/cloudflare-env";
+import { getSeedRelease } from "@/data/seed/releases";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export type { CloudflareEnv as CloudflareBindings };
 
@@ -69,7 +71,27 @@ export function rowToLink(row: DbRow): ReleaseLink {
 }
 
 export function attachLinks(release: Release, links: ReleaseLink[]): ReleaseWithLinks {
-  return { ...release, links };
+  const seed = getSeedRelease(release.slug);
+  const artworkUrl =
+    release.artworkUrl && isVerifiedListenUrl(release.artworkUrl)
+      ? release.artworkUrl
+      : seed?.artworkUrl && isVerifiedListenUrl(seed.artworkUrl)
+        ? seed.artworkUrl
+        : release.artworkUrl;
+  const filtered = links.filter((l) => l.url && isVerifiedListenUrl(l.url));
+  const merged =
+    filtered.length > 0
+      ? filtered
+      : (seed?.links ?? []).filter((l) => l.url && isVerifiedListenUrl(l.url));
+  return {
+    ...release,
+    artworkUrl,
+    appleMusicId: release.appleMusicId ?? seed?.appleMusicId,
+    description: release.description || seed?.description,
+    story: release.story || seed?.story,
+    tagline: release.tagline || seed?.tagline,
+    links: merged,
+  };
 }
 
 export async function getDb(): Promise<D1Database | null> {

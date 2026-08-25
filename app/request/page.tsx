@@ -5,6 +5,7 @@ import { PageShell } from "@/components/SiteChrome";
 export const metadata: Metadata = {
   title: "Create Your Song",
   description: "Request a custom production, song, beat, remix, cinematic score or collaboration from Bossie on the beat.",
+  alternates: { canonical: "/request" },
 };
 
 export default function RequestPage() {

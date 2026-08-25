@@ -4,7 +4,7 @@ import { seedWorlds } from "../data/seed/worlds.ts";
 import { seedCinema } from "../data/seed/cinema.ts";
 
 function esc(value: unknown): string {
-  if (value == null) return "NULL";
+  if (value == null || value === "") return "NULL";
   return `'${String(value).replace(/'/g, "''")}'`;
 }
 
@@ -23,13 +23,13 @@ for (const r of seedReleases) {
 
 for (const w of seedWorlds) {
   lines.push(
-    `INSERT OR REPLACE INTO worlds (slug, title, subtitle, description, themes, aesthetic, featured, manual_override) VALUES (${esc(w.slug)}, ${esc(w.title)}, ${esc(w.subtitle)}, ${esc(w.description)}, ${esc(JSON.stringify(w.themes || []))}, ${esc(JSON.stringify(w.aesthetic || []))}, ${w.featured ? 1 : 0}, 0);`,
+    `INSERT OR REPLACE INTO worlds (slug, title, subtitle, description, hero_image, themes, aesthetic, featured, manual_override) VALUES (${esc(w.slug)}, ${esc(w.title)}, ${esc(w.subtitle)}, ${esc(w.description)}, ${esc(w.heroImage)}, ${esc(JSON.stringify(w.themes || []))}, ${esc(JSON.stringify(w.aesthetic || []))}, ${w.featured ? 1 : 0}, 0);`,
   );
 }
 
 for (const c of seedCinema) {
   lines.push(
-    `INSERT OR REPLACE INTO cinema_items (id, slug, title, type, release_slug, world_slug, youtube_url, description, duration_seconds, featured) VALUES (${esc(c.id)}, ${esc(c.slug)}, ${esc(c.title)}, ${esc(c.type)}, ${esc(c.releaseSlug)}, ${esc(c.worldSlug)}, ${esc(c.youtubeUrl)}, ${esc(c.description)}, ${c.durationSeconds ?? "NULL"}, ${c.featured ? 1 : 0});`,
+    `INSERT OR REPLACE INTO cinema_items (id, slug, title, type, release_slug, world_slug, youtube_url, thumbnail_url, description, duration_seconds, featured) VALUES (${esc(c.id)}, ${esc(c.slug)}, ${esc(c.title)}, ${esc(c.type)}, ${esc(c.releaseSlug)}, ${esc(c.worldSlug)}, ${esc(c.youtubeUrl)}, ${esc(c.thumbnailUrl)}, ${esc(c.description)}, ${c.durationSeconds ?? "NULL"}, ${c.featured ? 1 : 0});`,
   );
 }
 
