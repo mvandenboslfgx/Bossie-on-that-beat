@@ -8,5 +8,7 @@ export interface CloudflareEnv {
   SPOTIFY_CLIENT_ID?: string;
   SPOTIFY_CLIENT_SECRET?: string;
   SPOTIFY_ARTIST_ID?: string;
+  YOUTUBE_API_KEY?: string;
+  YOUTUBE_CHANNEL_ID?: string;
   CRON_SECRET?: string;
 }

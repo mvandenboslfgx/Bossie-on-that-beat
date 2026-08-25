@@ -17,6 +17,7 @@ export interface CinemaItem {
   releaseSlug?: string;
   worldSlug?: string;
   youtubeUrl?: string;
+  youtubeVideoId?: string;
   videoUrl?: string;
   thumbnailUrl?: string;
   posterUrl?: string;
@@ -24,4 +25,7 @@ export interface CinemaItem {
   durationSeconds?: number;
   publishedAt?: string;
   featured?: boolean;
+  /** published = public; pending_review = sync matched with low confidence */
+  reviewStatus?: "published" | "pending_review" | "hidden";
+  manualOverride?: boolean;
 }

@@ -10,7 +10,7 @@ import {
 } from "@/lib/repository/release-repository";
 import { ReleaseArtwork, ReleaseActions, ReleaseCard, StatusBadge } from "@/components/release/ReleaseUI";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
-import { platformDisplayNames, siteSettings } from "@/lib/site-settings";
+import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export const metadata: Metadata = {
@@ -50,7 +50,7 @@ export default async function HomePage() {
 
   const featuredIsLatest = Boolean(featured && latest && featured.slug === latest.slug);
   const catalogue = live.filter((r) => r.slug !== featured?.slug && r.slug !== latest?.slug);
-  const streaming = Object.entries(siteSettings.streaming).filter(([, href]) => isVerifiedListenUrl(href));
+  const streaming = getOfficialProfileEntries("streaming").filter((e) => isVerifiedListenUrl(e.href));
   const nextWorld = projects[0];
 
   const schema = {
@@ -60,7 +60,7 @@ export default async function HomePage() {
     alternateName: siteSettings.artistAltName,
     url: siteSettings.siteUrl,
     description: siteSettings.defaultSeo.description,
-    sameAs: streaming.map(([, href]) => href),
+    sameAs: streaming.map((e) => e.href),
   };
 
   return (
@@ -214,9 +214,9 @@ export default async function HomePage() {
           <p className="eyebrow">LISTEN</p>
           <h2>Official artist profiles.</h2>
           <div className="platform-grid-v2">
-            {streaming.map(([key, href]) => (
+            {streaming.map(({ key, href, label }) => (
               <a key={key} href={href} target="_blank" rel="noreferrer">
-                {platformDisplayNames[key] ?? key} ↗
+                {label} ↗
               </a>
             ))}
           </div>

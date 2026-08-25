@@ -7,6 +7,8 @@ const serverSchema = z.object({
   SPOTIFY_CLIENT_ID: z.string().optional(),
   SPOTIFY_CLIENT_SECRET: z.string().optional(),
   SPOTIFY_ARTIST_ID: z.string().optional(),
+  YOUTUBE_API_KEY: z.string().optional(),
+  YOUTUBE_CHANNEL_ID: z.string().optional(),
   CRON_SECRET: z.string().optional(),
   SITE_URL: z.string().url().optional(),
   SYNC_INTERVAL_HOURS: z.coerce.number().optional(),

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { getLatestRelease, getLiveReleases } from "@/lib/repository/release-repository";
 import { ReleaseArtwork, ReleaseActions } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
-import { platformDisplayNames, siteSettings } from "@/lib/site-settings";
+import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export const metadata: Metadata = {
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 
 export default async function LinksPage() {
   const [latest, live] = await Promise.all([getLatestRelease(), getLiveReleases()]);
-  const streaming = Object.entries(siteSettings.streaming).filter(([, href]) => isVerifiedListenUrl(href));
-  const social = Object.entries(siteSettings.social).filter(([, href]) => isVerifiedListenUrl(href));
+  const streaming = getOfficialProfileEntries("streaming").filter((e) => isVerifiedListenUrl(e.href));
+  const social = getOfficialProfileEntries("social").filter((e) => isVerifiedListenUrl(e.href));
 
   return (
     <PageShell>
@@ -41,11 +41,11 @@ export default async function LinksPage() {
         <section className="section-pad links-section">
           <h2>Listen</h2>
           <div className="links-grid">
-            {streaming.map(([key, href]) => (
-              <a key={key} href={href} target="_blank" rel="noreferrer">
-                {platformDisplayNames[key] ?? key} ↗
-              </a>
-            ))}
+          {streaming.map(({ key, href, label }) => (
+            <a key={key} href={href} target="_blank" rel="noreferrer">
+              {label} ↗
+            </a>
+          ))}
             {live.slice(0, 3).map((r) => (
               <Link key={r.id} href={`/go/${r.slug}`}>
                 {r.title} ↗
@@ -66,11 +66,11 @@ export default async function LinksPage() {
         <section className="section-pad links-section">
           <h2>Follow</h2>
           <div className="links-grid">
-            {social.map(([key, href]) => (
-              <a key={key} href={href} target="_blank" rel="noreferrer">
-                {platformDisplayNames[key] ?? key} ↗
-              </a>
-            ))}
+          {social.map(({ key, href, label }) => (
+            <a key={key} href={href} target="_blank" rel="noreferrer">
+              {label} ↗
+            </a>
+          ))}
           </div>
         </section>
       )}

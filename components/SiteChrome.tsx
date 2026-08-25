@@ -21,14 +21,24 @@ const secondaryNav = [
 ] as const;
 
 function listenHref() {
-  const entries = Object.values(siteSettings.streaming).filter(isVerifiedListenUrl);
+  const preferred = ["spotify", "appleMusic", "youtube", "youtubeMusic"] as const;
+  for (const key of preferred) {
+    const href = siteSettings.streaming[key] || siteSettings.social[key];
+    if (href && isVerifiedListenUrl(href)) return href;
+  }
+  const entries = [...Object.values(siteSettings.streaming), ...Object.values(siteSettings.social)].filter(
+    isVerifiedListenUrl,
+  );
   return entries[0] ?? "/go/latest";
 }
 
 function listenLabel() {
-  const entry = Object.entries(siteSettings.streaming).find(([, href]) => isVerifiedListenUrl(href));
-  if (!entry) return "Listen";
-  return platformDisplayNames[entry[0]] ?? "Listen";
+  const preferred = ["spotify", "appleMusic", "youtube", "youtubeMusic"] as const;
+  for (const key of preferred) {
+    const href = siteSettings.streaming[key] || siteSettings.social[key];
+    if (href && isVerifiedListenUrl(href)) return platformDisplayNames[key] ?? "Listen";
+  }
+  return "Listen";
 }
 
 export function SiteNav() {

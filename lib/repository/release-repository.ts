@@ -152,31 +152,38 @@ export async function getAllCinema(): Promise<CinemaItem[]> {
     try {
       const rows = await db.prepare("SELECT * FROM cinema_items ORDER BY published_at DESC").all();
       if (rows.results?.length) {
-        return rows.results.map((row) => {
-          const slug = String(row.slug);
-          const seed = getSeedCinema(slug);
-          const youtubeRaw = row.youtube_url ? String(row.youtube_url) : undefined;
-          const youtubeUrl =
-            youtubeRaw && isVerifiedListenUrl(youtubeRaw) ? youtubeRaw : undefined;
-          return {
-            id: String(row.id),
-            slug,
-            title: String(row.title),
-            type: row.type as CinemaItem["type"],
-            releaseSlug: row.release_slug ? String(row.release_slug) : undefined,
-            worldSlug: row.world_slug ? String(row.world_slug) : undefined,
-            youtubeUrl,
-            videoUrl: row.video_url ? String(row.video_url) : undefined,
-            thumbnailUrl: row.thumbnail_url
-              ? String(row.thumbnail_url)
-              : seed?.thumbnailUrl,
-            posterUrl: row.poster_url ? String(row.poster_url) : undefined,
-            description: row.description ? String(row.description) : undefined,
-            durationSeconds: row.duration_seconds != null ? Number(row.duration_seconds) : undefined,
-            publishedAt: row.published_at ? String(row.published_at) : undefined,
-            featured: Boolean(row.featured),
-          };
-        });
+        return rows.results
+          .map((row) => {
+            const slug = String(row.slug);
+            const seed = getSeedCinema(slug);
+            const youtubeRaw = row.youtube_url ? String(row.youtube_url) : undefined;
+            const youtubeUrl =
+              youtubeRaw && isVerifiedListenUrl(youtubeRaw) ? youtubeRaw : undefined;
+            const reviewStatus = (row.review_status ? String(row.review_status) : "published") as
+              | "published"
+              | "pending_review"
+              | "hidden";
+            return {
+              id: String(row.id),
+              slug,
+              title: String(row.title),
+              type: row.type as CinemaItem["type"],
+              releaseSlug: row.release_slug ? String(row.release_slug) : undefined,
+              worldSlug: row.world_slug ? String(row.world_slug) : undefined,
+              youtubeUrl,
+              youtubeVideoId: row.youtube_video_id ? String(row.youtube_video_id) : undefined,
+              videoUrl: row.video_url ? String(row.video_url) : undefined,
+              thumbnailUrl: row.thumbnail_url ? String(row.thumbnail_url) : seed?.thumbnailUrl,
+              posterUrl: row.poster_url ? String(row.poster_url) : undefined,
+              description: row.description ? String(row.description) : undefined,
+              durationSeconds: row.duration_seconds != null ? Number(row.duration_seconds) : undefined,
+              publishedAt: row.published_at ? String(row.published_at) : undefined,
+              featured: Boolean(row.featured),
+              reviewStatus,
+              manualOverride: Boolean(row.manual_override),
+            };
+          })
+          .filter((item) => item.reviewStatus !== "pending_review" && item.reviewStatus !== "hidden");
       }
     } catch {
       /* fall through to seed */
