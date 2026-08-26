@@ -100,8 +100,10 @@ export function SiteNav() {
           aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
-          <span className="nav-menu-toggle-label" aria-hidden="true">
-            {open ? "✕" : "☰"}
+          <span className="nav-menu-bars" aria-hidden="true">
+            <span />
+            <span />
+            <span />
           </span>
           <span className="nav-menu-toggle-text">{open ? "Close" : "Menu"}</span>
         </button>
@@ -161,8 +163,7 @@ export function SiteFooter() {
         </small>
       </div>
       <a className="vdb-credit" href="https://vdbdigital.nl" target="_blank" rel="noreferrer">
-        <small>BUILT BY</small>
-        <strong>VDB DIGITAL ↗</strong>
+        Site by VDB Digital
       </a>
     </footer>
   );

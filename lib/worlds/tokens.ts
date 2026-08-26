@@ -19,11 +19,17 @@ export interface WorldSkin {
   overviewLayout: WorldOverviewLayout;
   /** Short manifesto / lore shown on world detail. */
   lore: string;
-  /** Max ~2 lines for Worlds overview cards. */
+  /** Max ~55–70 chars for Worlds overview. */
   teaser: string;
   ctaLabel: string;
   listenLabel: string;
   watchLabel: string;
+  /**
+   * Cover art already carries Bossie branding — suppress/soften UI B-mark on overview.
+   */
+  artworkContainsBrandMark?: boolean;
+  /** Overview: hide teaser line (artwork speaks). */
+  overviewMinimalCopy?: boolean;
 }
 
 export const worldSkinTokens: Record<string, WorldSkin> = {
@@ -31,7 +37,7 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     slug: "the-door",
     label: "THE DOOR",
     number: "001",
-    accent: "#5c4a6e",
+    accent: "#b08d57",
     glow: "rgba(92, 74, 110, 0.3)",
     markOpacity: 0.1,
     navTone: "dark",
@@ -39,7 +45,7 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "ritual",
     overviewLayout: "ritual",
     lore: "A threshold that was never meant to keep anything out. Memory, war, ritual and loss — gothic psychological cinema.",
-    teaser: "A threshold that never keeps anything out.",
+    teaser: "A threshold that never closes.",
     ctaLabel: "ENTER THE DOOR",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
@@ -56,10 +62,12 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "gothic",
     overviewLayout: "seal",
     lore: "Descend. Angelic voices collide with subterranean choirs. Burned gold over black stone. Every note is a cathedral collapsing in slow motion.",
-    teaser: "Burned gold. Subterranean choirs. Descend.",
+    teaser: "Burned gold. Descend.",
     ctaLabel: "DESCEND",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
+    artworkContainsBrandMark: true,
+    overviewMinimalCopy: true,
   },
   "the-mountain": {
     slug: "the-mountain",
@@ -73,10 +81,12 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "alpine",
     overviewLayout: "alpine",
     lore: "Altitude. Snow. Remembrance. Human scale against infinite white. The mountain does not speak — it remembers.",
-    teaser: "The mountain does not speak — it remembers.",
+    teaser: "It remembers.",
     ctaLabel: "EXPLORE",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
+    artworkContainsBrandMark: true,
+    overviewMinimalCopy: true,
   },
   "the-club": {
     slug: "the-club",
@@ -90,10 +100,11 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "neon",
     overviewLayout: "neon",
     lore: "Heat, velocity, neon and replay energy. Built for midnight rooms and bodies that refuse to stop.",
-    teaser: "Heat, velocity, neon — built for midnight rooms.",
+    teaser: "Heat. Velocity. Neon.",
     ctaLabel: "ENTER THE CLUB",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
+    artworkContainsBrandMark: true,
   },
   "the-storm": {
     slug: "the-storm",
@@ -107,10 +118,11 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "storm",
     overviewLayout: "storm",
     lore: "Storm-scale dynamics. Cinematic force. Orchestral power that arrives like weather — sudden, total, unforgettable.",
-    teaser: "Orchestral power that arrives like weather.",
+    teaser: "Power that arrives like weather.",
     ctaLabel: "ENTER THE STORM",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
+    artworkContainsBrandMark: true,
   },
   "the-streets": {
     slug: "the-streets",
@@ -124,7 +136,7 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "street",
     overviewLayout: "street",
     lore: "City velocity. Dutch energy. Street-level impact — concrete, gold and motion that never asks permission.",
-    teaser: "Concrete, gold and motion that never asks.",
+    teaser: "Concrete. Gold. Motion without permission.",
     ctaLabel: "ENTER THE STREETS",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
@@ -145,6 +157,7 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     ctaLabel: "ENTER THE NIGHT",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
+    artworkContainsBrandMark: true,
   },
   global: {
     slug: "global",
@@ -158,10 +171,11 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     typography: "anthem",
     overviewLayout: "anthem",
     lore: "Stadium-scale songwriting. International unity. One signal, many flags — Bossie for the world stage.",
-    teaser: "One signal, many flags — world stage.",
+    teaser: "One signal. Many flags.",
     ctaLabel: "ENTER GLOBAL",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
+    artworkContainsBrandMark: true,
   },
 };
 

@@ -30,15 +30,29 @@ export function WorldOverviewCard({ item }: { item: WorldOverviewItem }) {
   const layout = skin?.overviewLayout ?? "noir";
   const teaser = skin?.teaser ?? world.description.split(/[.!?]/)[0] + ".";
   const cta = skin?.ctaLabel ?? "ENTER";
+  const minimal = Boolean(skin?.overviewMinimalCopy);
+  const brandedArt = Boolean(skin?.artworkContainsBrandMark);
+  const hasVisual = Boolean(visual);
   const meta = [
     `${count} ${count === 1 ? "RELEASE" : "RELEASES"}`,
     ...genres.slice(0, 2).map((g) => g.toUpperCase()),
   ].join(" · ");
 
+  const classes = [
+    "world-poster",
+    `world-poster-${layout}`,
+    `world-skin-${world.slug}`,
+    hasVisual ? "world-poster-has-visual" : "world-poster-novisual",
+    brandedArt ? "world-poster-branded-art" : "",
+    minimal ? "world-poster-minimal" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <Link
       href={`/worlds/${world.slug}`}
-      className={`world-poster world-poster-${layout} world-skin-${world.slug}`}
+      className={classes}
       style={
         visual
           ? {
@@ -49,14 +63,26 @@ export function WorldOverviewCard({ item }: { item: WorldOverviewItem }) {
     >
       <div className="world-poster-media" aria-hidden="true" />
       <div className="world-poster-scrim" aria-hidden="true" />
-      <BossieMark size="md" className={`world-poster-mark world-mark-${skin?.markTreatment ?? "crown"}`} decorative={false} />
+      {hasVisual && !brandedArt && (
+        <BossieMark size="md" className={`world-poster-mark world-mark-${skin?.markTreatment ?? "crown"}`} />
+      )}
+      {hasVisual && brandedArt && (
+        <BossieMark
+          size="lg"
+          className={`world-poster-mark world-poster-mark-ghost world-mark-${skin?.markTreatment ?? "crown"}`}
+        />
+      )}
+      {!hasVisual && (
+        <BossieMark size="lg" className={`world-poster-mark world-poster-mark-threshold world-mark-${skin?.markTreatment ?? "portal"}`} />
+      )}
 
       <div className="world-poster-copy">
         <p className="world-poster-id">WORLD {skin?.number ?? "—"}</p>
         <WorldTitle label={world.title} layout={layout} />
         {world.subtitle && <p className="world-poster-sub">{world.subtitle}</p>}
-        <p className="world-poster-teaser">{teaser}</p>
-        <p className="world-poster-meta">{meta}</p>
+        {!minimal && <p className="world-poster-teaser">{teaser}</p>}
+        {!minimal && <p className="world-poster-meta">{meta}</p>}
+        {minimal && <p className="world-poster-meta world-poster-meta-alone">{meta}</p>}
         <span className="world-poster-cta">
           {cta} <span aria-hidden="true">↗</span>
         </span>
