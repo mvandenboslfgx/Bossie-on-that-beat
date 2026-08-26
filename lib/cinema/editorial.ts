@@ -97,29 +97,45 @@ export function normalizeCinemaDisplayTitle(providerTitle: string): string {
   working = stripEmojis(working);
   working = working.replace(CATEGORY_STRIP, " ");
   CATEGORY_STRIP.lastIndex = 0;
+
+  const beforeBrand = working;
   working = working.replace(BRAND_STRIP, " ");
   BRAND_STRIP.lastIndex = 0;
+  if (beforeBrand !== working) {
+    baseline = working;
+  }
+
   working = stripHashtags(working);
   working = cleanSeparators(working);
+
+  // Leading brand separators: "BOSSIE … — TITLE"
+  working = working.replace(/^\s*[—–-]+\s*/, "").trim();
 
   // Trailing subtitle after em dash when left side is the title.
   const dashSplit = working.split(/\s+[—–-]\s+/);
   if (dashSplit.length > 1) {
     const head = dashSplit[0]?.trim() ?? "";
     const tail = dashSplit.slice(1).join(" ");
-    if (head.length >= 3 && CATEGORY_STRIP.test(tail)) {
-      working = head;
+    if (head.length >= 3 && (CATEGORY_STRIP.test(tail) || BRAND_STRIP.test(head))) {
+      // Prefer the non-brand side.
+      if (BRAND_STRIP.test(head) && !BRAND_STRIP.test(tail)) {
+        working = tail;
+      } else if (CATEGORY_STRIP.test(tail)) {
+        working = head;
+      }
     }
     CATEGORY_STRIP.lastIndex = 0;
+    BRAND_STRIP.lastIndex = 0;
   }
 
   working = working.replace(/\s{2,}/g, " ").trim();
+  working = working.replace(/^[\s\-—–:|·•]+|[\s\-—–:|·•]+$/g, "").trim();
 
   if (working.length < 3) return original;
 
   const alnumBaseline = stripEmojis(baseline).replace(/[^a-zA-Z0-9]/g, "").length;
   const alnumWorking = working.replace(/[^a-zA-Z0-9]/g, "").length;
-  if (alnumBaseline > 0 && alnumWorking / alnumBaseline < 0.35) {
+  if (alnumBaseline > 0 && alnumWorking / alnumBaseline < 0.2) {
     return original;
   }
 
