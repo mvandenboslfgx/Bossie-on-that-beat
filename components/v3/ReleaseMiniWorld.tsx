@@ -19,7 +19,7 @@ export function ReleaseMiniWorld({
   const typography = skin?.typography ?? "anthem";
   const isLight = skin?.navTone === "light";
   const overlay = isLight
-    ? "linear-gradient(180deg, rgba(232,238,244,.35) 0%, rgba(247,245,240,.92) 78%)"
+    ? "linear-gradient(180deg, rgba(5,5,5,.25) 0%, rgba(5,5,5,.88) 78%)"
     : "linear-gradient(180deg, rgba(5,5,5,.35) 0%, rgba(5,5,5,.92) 78%)";
 
   return (

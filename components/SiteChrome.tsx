@@ -172,16 +172,19 @@ export function SiteFooter() {
 export function PageShell({
   children,
   worldSlug,
+  tone,
 }: {
   children: React.ReactNode;
   worldSlug?: string;
+  /** Light alpine tone — only for World detail, never release pages. */
+  tone?: "light" | "dark";
 }) {
   const skin = worldSlug ? `page-world-skin world-skin-${worldSlug}` : "";
-  const tone = worldSlug === "the-mountain" ? " world-tone-light" : "";
+  const light = tone === "light" ? " world-tone-light" : "";
   return (
     <>
       <SiteNav />
-      <main className={`subpage ${skin}${tone}`} data-world={worldSlug || undefined}>
+      <main className={`subpage ${skin}${light}`} data-world={worldSlug || undefined}>
         {children}
       </main>
       <SiteFooter />

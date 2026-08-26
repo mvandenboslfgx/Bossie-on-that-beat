@@ -98,7 +98,7 @@ export async function getReleasesByGenre(genre: string) {
 }
 
 export async function getReleasesByWorld(worldSlug: string) {
-  const all = await getAll();
+  const all = await getPublicReleases();
   return all.filter((r) => r.worldSlug === worldSlug);
 }
 
@@ -193,18 +193,27 @@ export async function getAllCinema(): Promise<CinemaItem[]> {
               manualOverride: Boolean(row.manual_override),
             };
           })
-          .filter((item) => item.reviewStatus !== "pending_review" && item.reviewStatus !== "hidden");
+          .filter((item) => item.reviewStatus !== "pending_review" && item.reviewStatus !== "hidden")
+          .filter((item) => isWatchableCinema(item));
       }
     } catch {
       /* fall through to seed */
     }
   }
-  return seedCinema;
+  return seedCinema.filter(isWatchableCinema);
+}
+
+function isWatchableCinema(item: Pick<CinemaItem, "youtubeUrl" | "videoUrl">): boolean {
+  if (item.videoUrl?.trim()) return true;
+  return Boolean(item.youtubeUrl && isVerifiedListenUrl(item.youtubeUrl));
 }
 
 export async function getCinemaBySlug(slug: string) {
   const items = await getAllCinema();
-  return items.find((c) => c.slug === slug) ?? getSeedCinema(slug);
+  const fromCatalog = items.find((c) => c.slug === slug);
+  if (fromCatalog) return fromCatalog;
+  const seed = getSeedCinema(slug);
+  return seed && isWatchableCinema(seed) ? seed : undefined;
 }
 
 export function slugifyGenre(genre: string) {

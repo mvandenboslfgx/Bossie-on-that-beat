@@ -37,7 +37,7 @@ export default async function WorldDetailPage({ params }: { params: Promise<{ sl
   const cinema = cinemaAll.filter((c) => c.worldSlug === slug);
 
   return (
-    <PageShell worldSlug={slug}>
+    <PageShell worldSlug={slug} tone={slug === "the-mountain" ? "light" : undefined}>
       <WorldExperience world={world} releases={releases} cinema={cinema} />
     </PageShell>
   );

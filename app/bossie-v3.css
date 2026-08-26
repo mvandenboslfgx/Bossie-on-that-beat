@@ -818,11 +818,18 @@
   opacity: 0.45;
 }
 
-.world-typo-alpine .world-hero-title,
-.world-typo-alpine.release-mini-world h1 {
+.world-typo-alpine .world-hero-title {
   letter-spacing: 0.18em;
   font-weight: 300;
   text-transform: uppercase;
+}
+
+.world-typo-alpine.release-mini-world h1 {
+  letter-spacing: 0.12em;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #f7f5f0;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.55);
 }
 
 .world-typo-alpine .world-lore-quote {
@@ -836,17 +843,35 @@
 }
 
 .world-skin-the-mountain.release-mini-world {
-  background-color: #d5e0ea !important;
+  background-color: #050505 !important;
 }
 
 .world-skin-the-mountain.release-mini-world .release-signal-block {
-  color: #121416;
+  color: #f2eee6;
 }
 
 .world-skin-the-mountain.release-mini-world .eyebrow,
 .world-skin-the-mountain.release-mini-world .current-world-meta,
 .world-skin-the-mountain.release-mini-world .release-artist {
-  color: #4a5560;
+  color: #b5afa4;
+}
+
+/* Release pages stay dark even when Mountain world accent is active */
+.page-world-skin.world-skin-the-mountain:not(.world-tone-light) {
+  --ink: #f2eee6;
+  background: #050505;
+  color: #f2eee6;
+}
+
+.page-world-skin.world-skin-the-mountain:not(.world-tone-light) .text-link,
+.page-world-skin.world-skin-the-mountain:not(.world-tone-light) .back-link,
+.page-world-skin.world-skin-the-mountain:not(.world-tone-light) .eyebrow {
+  color: #b5afa4;
+}
+
+.page-world-skin.world-skin-the-mountain:not(.world-tone-light) .button-ghost {
+  color: #f2eee6;
+  border-color: rgba(217, 179, 95, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

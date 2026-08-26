@@ -46,7 +46,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
     getCatalog(),
     r.worldSlug ? getReleasesByWorld(r.worldSlug) : Promise.resolve([]),
   ]);
-  const related = relatedWorld;
+  const related = relatedWorld.filter((item) => item.slug !== r.slug && item.status === "live");
   const watch = getWatchLink(r);
 
   const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));
@@ -134,17 +134,15 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      {related.filter((item) => item.slug !== r.slug).length > 0 && (
+      {related.length > 0 && (
         <section className="section-pad">
           <p className="eyebrow">RELATED TRANSMISSIONS</p>
           <div className="related-list">
-            {related
-              .filter((item) => item.slug !== r.slug)
-              .map((item) => (
-                <Link key={item.id} href={`/music/${item.slug}`}>
-                  {item.title} ↗
-                </Link>
-              ))}
+            {related.map((item) => (
+              <Link key={item.id} href={`/music/${item.slug}`}>
+                {item.title} ↗
+              </Link>
+            ))}
           </div>
         </section>
       )}
