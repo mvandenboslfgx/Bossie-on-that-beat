@@ -35,11 +35,14 @@ const MOOD_KEYWORDS: Record<string, string[]> = {
 };
 
 const WORLD_KEYWORDS: Record<string, string[]> = {
-  "the-abyss": ["abyss", "crown", "gothic", "cathedral", "metal", "vessel", "storm", "seals", "commandments", "ash"],
-  "the-club": ["gasolina", "club", "cuba", "party", "reggaeton", "nachtgeld", "stress"],
-  "the-mountain": ["mountain", "nims", "nepal", "albania", "altitude", "rise albania", "shqiper"],
+  "the-night": ["nachtgeld", "the night", "noir", "accelerates", "no sleep", "nacht"],
+  "the-abyss": ["abyss", "crown", "gothic", "cathedral", "metal", "vessel", "seals", "commandments", "ash"],
+  "the-club": ["gasolina", "club", "cuba", "party", "reggaeton", "stress"],
+  "the-mountain": ["mountain", "nims", "nepal", "remembers", "altitude"],
   "the-door": ["door", "psychological", "memory", "war", "gedachtens"],
-  "the-storm": ["storm", "symphony", "orchestral", "vessel"],
+  "the-storm": ["storm", "symphony", "orchestral", "earthshaker", "obliteration"],
+  "the-streets": ["klaaswaal", "nederland", "nul een", "acht zes", "uitgespeeld", "nooit rust"],
+  global: ["world cup", "one world", "one dream", "rise albania", "shqiper", "albania"],
 };
 
 const LANGUAGE_HINTS: Record<string, string[]> = {
