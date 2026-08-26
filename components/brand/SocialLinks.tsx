@@ -63,19 +63,19 @@ export function FooterSocialGrid() {
   return (
     <div className="footer-social-grid">
       {listen.length > 0 && (
-        <div>
-          <p className="footer-social-heading">Listen</p>
+        <details className="footer-acc" open>
+          <summary className="footer-social-heading">Listen</summary>
           <SocialList items={listen} />
-        </div>
+        </details>
       )}
       {follow.length > 0 && (
-        <div>
-          <p className="footer-social-heading">Follow</p>
+        <details className="footer-acc footer-acc-collapsible">
+          <summary className="footer-social-heading">Follow</summary>
           <SocialList items={follow} />
-        </div>
+        </details>
       )}
-      <div>
-        <p className="footer-social-heading">Explore</p>
+      <details className="footer-acc footer-acc-collapsible">
+        <summary className="footer-social-heading">Explore</summary>
         <ul className="social-links">
           {explore.map(({ href, label }) => (
             <li key={href}>
@@ -83,7 +83,7 @@ export function FooterSocialGrid() {
             </li>
           ))}
         </ul>
-      </div>
+      </details>
     </div>
   );
 }

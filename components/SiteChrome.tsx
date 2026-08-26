@@ -97,9 +97,13 @@ export function SiteNav() {
           className="nav-menu-toggle"
           aria-expanded={open}
           aria-controls={panelId}
+          aria-label={open ? "Close menu" : "Open menu"}
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Close" : "Menu"}
+          <span className="nav-menu-toggle-label" aria-hidden="true">
+            {open ? "✕" : "☰"}
+          </span>
+          <span className="nav-menu-toggle-text">{open ? "Close" : "Menu"}</span>
         </button>
       </div>
 

@@ -3,6 +3,8 @@
 export type WorldMarkTreatment = "seal" | "streetlight" | "stamp" | "crown" | "pulse" | "portal" | "grid" | "globe";
 export type WorldTypography = "gothic" | "noir" | "alpine" | "neon" | "storm" | "ritual" | "street" | "anthem";
 export type WorldNavTone = "dark" | "light";
+/** Overview card composition — different mobile posters per world. */
+export type WorldOverviewLayout = "noir" | "seal" | "alpine" | "neon" | "storm" | "street" | "ritual" | "anthem";
 
 export interface WorldSkin {
   slug: string;
@@ -14,8 +16,12 @@ export interface WorldSkin {
   navTone: WorldNavTone;
   markTreatment: WorldMarkTreatment;
   typography: WorldTypography;
+  overviewLayout: WorldOverviewLayout;
   /** Short manifesto / lore shown on world detail. */
   lore: string;
+  /** Max ~2 lines for Worlds overview cards. */
+  teaser: string;
+  ctaLabel: string;
   listenLabel: string;
   watchLabel: string;
 }
@@ -31,7 +37,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "portal",
     typography: "ritual",
+    overviewLayout: "ritual",
     lore: "A threshold that was never meant to keep anything out. Memory, war, ritual and loss — gothic psychological cinema.",
+    teaser: "A threshold that never keeps anything out.",
+    ctaLabel: "ENTER THE DOOR",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -45,7 +54,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "seal",
     typography: "gothic",
+    overviewLayout: "seal",
     lore: "Descend. Angelic voices collide with subterranean choirs. Burned gold over black stone. Every note is a cathedral collapsing in slow motion.",
+    teaser: "Burned gold. Subterranean choirs. Descend.",
+    ctaLabel: "DESCEND",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -59,7 +71,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "light",
     markTreatment: "stamp",
     typography: "alpine",
+    overviewLayout: "alpine",
     lore: "Altitude. Snow. Remembrance. Human scale against infinite white. The mountain does not speak — it remembers.",
+    teaser: "The mountain does not speak — it remembers.",
+    ctaLabel: "EXPLORE",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -73,7 +88,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "pulse",
     typography: "neon",
+    overviewLayout: "neon",
     lore: "Heat, velocity, neon and replay energy. Built for midnight rooms and bodies that refuse to stop.",
+    teaser: "Heat, velocity, neon — built for midnight rooms.",
+    ctaLabel: "ENTER THE CLUB",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -87,7 +105,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "crown",
     typography: "storm",
+    overviewLayout: "storm",
     lore: "Storm-scale dynamics. Cinematic force. Orchestral power that arrives like weather — sudden, total, unforgettable.",
+    teaser: "Orchestral power that arrives like weather.",
+    ctaLabel: "ENTER THE STORM",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -101,7 +122,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "grid",
     typography: "street",
+    overviewLayout: "street",
     lore: "City velocity. Dutch energy. Street-level impact — concrete, gold and motion that never asks permission.",
+    teaser: "Concrete, gold and motion that never asks.",
+    ctaLabel: "ENTER THE STREETS",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -115,7 +139,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "streetlight",
     typography: "noir",
+    overviewLayout: "noir",
     lore: "After hours. Black glass and blue neon. European noir where every transmission arrives after midnight — and never leaves the street.",
+    teaser: "After midnight, every signal changes.",
+    ctaLabel: "ENTER THE NIGHT",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -129,7 +156,10 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     navTone: "dark",
     markTreatment: "globe",
     typography: "anthem",
+    overviewLayout: "anthem",
     lore: "Stadium-scale songwriting. International unity. One signal, many flags — Bossie for the world stage.",
+    teaser: "One signal, many flags — world stage.",
+    ctaLabel: "ENTER GLOBAL",
     listenLabel: "LISTEN TO THIS WORLD",
     watchLabel: "WATCH THIS WORLD",
   },
@@ -154,4 +184,10 @@ export function getAdjacentWorlds(slug: string): { prev?: WorldSkin; next?: Worl
     prev: prevSlug && prevSlug !== slug ? worldSkinTokens[prevSlug] : undefined,
     next: nextSlug && nextSlug !== slug ? worldSkinTokens[nextSlug] : undefined,
   };
+}
+
+export function splitWorldTitle(label: string): [string, string] | [string] {
+  const parts = label.trim().split(/\s+/);
+  if (parts.length >= 2) return [parts[0]!, parts.slice(1).join(" ")];
+  return [label];
 }

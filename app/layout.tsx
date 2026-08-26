@@ -5,6 +5,7 @@ import "./multipage.css";
 import "./request.css";
 import "./v2.css";
 import "./bossie-v3.css";
+import "./bossie-mobile.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
