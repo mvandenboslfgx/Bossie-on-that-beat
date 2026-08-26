@@ -176,7 +176,9 @@ export function PageShell({
   return (
     <>
       <SiteNav />
-      <main className={`subpage ${skin}${tone}`}>{children}</main>
+      <main className={`subpage ${skin}${tone}`} data-world={worldSlug || undefined}>
+        {children}
+      </main>
       <SiteFooter />
     </>
   );

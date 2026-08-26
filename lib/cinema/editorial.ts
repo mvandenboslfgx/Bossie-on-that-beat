@@ -1,5 +1,14 @@
 import type { CinemaCategory, CinemaItem } from "@/lib/types/cinema";
 
+const CATEGORY_STRIP =
+  /\b(official\s+audio|official\s+lyrics?\s*video|official\s+music\s*video|official\s+video|lyrics?\s*video|lyric\s*film|music\s*video|visualizer|behind\s+the\s+scenes|#?\s*shorts)\b/gi;
+
+const BRAND_STRIP =
+  /\b(bossie\s+on\s+th(?:e|at)\s+beat|bossie\s+on\s+that\s+beat|bossie)\b/gi;
+
+const EMOJI_STRIP =
+  /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}\u{1F1E0}-\u{1F1FF}]/gu;
+
 const CATEGORY_LABELS: Record<CinemaCategory | "official-audio", string> = {
   film: "Feature Film",
   "short-film": "Feature Film",
@@ -36,6 +45,94 @@ function stripHashtags(text: string): string {
     .replace(/#[\w\u0080-\uFFFF]+/g, "")
     .replace(/\s{2,}/g, " ")
     .trim();
+}
+
+function stripEmojis(text: string): string {
+  return text.replace(EMOJI_STRIP, "").replace(/\s{2,}/g, " ").trim();
+}
+
+function cleanSeparators(text: string): string {
+  return text
+    .replace(/\([^)]*\)/g, " ")
+    .replace(/\[[^\]]*]/g, " ")
+    .replace(/\s*[|·•/]+\s*/g, " ")
+    .replace(/\s*[—–-]+\s*$/g, "")
+    .replace(/^\s*[—–-]+\s*/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+/**
+ * Derive a public cinema title from a raw provider title.
+ * Never mutates the provider string — returns a new value.
+ * Doubtful cases (nothing meaningful stripped) stay effectively unchanged.
+ */
+export function normalizeCinemaDisplayTitle(providerTitle: string): string {
+  const original = providerTitle.trim();
+  if (!original) return original;
+
+  const hasCategoryCue = CATEGORY_STRIP.test(original);
+  CATEGORY_STRIP.lastIndex = 0;
+  const hasEmoji = EMOJI_STRIP.test(original);
+  EMOJI_STRIP.lastIndex = 0;
+  const hasPipeBrand = /\|/.test(original) && BRAND_STRIP.test(original);
+  BRAND_STRIP.lastIndex = 0;
+
+  if (!hasCategoryCue && !hasEmoji && !hasPipeBrand) {
+    return original;
+  }
+
+  let working = original;
+  let baseline = original;
+
+  // Prefer the lead segment before branding pipes.
+  if (working.includes("|")) {
+    const lead = working.split("|")[0]?.trim() ?? working;
+    if (lead.length >= 3) {
+      working = lead;
+      baseline = lead;
+    }
+  }
+
+  working = stripEmojis(working);
+  working = working.replace(CATEGORY_STRIP, " ");
+  CATEGORY_STRIP.lastIndex = 0;
+  working = working.replace(BRAND_STRIP, " ");
+  BRAND_STRIP.lastIndex = 0;
+  working = stripHashtags(working);
+  working = cleanSeparators(working);
+
+  // Trailing subtitle after em dash when left side is the title.
+  const dashSplit = working.split(/\s+[—–-]\s+/);
+  if (dashSplit.length > 1) {
+    const head = dashSplit[0]?.trim() ?? "";
+    const tail = dashSplit.slice(1).join(" ");
+    if (head.length >= 3 && CATEGORY_STRIP.test(tail)) {
+      working = head;
+    }
+    CATEGORY_STRIP.lastIndex = 0;
+  }
+
+  working = working.replace(/\s{2,}/g, " ").trim();
+
+  if (working.length < 3) return original;
+
+  const alnumBaseline = stripEmojis(baseline).replace(/[^a-zA-Z0-9]/g, "").length;
+  const alnumWorking = working.replace(/[^a-zA-Z0-9]/g, "").length;
+  if (alnumBaseline > 0 && alnumWorking / alnumBaseline < 0.35) {
+    return original;
+  }
+
+  return working.toUpperCase();
+}
+
+/** Public cinema title — manual displayTitle always wins; never exposes raw provider junk when normalizable. */
+export function getPublicCinemaTitle(
+  item: Pick<CinemaItem, "title" | "providerTitle" | "displayTitle" | "manualOverride">,
+): string {
+  if (item.displayTitle?.trim()) return item.displayTitle.trim();
+  const provider = item.providerTitle?.trim() || item.title;
+  return normalizeCinemaDisplayTitle(provider);
 }
 
 function firstSentence(text: string, max = 140): string {

@@ -1,7 +1,7 @@
 import type { D1Database } from "@cloudflare/workers-types";
 import type { CinemaCategory } from "@/lib/types/cinema";
 import { normalizeTitle } from "@/lib/release-sync/match";
-import { generateCinemaEditorialSummary } from "@/lib/cinema/editorial";
+import { generateCinemaEditorialSummary, normalizeCinemaDisplayTitle } from "@/lib/cinema/editorial";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
@@ -195,12 +195,15 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
 
       const rawDescription = video.snippet?.description ?? null;
       const editorialSummary = generateCinemaEditorialSummary(title, type);
+      const displayTitle = normalizeCinemaDisplayTitle(title);
 
       if (existing) {
         await env.DB
           .prepare(
             `UPDATE cinema_items SET
               title = ?,
+              provider_title = ?,
+              display_title = CASE WHEN manual_override = 1 THEN display_title ELSE ? END,
               type = ?,
               youtube_url = CASE WHEN manual_override = 1 THEN youtube_url ELSE ? END,
               thumbnail_url = COALESCE(NULLIF(thumbnail_url, ''), ?),
@@ -216,6 +219,8 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
           )
           .bind(
             title,
+            title,
+            displayTitle,
             type,
             youtubeUrl,
             thumbnail,
@@ -237,15 +242,17 @@ export async function runCinemaSync(env: CinemaSyncEnv): Promise<CinemaSyncResul
         await env.DB
           .prepare(
             `INSERT INTO cinema_items (
-              id, slug, title, type, release_slug, world_slug, youtube_url, youtube_video_id,
+              id, slug, title, provider_title, display_title, type, release_slug, world_slug, youtube_url, youtube_video_id,
               thumbnail_url, description, provider_description_raw, editorial_summary,
               duration_seconds, published_at, featured, review_status, manual_override
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, 0)`,
           )
           .bind(
             id,
             slug,
             title,
+            title,
+            displayTitle,
             type,
             releaseSlug ?? null,
             worldSlug ?? null,

@@ -66,9 +66,10 @@ export const seedWorlds: World[] = [
     slug: "the-night",
     title: "THE NIGHT",
     subtitle: "Dark European Noir",
-    description: "Noir tension, European darkness and cinematic mystery.",
-    themes: ["noir", "mystery"],
-    aesthetic: ["dark", "european"],
+    description:
+      "After hours. Black glass and blue neon. European noir where every transmission arrives after midnight.",
+    themes: ["noir", "mystery", "streetlight"],
+    aesthetic: ["dark", "european", "cinematic"],
   },
   {
     slug: "global",

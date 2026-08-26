@@ -167,6 +167,10 @@ export async function getAllCinema(): Promise<CinemaItem[]> {
               id: String(row.id),
               slug,
               title: String(row.title),
+              providerTitle: row.provider_title
+                ? String(row.provider_title)
+                : String(row.title),
+              displayTitle: row.display_title ? String(row.display_title) : undefined,
               type: row.type as CinemaItem["type"],
               releaseSlug: row.release_slug ? String(row.release_slug) : undefined,
               worldSlug: row.world_slug ? String(row.world_slug) : undefined,

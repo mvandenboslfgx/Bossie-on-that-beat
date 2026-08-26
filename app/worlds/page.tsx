@@ -3,10 +3,14 @@ import Link from "next/link";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { getAllWorlds, getReleasesByWorld } from "@/lib/repository/release-repository";
 import { PageShell } from "@/components/SiteChrome";
+import { getWorldSkin } from "@/lib/worlds/tokens";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Worlds",
-  description: "Explore the creative universes of Bossie on the beat — each release world with its own sound and visual identity.",
+  description:
+    "Explore the creative universes of Bossie on the beat — each release world with its own sound and visual identity.",
   alternates: { canonical: "/worlds" },
 };
 
@@ -16,8 +20,10 @@ export default async function WorldsPage() {
   const withMeta = await Promise.all(
     worlds.map(async (world) => {
       const releases = await getReleasesByWorld(world.slug);
+      const skin = getWorldSkin(world.slug);
       return {
         world,
+        skin,
         count: releases.length,
         genres: [...new Set(releases.flatMap((r) => r.genres))].slice(0, 3),
         visual: world.heroImage ?? releases.find((r) => r.artworkUrl)?.artworkUrl,
@@ -31,23 +37,34 @@ export default async function WorldsPage() {
         <BossieMark size="lg" className="section-mark" />
         <p className="eyebrow">CREATIVE UNIVERSES</p>
         <h1>WORLDS</h1>
-        <p>Bossie is organized by worlds, not genre boxes. Each world carries its own sound, art direction and visual language.</p>
+        <p>
+          Bossie is organized by worlds, not genre boxes. Each world carries its own sound, art direction and visual
+          language.
+        </p>
       </section>
       <section className="worlds-page-grid section-pad">
-        {withMeta.map(({ world, count, genres, visual }, index) => (
+        {withMeta.map(({ world, skin, count, genres, visual }) => (
           <Link
             key={world.slug}
             href={`/worlds/${world.slug}`}
-            className={`world-page-card world-card-v2 world-theme-${world.slug}`}
-            style={visual ? { backgroundImage: `linear-gradient(180deg, rgba(5,5,5,.35), rgba(5,5,5,.92)), url(${visual})` } : undefined}
+            className={`world-page-card world-card-v2 world-theme-${world.slug} world-skin-${world.slug}`}
+            style={
+              visual
+                ? {
+                    backgroundImage: `linear-gradient(180deg, rgba(5,5,5,.35), rgba(5,5,5,.92)), url(${visual})`,
+                  }
+                : undefined
+            }
           >
             <BossieMark size="sm" className="world-card-mark" />
-            <span>WORLD {String(index + 1).padStart(3, "0")}</span>
+            <span>WORLD {skin?.number ?? "—"}</span>
             <h2>{world.title}</h2>
             <strong>{world.subtitle}</strong>
-            <p>{world.description}</p>
+            <p>{skin?.lore ?? world.description}</p>
             <div className="world-card-meta">
-              <span>{count} release{count === 1 ? "" : "s"}</span>
+              <span>
+                {count} release{count === 1 ? "" : "s"}
+              </span>
               {genres.length > 0 && <span>{genres.join(" · ")}</span>}
             </div>
             <span className="text-link">Enter world ↗</span>

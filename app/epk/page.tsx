@@ -9,7 +9,9 @@ import { getAllCinema } from "@/lib/repository/release-repository";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { platformDisplayNames, siteSettings } from "@/lib/site-settings";
+import { getPublicCinemaTitle } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -119,7 +121,7 @@ export default async function EpkPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.thumbnailUrl} alt="" className="epk-cinema-thumb" />
               ) : null}
-              <h3>{item.title}</h3>
+              <h3>{getPublicCinemaTitle(item)}</h3>
               <Link className="text-link" href={`/cinema/${item.slug}`}>
                 View ↗
               </Link>

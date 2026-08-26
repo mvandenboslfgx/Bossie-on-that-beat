@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getCinemaBySlug } from "@/lib/repository/release-repository";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
-import { getCinemaCategoryLabel, getPublicCinemaSummary } from "@/lib/cinema/editorial";
+import { getCinemaCategoryLabel, getPublicCinemaSummary, getPublicCinemaTitle } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export const dynamic = "force-dynamic";
@@ -14,12 +14,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const item = await getCinemaBySlug(slug);
   if (!item) return {};
   const summary = getPublicCinemaSummary(item);
+  const title = getPublicCinemaTitle(item);
   return {
-    title: `${item.title} — Cinema`,
+    title: `${title} — Cinema`,
     description: summary,
     alternates: { canonical: `/cinema/${item.slug}` },
     openGraph: {
-      title: item.title,
+      title,
       description: summary,
       images: item.thumbnailUrl ? [{ url: item.thumbnailUrl }] : undefined,
     },
@@ -38,6 +39,7 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
 
   const canWatch = Boolean(item.youtubeUrl && isVerifiedListenUrl(item.youtubeUrl));
   const summary = getPublicCinemaSummary(item);
+  const title = getPublicCinemaTitle(item);
   const categoryLabel = getCinemaCategoryLabel(item.type);
 
   const videoSchema =
@@ -45,7 +47,7 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
       ? {
           "@context": "https://schema.org",
           "@type": "VideoObject",
-          name: item.title,
+          name: title,
           description: summary,
           thumbnailUrl: item.thumbnailUrl,
           uploadDate: item.publishedAt,
@@ -55,7 +57,7 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
       : null;
 
   return (
-    <PageShell>
+    <PageShell worldSlug={item.worldSlug}>
       {videoSchema && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
       )}
@@ -66,11 +68,11 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
             className="cinema-featured-visual cinema-detail-visual"
             style={{ backgroundImage: `url(${item.thumbnailUrl})` }}
             role="img"
-            aria-label={`${item.title} still`}
+            aria-label={`${title} still`}
           />
         )}
         <p className="eyebrow">{categoryLabel.toUpperCase()}{duration ? ` · ${duration}` : ""}</p>
-        <h1>{item.title}</h1>
+        <h1>{title}</h1>
         {summary && <blockquote className="cinema-editorial-quote">{summary}</blockquote>}
         <div className="cinema-actions">
           {canWatch && (

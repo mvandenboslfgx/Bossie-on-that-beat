@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { CinemaItem } from "@/lib/types/cinema";
 import { BossieMark } from "@/components/brand/BossieMark";
-import { formatCinemaMeta, getPublicCinemaSummary } from "@/lib/cinema/editorial";
+import { formatCinemaMeta, getPublicCinemaSummary, getPublicCinemaTitle } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; featured?: boolean }) {
   const summary = getPublicCinemaSummary(item);
+  const title = getPublicCinemaTitle(item);
   const meta = formatCinemaMeta(item.type, item.durationSeconds);
   const canWatch = Boolean(item.youtubeUrl && isVerifiedListenUrl(item.youtubeUrl));
 
@@ -25,7 +26,7 @@ export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; feat
       </Link>
       <div className="cinema-editorial-body">
         <p className="cinema-editorial-meta">{meta}</p>
-        <h3>{item.title}</h3>
+        <h3>{title}</h3>
         <blockquote className="cinema-editorial-quote">{summary}</blockquote>
         <div className="cinema-editorial-actions">
           {canWatch && (
