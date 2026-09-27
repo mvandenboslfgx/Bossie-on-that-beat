@@ -152,7 +152,7 @@ export const worldSkinTokens: Record<string, WorldSkin> = {
     markTreatment: "streetlight",
     typography: "noir",
     overviewLayout: "noir",
-    lore: "After hours. Black glass and blue neon. European noir where every transmission arrives after midnight — and never leaves the street.",
+    lore: "After hours. Black glass and blue neon. European noir where every release arrives after midnight — and never leaves the street.",
     teaser: "After midnight, every signal changes.",
     ctaLabel: "ENTER THE NIGHT",
     listenLabel: "LISTEN TO THIS WORLD",

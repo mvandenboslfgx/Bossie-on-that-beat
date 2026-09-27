@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAllGenres, getReleasesByGenre, slugifyGenre } from "@/lib/repository/release-repository";
 import { ReleaseCard } from "@/components/release/ReleaseUI";
@@ -5,6 +6,18 @@ import { PageShell } from "@/components/SiteChrome";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const genres = await getAllGenres();
+  const genre = genres.find((item) => slugifyGenre(item) === slug);
+  if (!genre) return {};
+  return {
+    title: `${genre} music`,
+    description: `Explore official ${genre} tracks and releases by Bossie on that beat.`,
+    alternates: { canonical: `/music/genre/${slug}` },
+  };
+}
 
 export default async function GenrePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

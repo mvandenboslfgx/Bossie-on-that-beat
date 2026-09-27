@@ -10,6 +10,7 @@ import { PlatformLinks } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -50,28 +51,45 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
   const watch = getWatchLink(r);
 
   const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));
+  const canonicalArtist = r.artist.toLowerCase() === siteSettings.artistName.toLowerCase();
   const recordingSchema = {
     "@context": "https://schema.org",
-    "@type": "MusicRecording",
-    "@id": `${base}/music/${r.slug}#recording`,
-    name: r.title,
-    url: `${base}/music/${r.slug}`,
-    datePublished: r.releaseDate,
-    genre: r.genres,
-    description: r.description,
-    byArtist: {
-      "@type": "MusicGroup",
-      "@id": `${base}/#artist`,
-      name: siteSettings.artistName,
-      url: base,
-    },
-    image: r.artworkUrl || undefined,
-    ...(sameAs.length ? { sameAs } : {}),
+    "@graph": [
+      {
+        "@type": "MusicRecording",
+        "@id": `${base}/music/${r.slug}#recording`,
+        name: r.title,
+        url: `${base}/music/${r.slug}`,
+        datePublished: r.releaseDate,
+        genre: r.genres,
+        description: r.description ?? r.tagline,
+        byArtist: canonicalArtist
+          ? { "@id": `${base}/#artist` }
+          : { "@type": "MusicGroup", name: r.artist },
+        contributor: canonicalArtist ? undefined : { "@id": `${base}/#artist` },
+        image: r.artworkUrl || undefined,
+        ...(r.collectionTitle
+          ? { inAlbum: { "@type": "MusicAlbum", name: r.collectionTitle } }
+          : {}),
+        ...(sameAs.length ? { sameAs } : {}),
+        potentialAction: sameAs.length
+          ? { "@type": "ListenAction", target: sameAs }
+          : undefined,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: base },
+          { "@type": "ListItem", position: 2, name: "Music", item: `${base}/music` },
+          { "@type": "ListItem", position: 3, name: r.title, item: `${base}/music/${r.slug}` },
+        ],
+      },
+    ],
   };
 
   return (
     <PageShell worldSlug={r.worldSlug}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(recordingSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(recordingSchema) }} />
       <ReleaseMiniWorld release={r} live={catalog.live} />
       <ReleaseSignalBlock release={r} />
 
@@ -90,7 +108,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
       )}
 
       <section className="section-pad release-social-section">
-        <FollowSocialBlock title="Follow Bossie" />
+        <FollowSocialBlock title="Follow Bossie on that beat" />
         <ShareRelease title={r.title} slug={r.slug} />
       </section>
 
@@ -136,7 +154,7 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
 
       {related.length > 0 && (
         <section className="section-pad">
-          <p className="eyebrow">RELATED TRANSMISSIONS</p>
+          <p className="eyebrow">RELATED RELEASES</p>
           <div className="related-list">
             {related.map((item) => (
               <Link key={item.id} href={`/music/${item.slug}`}>

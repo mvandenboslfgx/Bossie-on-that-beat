@@ -1,16 +1,15 @@
 import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export const siteSettings = {
-  artistName: "Bossie on the beat",
-  artistAltName: "Bossie on that beat",
-  producerTag: "Bossie on the beat",
+  artistName: "Bossie on that beat",
+  producerTag: "Bossie on that beat",
   slogan: "EVERY TRACK IS A NEW WORLD",
   domain: "bossieonthatbeat.com",
   siteUrl: "https://bossieonthatbeat.com",
   defaultSeo: {
-    title: "Bossie on the beat | Producer, Composer & Artist",
+    title: "Bossie on that beat | Producer, Composer & Artist",
     description:
-      "Official website of Bossie on the beat — cinematic, orchestral, metal, electronic, rap and global music. Every track is a new world.",
+      "Official website of Bossie on that beat — cinematic, orchestral, metal, electronic, rap and global music. Every track is a new world.",
   },
   /**
    * Canonical provider identities. Env secrets may override at runtime for sync,
@@ -54,6 +53,7 @@ export const siteSettings = {
   },
   sync: {
     intervalHours: 6,
+    // The second value is a provider-only legacy alias and is never rendered publicly.
     artistNames: ["bossie on that beat", "bossie on the beat"],
     confidenceHigh: 0.85,
     confidenceMedium: 0.6,

@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { getCatalog } from "@/lib/repository/catalog";
 import { ReleaseCard } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Upcoming music",
+  description: "Official announced and upcoming music from Bossie on that beat.",
+  alternates: { canonical: "/music/upcoming" },
+};
 
 export default async function MusicUpcomingPage() {
   const { upcoming } = await getCatalog();

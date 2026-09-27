@@ -18,12 +18,9 @@ export function isReleaseDateFuture(releaseDate?: string): boolean {
   return normalized > today;
 }
 
-function hasVerifiedSpotify(item: ProviderRelease): boolean {
-  return Boolean(item.spotifyId) && item.links.some((l) => l.platform === "spotify" && l.verified);
-}
-
 /**
- * Official Spotify ingest from canonical artist → auto public when release date reached.
+ * Official provider ingest from the canonical artist ID → auto public when the
+ * release date is reached. Uncertain text-search matches stay in review.
  * Uncertain matches stay pending_review for the admin queue.
  */
 export function resolveIngestStatus(input: {
@@ -33,8 +30,8 @@ export function resolveIngestStatus(input: {
   ambiguousMatch?: boolean;
 }): ReleaseStatus {
   const { item, classification, matchScore, ambiguousMatch } = input;
-  const spotifyOfficial = hasVerifiedSpotify(item);
   const verifiedLink = item.links.some((l) => l.verified);
+  const canonicalOfficial = item.officialArtist === true && verifiedLink;
   const dateReached = isReleaseDateReached(item.releaseDate);
   const dateFuture = isReleaseDateFuture(item.releaseDate);
 
@@ -43,7 +40,7 @@ export function resolveIngestStatus(input: {
     return "pending_review";
   }
 
-  if (spotifyOfficial) {
+  if (canonicalOfficial) {
     if (dateFuture) return "upcoming";
     if (dateReached) return "live";
   }
@@ -64,18 +61,22 @@ export function resolveIngestStatus(input: {
   return "pending_review";
 }
 
-export function buildReleaseSeo(title: string, classification: ClassificationResult): ReleaseSeo {
+export function buildReleaseSeo(
+  title: string,
+  classification: ClassificationResult,
+  artist: string = siteSettings.artistName,
+): ReleaseSeo {
   const genreLine = classification.genres.length ? classification.genres.join(", ") : "official music";
   const moodLine = classification.moods.length ? ` ${classification.moods.join(", ")} energy.` : "";
   return {
-    title: `${title} | ${siteSettings.artistName}`,
-    description: `Listen to ${title} by ${siteSettings.artistName} — ${genreLine}.${moodLine} Stream on Spotify, Apple Music and more.`,
-    keywords: [...classification.genres, ...classification.subgenres, siteSettings.artistName],
+    title: `${title} | ${artist}`,
+    description: `Listen to ${title} by ${artist} — ${genreLine}.${moodLine} Stream on Spotify, Apple Music and more.`,
+    keywords: [...classification.genres, ...classification.subgenres, artist, siteSettings.artistName],
   };
 }
 
 export function buildTagline(title: string, classification: ClassificationResult): string {
-  if (classification.moods.includes("Epic")) return "Monumental cinematic energy from Bossie on the beat.";
+  if (classification.moods.includes("Epic")) return "Monumental cinematic energy from Bossie on that beat.";
   if (classification.moods.includes("Party")) return "High-velocity club energy built for replay.";
   if (classification.moods.includes("Dark")) return "Dark orchestral power from the Bossie universe.";
   if (classification.worldSlug === "the-mountain") return "A cinematic tribute world of altitude and remembrance.";

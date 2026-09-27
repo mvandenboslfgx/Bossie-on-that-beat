@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Worlds",
   description:
-    "Explore the creative universes of Bossie on the beat — each release world with its own sound and visual identity.",
+    "Explore the creative universes of Bossie on that beat — each release world with its own sound and visual identity.",
   alternates: { canonical: "/worlds" },
 };
 

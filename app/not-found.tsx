@@ -9,7 +9,7 @@ export default function NotFound() {
       <section className="page-hero error-hero">
         <BossieMark size="xl" className="error-mark" decorative={false} />
         <div className="page-shell">
-          <p className="eyebrow">404 / Lost transmission</p>
+          <p className="eyebrow">404 / Lost in the archive</p>
           <h1>
             THIS WORLD
             <br />

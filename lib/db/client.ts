@@ -3,6 +3,7 @@ import type { Release, ReleaseLink, ReleaseWithLinks } from "@/lib/types/release
 import type { CloudflareEnv } from "@/lib/cloudflare-env";
 import { getSeedRelease } from "@/data/seed/releases";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { siteSettings } from "@/lib/site-settings";
 
 export type { CloudflareEnv as CloudflareBindings };
 
@@ -22,8 +23,9 @@ export function rowToRelease(row: DbRow): Release {
     id: String(row.id),
     slug: String(row.slug),
     title: String(row.title),
-    artist: String(row.artist),
+    artist: String(row.artist).replace(/bossie on (?:that|the) beat/gi, siteSettings.artistName),
     type: row.type as Release["type"],
+    collectionTitle: row.collection_title ? String(row.collection_title) : undefined,
     status: row.status as Release["status"],
     releaseDate: row.release_date ? String(row.release_date) : undefined,
     announcementDate: row.announcement_date ? String(row.announcement_date) : undefined,

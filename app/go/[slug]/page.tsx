@@ -12,6 +12,7 @@ import { ReleaseArtwork, PlatformLinks } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -19,14 +20,15 @@ export const dynamicParams = true;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   if (slug === "latest") {
-    return { title: "Latest Release", alternates: { canonical: "/go/latest" } };
+    return { title: "Latest Release", robots: { index: false, follow: true }, alternates: { canonical: "/music/latest" } };
   }
   const release = await getReleaseBySlug(slug);
   if (!release) return {};
   return {
     title: `Listen — ${release.title}`,
     description: `Listen to ${release.title} by ${siteSettings.artistName} on your preferred platform.`,
-    alternates: { canonical: `/go/${release.slug}` },
+    robots: { index: false, follow: true },
+    alternates: { canonical: `/music/${release.slug}` },
     openGraph: {
       title: release.title,
       description: `Listen now — ${siteSettings.artistName}`,
@@ -71,18 +73,18 @@ export default async function GoPage({
           <h1>{release.title}</h1>
           <p>{siteSettings.artistName}</p>
           {primary && (
-            <a className="button button-gold" href={primary.url} target="_blank" rel="noreferrer">
+            <TrackedLink className="button button-gold" href={primary.url} target="_blank" rel="noreferrer" releaseId={release.id} platform={primary.platform}>
               LISTEN NOW ↗
-            </a>
+            </TrackedLink>
           )}
           <PlatformLinks release={release} />
-          <FollowSocialBlock title="Follow Bossie" />
+          <FollowSocialBlock title="Follow Bossie on that beat" />
           <div className="smartlink-secondary">
             <Link className="text-link" href={`/music/${release.slug}`}>
               Explore release ↗
             </Link>
             <Link className="text-link" href="/links">
-              Follow Bossie ↗
+              Official links ↗
             </Link>
           </div>
         </div>

@@ -83,13 +83,16 @@ export async function POST(request: Request){
     });
 
     if(!response.ok){
-      console.error("Bossie request email failed", response.status, await response.text());
+      console.error(JSON.stringify({message:"request email failed",status:response.status}));
       return NextResponse.json({error:"Delivery failed"},{status:502});
     }
 
     return NextResponse.json({ok:true});
   }catch(error){
-    console.error("Bossie request endpoint error",error);
+    console.error(JSON.stringify({
+      message:"request endpoint error",
+      error:error instanceof Error ? error.message : String(error),
+    }));
     return NextResponse.json({error:"Invalid request"},{status:400});
   }
 }

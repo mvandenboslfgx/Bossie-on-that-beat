@@ -6,7 +6,11 @@ import { siteSettings } from "@/lib/site-settings";
 export const dynamic = "force-dynamic";
 
 type CuratedRelease = {
+  slug: string;
   title: string;
+  artist: string;
+  type: string;
+  collection?: string | null;
   status?: "pre-save" | "live";
   spotify?: string | null;
   hyperfollow?: string | null;
@@ -32,7 +36,11 @@ export async function GET() {
     );
 
     return {
+      slug: release.slug,
       title: release.title,
+      artist: release.artist,
+      type: release.type,
+      collection: release.collectionTitle ?? null,
       status: "live",
       spotify: links.spotify ?? null,
       appleMusic: links["apple-music"] ?? null,

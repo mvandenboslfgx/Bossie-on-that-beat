@@ -6,39 +6,29 @@ import { FollowSocialBlock, ListenSocialBlock } from "@/components/brand/SocialL
 import { getDownloadableBrandAssets } from "@/lib/brand/assets";
 import { getCatalog } from "@/lib/repository/catalog";
 import { getAllCinema } from "@/lib/repository/release-repository";
-import { ReleaseArtwork } from "@/components/release/ReleaseUI";
+import { ReleaseActions, ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { platformDisplayNames, siteSettings } from "@/lib/site-settings";
 import { getPublicCinemaTitle } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { CatalogProof } from "@/components/v3/BossieV3";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "EPK / Press",
   description:
-    "Electronic press kit for Bossie on the beat — artist overview, selected music, cinema, genres and official links.",
+    "Electronic press kit for Bossie on that beat — artist overview, newest music, cinema and official links.",
   alternates: { canonical: "/epk" },
 };
 
 export default async function EpkPage() {
-  const { live } = await getCatalog();
+  const { live, latest, refreshedAt } = await getCatalog();
   const cinema = await getAllCinema();
   const brandDownloads = getDownloadableBrandAssets();
 
-  const curatedSlugs = [
-    "crown-of-the-abyss",
-    "gasolina",
-    "nachtgeld",
-    "symphony-of-the-storm",
-    "one-world-one-dream",
-    "the-mountain-remembers",
-  ];
-  const selectedReleases = curatedSlugs
-    .map((slug) => live.find((r) => r.slug === slug))
-    .filter((r): r is (typeof live)[number] => Boolean(r))
-    .slice(0, 6);
-  const picks = selectedReleases.length ? selectedReleases : live.slice(0, 6);
+  const picks = live.slice(0, 6);
   const selectedCinema = cinema.slice(0, 3);
   const facts: Array<[string, string]> = [
     ["Artist / producer", siteSettings.artistName],
@@ -50,6 +40,7 @@ export default async function EpkPage() {
 
   return (
     <PageShell>
+      <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
       <section className="page-hero compact-hero epk-hero">
         <div className="epk-seal">
           <BossieMark size="sm" decorative={false} />
@@ -67,7 +58,7 @@ export default async function EpkPage() {
           <p className="eyebrow">Artist overview</p>
           <h2>Genre-fluid. Cinematic by design.</h2>
           <p>
-            Bossie on the beat is an independent producer and artist project built around contrast, scale and complete
+            Bossie on that beat is an independent producer and artist project built around contrast, scale and complete
             release worlds. Each project is developed as sound, image and story rather than as an isolated track.
           </p>
         </div>
@@ -81,6 +72,20 @@ export default async function EpkPage() {
         </dl>
       </section>
 
+      {latest && (
+        <section className="section-pad epk-latest" aria-labelledby="epk-latest-heading">
+          <div className="epk-latest-art">
+            <ReleaseArtwork release={latest} large priority />
+          </div>
+          <div className="epk-latest-copy">
+            <p className="eyebrow">Newest release</p>
+            <h2 id="epk-latest-heading">{latest.title}</h2>
+            <p>{latest.tagline ?? latest.description}</p>
+            <ReleaseActions release={latest} />
+          </div>
+        </section>
+      )}
+
       <section className="section-pad">
         <p className="eyebrow">Short bio</p>
         <p>
@@ -92,7 +97,8 @@ export default async function EpkPage() {
       <section className="section-pad">
         <p className="eyebrow">Selected work</p>
         <div className="epk-release-grid">
-          {picks.map((r) => {            const listen = r.links.find((l) => isVerifiedListenUrl(l.url));
+          {picks.map((r) => {
+            const listen = r.links.find((l) => isVerifiedListenUrl(l.url));
             return (
               <article key={r.id} className="epk-release-card">
                 <ReleaseArtwork release={r} />
@@ -101,9 +107,15 @@ export default async function EpkPage() {
                 <div className="epk-card-links">
                   <Link href={`/music/${r.slug}`}>Release page ↗</Link>
                   {listen && (
-                    <a href={listen.url} target="_blank" rel="noreferrer">
+                    <TrackedLink
+                      href={listen.url}
+                      releaseId={r.id}
+                      platform={listen.platform}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       {platformDisplayNames[listen.platform] ?? "Listen"} ↗
-                    </a>
+                    </TrackedLink>
                   )}
                 </div>
               </article>

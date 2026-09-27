@@ -11,6 +11,7 @@ import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
+import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 export const dynamic = "force-dynamic";
 
@@ -24,54 +25,95 @@ export const metadata: Metadata = {
     url: siteSettings.siteUrl,
     title: siteSettings.defaultSeo.title,
     description: siteSettings.defaultSeo.description,
-    ...(ogArt ? { images: [{ url: ogArt, alt: "Bossie on the beat official logo" }] } : {}),
+    ...(ogArt ? { images: [{ url: ogArt, alt: "Bossie on that beat official logo" }] } : {}),
   },
 };
 
 export default async function HomePage() {
   const [catalog, worlds, cinema] = await Promise.all([getCatalog(), getAllWorlds(), getAllCinema()]);
-  const { latest, live, refreshedAt } = catalog;
+  const { latest, live, trackCount, collections, refreshedAt } = catalog;
   const current = latest ?? catalog.featured;
+  const latestReleases = collections.length ? collections : live;
   const streaming = getOfficialProfileEntries("streaming").filter((e) => isVerifiedListenUrl(e.href));
 
   const schema = {
     "@context": "https://schema.org",
-    "@type": "MusicGroup",
-    name: siteSettings.artistName,
-    alternateName: siteSettings.artistAltName,
-    url: siteSettings.siteUrl,
-    description: siteSettings.defaultSeo.description,
-    sameAs: getSameAsUrls(),
+    "@graph": [
+      {
+        "@type": "ProfilePage",
+        "@id": `${siteSettings.siteUrl}/#profile-page`,
+        url: siteSettings.siteUrl,
+        name: `Who is ${siteSettings.artistName}?`,
+        description: siteSettings.defaultSeo.description,
+        mainEntity: { "@id": `${siteSettings.siteUrl}/#artist` },
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${siteSettings.siteUrl}/#latest-music`,
+        name: `Latest music by ${siteSettings.artistName}`,
+        numberOfItems: live.length,
+        itemListElement: live.slice(0, 20).map((release, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${siteSettings.siteUrl}/music/${release.slug}`,
+          name: release.title,
+        })),
+      },
+    ],
   };
 
   return (
-    <main>
+    <main id="main-content">
       <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
       <div className="grain" aria-hidden="true" />
       <SiteNav />
 
       {current && <CurrentWorldHero release={current} live={live} />}
 
+      <section className="section-pad identity-intro" aria-labelledby="who-is-bossie">
+        <div className="identity-intro-kicker">
+          <BossieMark size="md" className="section-mark" />
+          <p className="eyebrow">WHO IS BOSSIE ON THAT BEAT?</p>
+        </div>
+        <div className="identity-intro-copy">
+          <h2 id="who-is-bossie">Producer. Composer. Artist. World builder.</h2>
+          <p className="identity-intro-lede">
+            Bossie on that beat is an independent music project that turns every release into a complete world of sound,
+            image and story. The catalogue moves through cinematic, orchestral, metal, electronic, rap and global music
+            without losing one recognizable identity.
+          </p>
+          <div className="identity-actions">
+            <Link className="button button-gold" href="/about">Meet Bossie ↗</Link>
+            <Link className="text-link" href="/epk">Official EPK ↗</Link>
+          </div>
+        </div>
+        <dl className="identity-proof-grid">
+          <div><dt>Official catalogue</dt><dd>{trackCount} verified tracks</dd></div>
+          <div><dt>Creative system</dt><dd>{worlds.length} distinct worlds</dd></div>
+          <div><dt>Visual archive</dt><dd>{cinema.length ? `${cinema.length} films & transmissions` : "Sound · image · story"}</dd></div>
+        </dl>
+      </section>
+
       <section className="section-pad home-section">
         <div className="section-heading">
           <BossieMark size="md" className="section-mark" />
           <div>
-            <p className="eyebrow">MUSIC ARCHIVE</p>
-            <h2>Signals from every world.</h2>
+            <p className="eyebrow">LATEST RELEASES</p>
+            <h2>Every official track. One living archive.</h2>
           </div>
           <Link className="text-link" href="/music">
             Full archive ↗
           </Link>
         </div>
-        <MusicEditorialArchive live={live.slice(0, 4)} />
+        <MusicEditorialArchive live={latestReleases.slice(0, 4)} catalog={live} />
       </section>
 
       <section className="section-pad home-section worlds-home">
         <div className="section-heading inverse">
           <div>
             <p className="eyebrow">WORLDS</p>
-            <h2>One name. Infinite universes.</h2>
+            <h2>Every sound becomes a place.</h2>
           </div>
           <Link className="text-link" href="/worlds">
             All worlds ↗
@@ -98,7 +140,7 @@ export default async function HomePage() {
         <div className="section-heading">
           <div>
             <p className="eyebrow">CINEMA</p>
-            <h2>Music is only half the story.</h2>
+            <h2>The picture continues where the track ends.</h2>
           </div>
           <Link className="text-link" href="/cinema">
             Bossie Cinema ↗
@@ -113,8 +155,8 @@ export default async function HomePage() {
 
       <section className="section-pad home-section cta-section">
         <BossieMark size="lg" className="section-mark" />
-        <p className="eyebrow">BUILD YOUR WORLD</p>
-        <h2>Your story. Your track. Your universe.</h2>
+        <p className="eyebrow">BESPOKE PRODUCTION</p>
+        <h2>Commission a world of your own.</h2>
         <Link className="button button-gold" href="/request">
           Start your song ↗
         </Link>

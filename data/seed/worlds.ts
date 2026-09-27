@@ -67,7 +67,7 @@ export const seedWorlds: World[] = [
     title: "THE NIGHT",
     subtitle: "Dark European Noir",
     description:
-      "After hours. Black glass and blue neon. European noir where every transmission arrives after midnight.",
+      "After hours. Black glass and blue neon. European noir where every release arrives after midnight.",
     themes: ["noir", "mystery", "streetlight"],
     aesthetic: ["dark", "european", "cinematic"],
   },

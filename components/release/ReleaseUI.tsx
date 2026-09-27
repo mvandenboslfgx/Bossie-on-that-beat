@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ReleaseWithLinks } from "@/lib/types/release";
 import { getPrimaryListenLink, getWatchLink } from "@/lib/repository/release-repository";
 import { platformDisplayNames } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
 const platformOrder = [
   "spotify",
@@ -15,16 +17,30 @@ const platformOrder = [
   "qobuz",
 ] as const;
 
-export function ReleaseArtwork({ release, large }: { release: ReleaseWithLinks; large?: boolean }) {
+export function ReleaseArtwork({
+  release,
+  large,
+  priority,
+}: {
+  release: ReleaseWithLinks;
+  large?: boolean;
+  priority?: boolean;
+}) {
   const className = large ? "release-artwork large" : "release-artwork";
   if (release.artworkUrl && isVerifiedListenUrl(release.artworkUrl)) {
     return (
-      <div
-        className={className}
-        style={{ backgroundImage: `url(${release.artworkUrl})` }}
-        role="img"
-        aria-label={`${release.title} artwork`}
-      />
+      <div className={className}>
+        <Image
+          className="release-artwork-image"
+          src={release.artworkUrl}
+          alt={`${release.title} artwork`}
+          fill
+          unoptimized
+          priority={priority}
+          sizes={large ? "(max-width: 900px) 92vw, 50vw" : "(max-width: 760px) 92vw, 32vw"}
+        />
+        <span className="release-artwork-sheen" aria-hidden="true" />
+      </div>
     );
   }
   return (
@@ -70,15 +86,17 @@ export function PlatformLinks({ release, smartlink }: { release: ReleaseWithLink
   return (
     <div className="platform-links">
       {links.map((link) => (
-        <a
+        <TrackedLink
           key={link.id}
           href={smartlink ? `/go/${release.slug}?platform=${link.platform}` : link.url}
           className="platform-btn"
           target={smartlink ? undefined : "_blank"}
           rel={smartlink ? undefined : "noreferrer"}
+          releaseId={release.id}
+          platform={link.platform}
         >
           {platformDisplayNames[link.platform] ?? link.platform} ↗
-        </a>
+        </TrackedLink>
       ))}
     </div>
   );
@@ -91,14 +109,14 @@ export function ReleaseActions({ release }: { release: ReleaseWithLinks }) {
   return (
     <div className="release-actions-v2">
       {listen && (
-        <Link className="button button-gold" href={`/go/${release.slug}`}>
+        <TrackedLink className="button button-gold" href={`/go/${release.slug}`} releaseId={release.id} platform="smartlink">
           LISTEN NOW ↗
-        </Link>
+        </TrackedLink>
       )}
       {watch && (
-        <a className="button button-ghost" href={watch.url} target="_blank" rel="noreferrer">
+        <TrackedLink className="button button-ghost" href={watch.url} target="_blank" rel="noreferrer" releaseId={release.id} platform="youtube">
           WATCH ↗
-        </a>
+        </TrackedLink>
       )}
       {release.worldSlug && (
         <Link className="button button-ghost" href={`/worlds/${release.worldSlug}`}>
@@ -128,9 +146,9 @@ export function ReleaseCard({ release, withListen }: { release: ReleaseWithLinks
       </Link>
       {withListen && listen && (
         <div className="release-card-actions">
-          <Link className="button button-gold" href={`/go/${release.slug}`}>
+          <TrackedLink className="button button-gold" href={`/go/${release.slug}`} releaseId={release.id} platform="smartlink">
             LISTEN ↗
-          </Link>
+          </TrackedLink>
           <Link className="text-link" href={`/music/${release.slug}`}>
             Explore ↗
           </Link>
@@ -150,6 +168,9 @@ export function ReleaseHero({ release }: { release: ReleaseWithLinks }) {
           <p className="eyebrow">{release.type.toUpperCase()}</p>
           <h1>{release.title}</h1>
           <p className="release-artist">{release.artist}</p>
+          {release.collectionTitle && release.collectionTitle !== release.title ? (
+            <p className="release-collection">From {release.collectionTitle}</p>
+          ) : null}
           {release.tagline && <p className="release-tagline">{release.tagline}</p>}
           <div className="release-meta-row">
             {release.genres.map((g) => (
