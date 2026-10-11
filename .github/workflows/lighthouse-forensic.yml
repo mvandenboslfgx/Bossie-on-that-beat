@@ -1,0 +1,93 @@
+name: Bossie Lighthouse forensic
+
+on:
+  push:
+    branches: [audit/lighthouse-20261012]
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production app
+        run: npm run build
+
+      - name: Start production app
+        shell: bash
+        run: |
+          NEXT_TELEMETRY_DISABLED=1 npm start > /tmp/bossie-next.log 2>&1 &
+          echo $! > /tmp/bossie-next.pid
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              echo "Bossie local production server ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bossie-next.log
+          exit 1
+
+      - name: Run mobile Lighthouse
+        run: |
+          npx --yes lighthouse@13.4.1 http://127.0.0.1:3000/ \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --output=json \
+            --output-path=lighthouse-mobile.json \
+            --quiet
+
+      - name: Print scored failures
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('lighthouse-mobile.json', 'utf8'));
+          console.log('\n=== CATEGORY SCORES ===');
+          for (const [id, category] of Object.entries(report.categories || {})) {
+            console.log(`${id}: ${category.score == null ? 'n/a' : Math.round(category.score * 100)}`);
+          }
+          console.log('\n=== CORE METRICS ===');
+          for (const id of ['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift']) {
+            const audit = report.audits[id];
+            if (audit) console.log(`${id}: ${audit.displayValue ?? audit.numericValue ?? 'n/a'} (score=${audit.score})`);
+          }
+          console.log('\n=== SCORED AUDITS BELOW 1.00 ===');
+          const seen = new Set();
+          for (const category of Object.values(report.categories || {})) {
+            for (const ref of category.auditRefs || []) {
+              if (!ref.weight || seen.has(ref.id)) continue;
+              seen.add(ref.id);
+              const audit = report.audits[ref.id];
+              if (audit && typeof audit.score === 'number' && audit.score < 1) {
+                console.log(`${ref.id}: score=${audit.score} :: ${audit.title}${audit.displayValue ? ` :: ${audit.displayValue}` : ''}`);
+              }
+            }
+          }
+          console.log('\n=== AGENTIC / LLMS AUDITS ===');
+          for (const [id, audit] of Object.entries(report.audits || {})) {
+            if (/agent|llms|accessibility-tree|layout-shift/i.test(id) || /agent|llms\.txt|accessibility tree/i.test(audit.title || '')) {
+              console.log(`${id}: score=${audit.score} mode=${audit.scoreDisplayMode} :: ${audit.title}`);
+            }
+          }
+          NODE
+
+      - name: Upload Lighthouse JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: bossie-lighthouse-mobile
+          path: lighthouse-mobile.json
+          retention-days: 3
