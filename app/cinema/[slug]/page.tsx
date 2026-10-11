@@ -6,6 +6,7 @@ import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
 import { getCinemaCategoryLabel, getPublicCinemaSummary, getPublicCinemaTitle } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
+import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,7 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
   return (
     <PageShell worldSlug={item.worldSlug}>
       {videoSchema && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(videoSchema) }} />
       )}
       <section className="page-hero cinema-detail-hero">
         <BossieMark size="lg" className="section-mark" />

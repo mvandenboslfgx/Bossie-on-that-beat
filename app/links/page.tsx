@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Links",
-  description: "Official Bossie on the beat hub — current signal, listen and enter the universe.",
+  description: "Official Bossie on that beat link hub — the newest release, verified platforms and official profiles.",
   alternates: { canonical: "/links" },
 };
 
@@ -29,9 +29,10 @@ export default async function LinksPage() {
 
         {latest && (
           <>
-            <p className="links-signal-label">CURRENT SIGNAL // {tx}</p>
+            <p className="links-signal-label">NEWEST RELEASE / {tx}</p>
             <h1 className="links-signal-title">{latest.title}</h1>
-            <ReleaseArtwork release={latest} large />
+            <p className="links-signal-artist">Bossie on that beat</p>
+            <ReleaseArtwork release={latest} large priority />
             <ReleaseActions release={latest} />
           </>
         )}

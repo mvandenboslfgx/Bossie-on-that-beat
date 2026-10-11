@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS releases (
   id TEXT PRIMARY KEY,
   slug TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
-  artist TEXT NOT NULL DEFAULT 'Bossie on the beat',
+  artist TEXT NOT NULL DEFAULT 'Bossie on that beat',
   type TEXT NOT NULL DEFAULT 'single',
   status TEXT NOT NULL DEFAULT 'project',
   release_date TEXT,

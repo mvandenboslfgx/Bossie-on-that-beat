@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description: skin?.lore ?? world.description,
     alternates: { canonical: `/worlds/${world.slug}` },
     openGraph: {
-      title: `${world.title} | Bossie on the beat`,
+      title: `${world.title} | Bossie on that beat`,
       description: skin?.lore ?? world.description,
       images: world.heroImage ? [{ url: world.heroImage }] : undefined,
     },

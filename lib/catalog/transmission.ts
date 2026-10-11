@@ -1,6 +1,6 @@
 import type { ReleaseWithLinks } from "@/lib/types/release";
 
-/** BOSSIE TRANSMISSION 024 — zero-padded index from newest (live sorted desc). */
+/** Zero-padded catalogue index, oldest release = 001. */
 export function getTransmissionNumber(live: ReleaseWithLinks[], slug: string): string {
   const idx = live.findIndex((r) => r.slug === slug);
   if (idx < 0) return "000";

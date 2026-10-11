@@ -17,22 +17,25 @@ async function revalidateMainCatalog(env: Env) {
       headers: { "x-cron-secret": env.CRON_SECRET },
     });
     if (!response.ok) {
-      console.warn("[bossie-sync] catalog revalidate failed", response.status);
+      console.warn(JSON.stringify({ message: "catalog revalidate failed", status: response.status }));
     }
   } catch (error) {
-    console.warn("[bossie-sync] catalog revalidate error", error);
+    console.warn(JSON.stringify({
+      message: "catalog revalidate error",
+      error: error instanceof Error ? error.message : String(error),
+    }));
   }
 }
 
 export default {
   async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext) {
     if (!env.DB) {
-      console.error("[bossie-sync] DB binding missing");
+      console.error(JSON.stringify({ message: "DB binding missing" }));
       return;
     }
     const result = await runReleaseSync(env);
     await revalidateMainCatalog(env);
-    console.log("[bossie-sync] completed", JSON.stringify(result));
+    console.log(JSON.stringify({ message: "release sync completed", result }));
   },
 
   async fetch(request: Request, env: Env): Promise<Response> {

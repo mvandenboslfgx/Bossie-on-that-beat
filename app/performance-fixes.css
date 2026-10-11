@@ -1,5 +1,4 @@
-/* Production navigation reliability + rendering performance.
-   Kept separate so the existing visual system remains intact. */
+/* Production-only reliability and paint-cost fixes layered after luxury.css. */
 
 .site-nav {
   background: rgba(5, 5, 5, 0.97);
@@ -8,206 +7,55 @@
   contain: layout paint;
 }
 
-.nav-menu-toggle {
-  position: relative;
-  z-index: 92;
-  cursor: pointer;
+.nav-menu-toggle,
+.mobile-nav-close,
+.mobile-nav-list a,
+.mobile-nav-listen {
   touch-action: manipulation;
 }
 
-.current-world-hero {
-  isolation: isolate;
-  background-image: none !important;
-}
-
-.current-world-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.current-world-bg-image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  object-position: center;
-}
-
-.current-world-bg::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(5, 5, 5, 0.55) 0%, rgba(5, 5, 5, 0.92) 68%);
-}
-
-.current-world-watermark {
-  z-index: 1;
-}
-
-.current-world-inner,
-.transmission-bar {
+.nav-menu-toggle {
   position: relative;
+  z-index: 2;
 }
 
-/* Skip paint/layout work for large below-the-fold homepage sections until needed. */
-.home-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 820px;
+.mobile-nav-overlay {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  overscroll-behavior: contain;
+  touch-action: manipulation;
+  contain: layout paint;
 }
 
-@media (min-width: 1181px) {
-  .site-nav .nav-inner {
-    height: 72px;
-    padding: 0 max(3vw, 20px);
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: clamp(16px, 2vw, 30px);
-  }
-
-  .site-links.desktop-nav {
-    min-width: 0;
-    justify-self: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(12px, 1.35vw, 24px);
-    white-space: nowrap;
-  }
-
-  .site-links.desktop-nav a {
-    line-height: 1;
-  }
-
-  .site-listen.desktop-only {
-    justify-self: end;
-    white-space: nowrap;
-  }
+.mobile-nav-panel {
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Use the reliable drawer sooner so intermediate desktop/tablet widths never overflow. */
-@media (max-width: 1180px) {
-  .desktop-nav,
-  .desktop-only {
+/* Keep the fixed noise layer off the constrained mobile GPU path. */
+@media (max-width: 900px) {
+  .grain {
     display: none !important;
   }
 
-  .site-nav .nav-inner {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 64px !important;
-    height: 64px !important;
-    padding: 0 max(3vw, 14px) !important;
-    gap: 16px !important;
-  }
-
-  .nav-menu-toggle {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    min-height: 40px;
-    padding: 0.45rem 0.65rem;
-    border: 0;
-    background: transparent;
-    color: #e8e2d6;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-
-  .nav-menu-bars {
-    display: grid;
-    gap: 3px;
-    width: 17px;
-  }
-
-  .nav-menu-bars span {
-    display: block;
-    height: 1.5px;
-    background: var(--gold);
-    border-radius: 1px;
-    transition: transform 0.18s ease, opacity 0.18s ease;
-    transform-origin: center;
-  }
-
-  .nav-menu-bars span:nth-child(2) {
-    width: 70%;
-    justify-self: end;
-  }
-
-  .nav-menu-toggle[aria-expanded="true"] .nav-menu-bars span:nth-child(1) {
-    transform: translateY(4.5px) rotate(45deg);
-  }
-
-  .nav-menu-toggle[aria-expanded="true"] .nav-menu-bars span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .nav-menu-toggle[aria-expanded="true"] .nav-menu-bars span:nth-child(3) {
-    transform: translateY(-4.5px) rotate(-45deg);
-  }
-
-  .mobile-nav-overlay {
-    display: block !important;
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    background: rgba(0, 0, 0, 0.76);
-    overscroll-behavior: contain;
-    touch-action: manipulation;
-  }
-
-  .mobile-nav-panel {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: min(92vw, 390px);
-    height: 100vh;
-    height: 100dvh;
-    max-height: 100dvh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-    border-left: 1px solid var(--line);
-    padding: 1.25rem 1.35rem 2rem;
-    background: radial-gradient(ellipse 80% 40% at 80% 0%, rgba(217, 179, 95, 0.08), transparent 50%), #090909;
-    box-shadow: -28px 0 80px rgba(0, 0, 0, 0.35);
-  }
-
-  .mobile-nav-close {
-    min-height: 40px;
-    cursor: pointer;
-  }
-
-  .mobile-nav-list a {
-    min-height: 44px;
-  }
-}
-
-@media (max-width: 900px) {
-  .grain {
-    display: none;
+  .current-world-backdrop {
+    animation: none !important;
+    transform: scale(1.01);
   }
 
   .site-nav {
     contain: layout;
   }
-
-  .current-world-bg::after {
-    background: linear-gradient(180deg, rgba(5, 5, 5, 0.48) 0%, rgba(5, 5, 5, 0.94) 72%);
-  }
-
-  .home-section {
-    contain-intrinsic-size: 1px 680px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-menu-bars span {
-    transition: none;
+  .mobile-nav-panel,
+  .current-world-backdrop {
+    animation: none !important;
   }
 }

@@ -3,12 +3,19 @@ import type { ReleaseWithLinks } from "@/lib/types/release";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { formatWorldLabel, getTransmissionNumber } from "@/lib/catalog/transmission";
+import { TrackedLink } from "@/components/analytics/TrackedLink";
 
-export function MusicEditorialArchive({ live }: { live: ReleaseWithLinks[] }) {
+export function MusicEditorialArchive({
+  live,
+  catalog = live,
+}: {
+  live: ReleaseWithLinks[];
+  catalog?: ReleaseWithLinks[];
+}) {
   return (
     <div className="music-editorial-archive">
       {live.map((release, index) => {
-        const tx = getTransmissionNumber(live, release.slug);
+        const tx = getTransmissionNumber(catalog, release.slug);
         const isHero = index === 0;
         const isAlt = index % 2 === 1;
 
@@ -32,13 +39,16 @@ export function MusicEditorialArchive({ live }: { live: ReleaseWithLinks[] }) {
                 <Link href={`/music/${release.slug}`}>{release.title}</Link>
               </h2>
               <p className="music-editorial-meta">
-                {[release.releaseDate?.slice(0, 4), ...(release.genres ?? []).slice(0, 2)].filter(Boolean).join(" / ")}
+                {[release.type, release.releaseDate?.slice(0, 4), ...(release.genres ?? []).slice(0, 2)].filter(Boolean).join(" / ")}
               </p>
+              {release.collectionTitle && release.collectionTitle !== release.title ? (
+                <p className="music-editorial-collection">From {release.collectionTitle}</p>
+              ) : null}
               {release.tagline && <p className="music-editorial-tagline">{release.tagline}</p>}
               <div className="music-editorial-actions">
-                <Link className="button button-gold" href={`/go/${release.slug}`}>
+                <TrackedLink className="button button-gold" href={`/go/${release.slug}`} releaseId={release.id} platform="smartlink">
                   LISTEN ↗
-                </Link>
+                </TrackedLink>
                 <Link className="text-link" href={`/music/${release.slug}`}>
                   Explore ↗
                 </Link>

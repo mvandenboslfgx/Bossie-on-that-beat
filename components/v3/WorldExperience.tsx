@@ -108,7 +108,7 @@ export function WorldExperience({
                   </p>
                   <h2>{release.title}</h2>
                   <p>{release.tagline ?? release.genres?.join(" / ")}</p>
-                  <span className="text-link">Enter transmission ↗</span>
+                  <span className="text-link">Explore release ↗</span>
                 </div>
               </Link>
             ))}

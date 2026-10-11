@@ -1,4 +1,5 @@
-import type { ReleaseLink, StreamingPlatform } from "@/lib/types/release";
+import type { ReleaseCredit, ReleaseLink, ReleaseType, StreamingPlatform } from "@/lib/types/release";
+import { siteSettings } from "@/lib/site-settings";
 
 export interface DiscoveredLink {
   platform: StreamingPlatform;
@@ -8,6 +9,9 @@ export interface DiscoveredLink {
 
 export interface ProviderRelease {
   title: string;
+  artist?: string;
+  type?: ReleaseType;
+  collectionTitle?: string;
   releaseDate?: string;
   artworkUrl?: string;
   spotifyId?: string;
@@ -15,6 +19,9 @@ export interface ProviderRelease {
   isrc?: string;
   upc?: string;
   genres?: string[];
+  credits?: ReleaseCredit[];
+  /** True only when the provider result is tied to the configured canonical artist ID. */
+  officialArtist?: boolean;
   links: DiscoveredLink[];
 }
 
@@ -31,6 +38,18 @@ export function normalizeArtist(value: string) {
 
 export function isBossieArtist(value: string) {
   return ACCEPTED_ARTISTS.has(normalizeArtist(value));
+}
+
+export function includesBossieArtist(value: string) {
+  const normalized = normalizeArtist(value);
+  return [...ACCEPTED_ARTISTS].some((artist) => normalized === artist || normalized.includes(artist));
+}
+
+/** Keep provider-only aliases out of public artist credits. */
+export function canonicalizeArtistCredit(value: string) {
+  const cleaned = value.trim();
+  if (!cleaned) return siteSettings.artistName;
+  return cleaned.replace(/bossie on (?:that|the) beat/gi, siteSettings.artistName);
 }
 
 export function mergeLinks(existing: ReleaseLink[], incoming: DiscoveredLink[], releaseId: string): ReleaseLink[] {

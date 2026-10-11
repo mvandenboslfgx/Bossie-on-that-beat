@@ -31,7 +31,7 @@ export default async function CinemaPage() {
         <BossieMark size="lg" className="section-mark" />
         <p className="eyebrow">BOSSIE CINEMA</p>
         <h1>CINEMA</h1>
-        <p>Sound in motion — editorial transmissions, not raw feed dumps.</p>
+        <p>Sound in motion — films, visualizers and moving release worlds.</p>
       </section>
 
       {featured && (
@@ -61,7 +61,7 @@ export default async function CinemaPage() {
 
       {items.length === 0 && (
         <section className="section-pad">
-          <p className="empty-state">No cinema transmissions published yet.</p>
+          <p className="empty-state">No films published yet.</p>
         </section>
       )}
     </PageShell>

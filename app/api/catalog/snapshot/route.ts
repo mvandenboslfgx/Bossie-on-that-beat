@@ -9,6 +9,8 @@ export async function GET() {
     {
       refreshedAt: catalog.refreshedAt,
       liveCount: catalog.live.length,
+      trackCount: catalog.trackCount,
+      releaseCount: catalog.collections.length,
       latestSlug: catalog.latest?.slug ?? null,
       latestTitle: catalog.latest?.title ?? null,
       featuredSlug: catalog.featured?.slug ?? null,

@@ -1,9 +1,8 @@
-/** Catalog HTML must never be edge-cached — crawlers and social bots need fresh D1 snapshots. */
+/** Short public edge cache: fast globally while sync revalidation keeps releases current. */
 export const CATALOG_HTML_HEADERS: Record<string, string> = {
-  "Cache-Control": "private, no-cache, no-store, max-age=0, must-revalidate",
-  "CDN-Cache-Control": "no-store",
-  "Cloudflare-CDN-Cache-Control": "no-store",
-  Pragma: "no-cache",
+  "Cache-Control": "public, max-age=0, s-maxage=60, stale-while-revalidate=300",
+  "CDN-Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+  "Cloudflare-CDN-Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
 };
 
 export const CATALOG_ROUTE_PREFIXES = [

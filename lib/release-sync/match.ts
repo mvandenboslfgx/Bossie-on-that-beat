@@ -28,6 +28,7 @@ export function normalizeReleaseDate(value?: string): string | undefined {
 
 export interface MatchCandidate {
   title: string;
+  type?: string;
   isrc?: string;
   upc?: string;
   spotifyId?: string;
@@ -41,6 +42,8 @@ export function scoreMatch(existing: MatchCandidate, incoming: MatchCandidate): 
   if (incoming.spotifyId && existing.spotifyId && incoming.spotifyId === existing.spotifyId) return 0.95;
   if (incoming.appleMusicId && existing.appleMusicId && incoming.appleMusicId === existing.appleMusicId) return 0.95;
   if (titlesMatch(existing.title, incoming.title)) {
+    // A multi-track collection and its title track are separate catalogue items.
+    if (existing.type && incoming.type && (existing.type === "track") !== (incoming.type === "track")) return 0;
     const a = normalizeReleaseDate(existing.releaseDate);
     const b = normalizeReleaseDate(incoming.releaseDate);
     if (a && b && a === b) return 0.9;

@@ -163,12 +163,12 @@ export function generateCinemaEditorialSummary(title: string, type: CinemaCatego
   const t = title.toLowerCase();
   const label = getCinemaCategoryLabel(type).toLowerCase();
 
-  if (type === "short") return "A short transmission from the Bossie universe.";
+  if (type === "short") return "A short film from the Bossie universe.";
   if (type === "official-audio" || /\bofficial audio\b/i.test(title)) {
     if (/crown|abyss/i.test(t)) return "A descent into Bossie's darkest orchestral world.";
-    if (/anthem/i.test(t)) return "The Bossie anthem — official audio transmission.";
+    if (/anthem/i.test(t)) return "The Bossie anthem — official audio.";
     if (/gedacht|duizend/i.test(t)) return "Late-night Dutch energy — official audio.";
-    return "Official audio from Bossie on the beat.";
+    return "Official audio from Bossie on that beat.";
   }
   if (type === "lyric-video" || /\blyric/i.test(t)) {
     return "Lyrics unfold inside a cinematic Bossie visual world.";

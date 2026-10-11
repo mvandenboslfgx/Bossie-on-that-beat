@@ -1,4 +1,4 @@
-# Bossie on the beat — V2 Platform
+# Bossie on that beat — Premium Artist Platform
 
 Official platform for [bossieonthatbeat.com](https://bossieonthatbeat.com).
 

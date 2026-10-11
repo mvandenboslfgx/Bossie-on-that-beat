@@ -86,6 +86,28 @@ async function countDuplicateSlugs(db: D1Database): Promise<number> {
   return Number(row?.c ?? 0);
 }
 
+function uniqueReleaseSlug(existing: Array<{ slug: string }>, item: ProviderRelease) {
+  const base = slugFromTitle(item.title) || "untitled-track";
+  if (!existing.some((release) => release.slug === base)) return base;
+
+  const dateSuffix = item.releaseDate?.slice(0, 10);
+  if (dateSuffix) {
+    const dated = `${base}-${dateSuffix}`;
+    if (!existing.some((release) => release.slug === dated)) return dated;
+  }
+
+  const providerSuffix = (item.spotifyId || item.appleMusicId || "track")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .slice(-8);
+  let candidate = `${base}-${providerSuffix || "track"}`;
+  let index = 2;
+  while (existing.some((release) => release.slug === candidate)) {
+    candidate = `${base}-${providerSuffix || "track"}-${index++}`;
+  }
+  return candidate;
+}
+
 async function discover(
   env: SyncEnv,
 ): Promise<{
@@ -205,7 +227,8 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
       matchScore,
       ambiguousMatch,
     });
-    const seo = buildReleaseSeo(item.title, classification);
+    const artist = item.artist ?? siteSettings.artistName;
+    const seo = buildReleaseSeo(item.title, classification, artist);
     const tagline = buildTagline(item.title, classification);
     const autoEnrich = classification.confidence >= siteSettings.sync.confidenceHigh;
 
@@ -220,6 +243,7 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
       );
       const moodJson = JSON.stringify(enrich ? merged.moods ?? classification.moods : match.moods ?? classification.moods);
       const langJson = JSON.stringify(enrich ? classification.languages : match.languages ?? []);
+      const creditsJson = JSON.stringify(item.credits ?? match.credits ?? []);
       const seoJson = JSON.stringify(seo);
       const nextStatus = (() => {
         if (match.manualOverride || match.status === "project") return match.status;
@@ -231,6 +255,9 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
       await db
         .prepare(
           `UPDATE releases SET
+            artist = CASE WHEN manual_override = 1 THEN artist WHEN ? != '' THEN ? ELSE artist END,
+            type = CASE WHEN manual_override = 1 THEN type WHEN ? != '' THEN ? ELSE type END,
+            collection_title = COALESCE(collection_title, ?),
             release_date = COALESCE(release_date, ?),
             artwork_url = CASE
               WHEN artwork_url IS NOT NULL AND artwork_url != '' THEN artwork_url
@@ -245,6 +272,7 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
             subgenres = CASE WHEN manual_override = 1 THEN subgenres WHEN ? != '[]' THEN ? ELSE subgenres END,
             moods = CASE WHEN manual_override = 1 THEN moods WHEN ? != '[]' THEN ? ELSE moods END,
             languages = CASE WHEN manual_override = 1 THEN languages WHEN ? != '[]' THEN ? ELSE languages END,
+            credits = CASE WHEN manual_override = 1 THEN credits WHEN ? != '[]' THEN ? ELSE credits END,
             energy = CASE WHEN manual_override = 1 THEN energy WHEN ? IS NOT NULL THEN ? ELSE energy END,
             world_slug = CASE WHEN manual_override = 1 THEN world_slug WHEN ? IS NOT NULL THEN ? ELSE world_slug END,
             tagline = CASE WHEN manual_override = 1 THEN tagline WHEN tagline IS NULL OR tagline = '' THEN ? ELSE tagline END,
@@ -257,6 +285,11 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
            WHERE id = ?`,
         )
         .bind(
+          artist,
+          artist,
+          item.type ?? "track",
+          item.type ?? "track",
+          item.collectionTitle ?? null,
           item.releaseDate ?? null,
           fillArtwork || !match.manualOverride ? item.artworkUrl ?? "" : "",
           fillArtwork || !match.manualOverride ? item.artworkUrl ?? "" : "",
@@ -272,6 +305,8 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           moodJson,
           langJson,
           langJson,
+          creditsJson,
+          creditsJson,
           autoEnrich ? classification.energy ?? null : null,
           autoEnrich ? classification.energy ?? null : null,
           autoEnrich ? classification.worldSlug ?? null : null,
@@ -321,13 +356,17 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           upc: existing[idx].upc ?? item.upc,
           artworkUrl: existing[idx].artworkUrl || item.artworkUrl || "",
           releaseDate: existing[idx].releaseDate ?? item.releaseDate,
+          artist,
+          type: item.type ?? existing[idx].type,
+          collectionTitle: existing[idx].collectionTitle ?? item.collectionTitle,
+          credits: item.credits ?? existing[idx].credits,
           status: match.manualOverride ? existing[idx].status : nextStatus,
         };
       }
       linksByRelease.set(match.id, mergedLinks);
       updated++;
     } else if (classification.confidence >= 0.75 || item.links.some((l) => l.verified)) {
-      const slug = slugFromTitle(item.title);
+      const slug = uniqueReleaseSlug(existing, item);
       const id = `release-${slug}`;
       const status = ingestStatus;
       const seoJson = JSON.stringify(seo);
@@ -337,14 +376,16 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
 
       const insert = await db
         .prepare(
-          `INSERT OR IGNORE INTO releases (id, slug, title, artist, type, status, release_date, artwork_url, genres, subgenres, moods, languages, energy, world_slug, tagline, description, seo, spotify_id, apple_music_id, isrc, upc, classification_confidence, first_seen_at, last_synced_at)
-           VALUES (?, ?, ?, ?, 'single', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT OR IGNORE INTO releases (id, slug, title, artist, type, collection_title, status, release_date, artwork_url, genres, subgenres, moods, languages, energy, world_slug, tagline, description, seo, credits, spotify_id, apple_music_id, isrc, upc, classification_confidence, first_seen_at, last_synced_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .bind(
           id,
           slug,
           item.title,
-          siteSettings.artistName,
+          artist,
+          item.type ?? "track",
+          item.collectionTitle ?? null,
           status,
           item.releaseDate ?? null,
           item.artworkUrl ?? "",
@@ -357,6 +398,7 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           autoEnrich ? tagline : null,
           autoEnrich ? seo.description ?? null : null,
           autoEnrich ? seoJson : "{}",
+          JSON.stringify(item.credits ?? []),
           item.spotifyId ?? null,
           item.appleMusicId ?? null,
           item.isrc ?? null,
@@ -381,8 +423,9 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           id,
           slug,
           title: item.title,
-          artist: siteSettings.artistName,
-          type: "single",
+          artist,
+          type: item.type ?? "track",
+          collectionTitle: item.collectionTitle,
           status,
           releaseDate: item.releaseDate,
           artworkUrl: item.artworkUrl ?? "",
@@ -390,6 +433,7 @@ async function upsertDiscovered(db: D1Database, discovered: ProviderRelease[]) {
           subgenres: classification.subgenres,
           moods: classification.moods,
           languages: classification.languages,
+          credits: item.credits,
           spotifyId: item.spotifyId,
           appleMusicId: item.appleMusicId,
           isrc: item.isrc,

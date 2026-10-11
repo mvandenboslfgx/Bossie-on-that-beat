@@ -1,5 +1,9 @@
 import type { MusicProvider, ProviderRelease } from "@/lib/release-sync/providers/base";
-import { isBossieArtist } from "@/lib/release-sync/providers/base";
+import {
+  canonicalizeArtistCredit,
+  includesBossieArtist,
+  isBossieArtist,
+} from "@/lib/release-sync/providers/base";
 import { siteSettings } from "@/lib/site-settings";
 import { normalizeReleaseDate } from "@/lib/release-sync/match";
 
@@ -37,13 +41,16 @@ export function createAppleMusicProvider(): MusicProvider {
   return {
     name: "apple-music",
     async findReleases(): Promise<ProviderRelease[]> {
+      // Lookup by immutable artist ID and request songs, not collections. The old
+      // text search returned only 27 album/single containers while the canonical
+      // profile currently contains 42 individual tracks.
       const params = new URLSearchParams({
-        term: "Bossie on that beat",
-        entity: "album",
-        limit: "50",
+        id: siteSettings.identities.appleMusicArtistId,
+        entity: "song",
+        limit: "200",
         country: "NL",
       });
-      const response = await fetchAppleSearch(`https://itunes.apple.com/search?${params.toString()}`);
+      const response = await fetchAppleSearch(`https://itunes.apple.com/lookup?${params.toString()}`);
       if (response.status === 429) {
         throw new Error("apple-music HTTP 429 (rate limited after bounded retry)");
       }
@@ -51,19 +58,59 @@ export function createAppleMusicProvider(): MusicProvider {
         throw new Error(`apple-music HTTP ${response.status}`);
       }
       const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
-      return (json.results ?? [])
-        .filter((item) => isBossieArtist(String(item.artistName ?? "")))
-        .map((item) => ({
-          title: String(item.collectionName ?? ""),
+      const sourceTracks = (json.results ?? [])
+        .filter((item) => {
+          if (String(item.wrapperType ?? "") !== "track" || !item.trackName) return false;
+          return (
+            String(item.artistId ?? "") === siteSettings.identities.appleMusicArtistId ||
+            includesBossieArtist(String(item.artistName ?? ""))
+          );
+        });
+      const tracks = sourceTracks.map((item): ProviderRelease => {
+          const artist = canonicalizeArtistCredit(String(item.artistName ?? siteSettings.artistName));
+          const trackCount = Number(item.trackCount ?? 1);
+          return {
+          title: String(item.trackName ?? ""),
+          artist,
+          type: trackCount > 1 ? "track" : "single",
+          collectionTitle: item.collectionName ? String(item.collectionName).replace(/\s+-\s+Single$/i, "") : undefined,
           releaseDate: normalizeReleaseDate(item.releaseDate ? String(item.releaseDate) : undefined),
           artworkUrl: highResArtwork(item.artworkUrl100 ? String(item.artworkUrl100) : undefined),
-          appleMusicId: String(item.collectionId ?? ""),
-          upc: item.upc ? String(item.upc) : undefined,
+          appleMusicId: String(item.trackId ?? ""),
           genres: item.primaryGenreName ? [String(item.primaryGenreName)] : [],
-          links: item.collectionViewUrl
-            ? [{ platform: "apple-music" as const, url: String(item.collectionViewUrl), verified: true }]
+          credits: [{ role: "Performing artist", name: artist }],
+          officialArtist: true,
+          links: item.trackViewUrl
+            ? [{ platform: "apple-music" as const, url: String(item.trackViewUrl), verified: true }]
             : [],
-        }));
+          };
+        });
+
+      const collections = new Map<string, ProviderRelease>();
+      for (const item of sourceTracks) {
+        const collectionId = String(item.collectionId ?? "");
+        const trackCount = Number(item.trackCount ?? 1);
+        if (!collectionId || trackCount <= 1 || collections.has(collectionId)) continue;
+        const artist = canonicalizeArtistCredit(String(item.artistName ?? siteSettings.artistName));
+        const title = String(item.collectionName ?? "").replace(/\s+-\s+Single$/i, "");
+        if (!title) continue;
+        collections.set(collectionId, {
+          title,
+          artist,
+          type: trackCount <= 6 ? "ep" : "album",
+          releaseDate: normalizeReleaseDate(item.releaseDate ? String(item.releaseDate) : undefined),
+          artworkUrl: highResArtwork(item.artworkUrl100 ? String(item.artworkUrl100) : undefined),
+          appleMusicId: collectionId,
+          genres: item.primaryGenreName ? [String(item.primaryGenreName)] : [],
+          credits: [{ role: "Performing artist", name: artist }],
+          officialArtist: true,
+          links: item.collectionViewUrl
+            ? [{ platform: "apple-music", url: String(item.collectionViewUrl), verified: true }]
+            : [],
+        });
+      }
+
+      return [...collections.values(), ...tracks];
     },
   };
 }
@@ -73,22 +120,30 @@ type SpotifyImage = { url?: string };
 type SpotifyAlbum = {
   id?: string;
   name?: string;
+  album_type?: string;
+  album_group?: string;
+  total_tracks?: number;
   release_date?: string;
   images?: SpotifyImage[];
   external_urls?: { spotify?: string };
   external_ids?: { upc?: string; ean?: string };
   artists?: Array<{ id?: string; name?: string }>;
 };
+type SpotifyTrack = {
+  id?: string;
+  name?: string;
+  artists?: Array<{ id?: string; name?: string }>;
+  external_urls?: { spotify?: string };
+  external_ids?: { isrc?: string };
+};
+type SpotifyAlbumDetail = SpotifyAlbum & { tracks?: SpotifyTracksPage };
 type SpotifyAlbumsPage = {
   items?: SpotifyAlbum[];
   next?: string | null;
 };
 type SpotifyTracksPage = {
-  items?: Array<{
-    track?: { external_ids?: { isrc?: string }; artists?: Array<{ id?: string; name?: string }> };
-    external_ids?: { isrc?: string };
-    artists?: Array<{ id?: string; name?: string }>;
-  }>;
+  items?: SpotifyTrack[];
+  next?: string | null;
 };
 
 async function spotifyGet<T>(url: string, token: string): Promise<T> {
@@ -104,7 +159,7 @@ async function spotifyGet<T>(url: string, token: string): Promise<T> {
 async function fetchAllArtistAlbums(token: string, artistId: string): Promise<SpotifyAlbum[]> {
   const albums: SpotifyAlbum[] = [];
   let url: string | null =
-    `https://api.spotify.com/v1/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single&market=NL&limit=10`;
+    `https://api.spotify.com/v1/artists/${encodeURIComponent(artistId)}/albums?include_groups=album,single,appears_on,compilation&market=NL&limit=50`;
 
   while (url) {
     const page: SpotifyAlbumsPage = await spotifyGet<SpotifyAlbumsPage>(url, token);
@@ -120,45 +175,118 @@ async function fetchAllArtistAlbums(token: string, artistId: string): Promise<Sp
   return albums;
 }
 
-async function enrichAlbumMeta(token: string, album: SpotifyAlbum): Promise<ProviderRelease | null> {
-  if (!album.id || !album.name) return null;
+function spotifyArtistMatch(artists: SpotifyTrack["artists"], artistId: string) {
+  return (artists ?? []).some(
+    (artist) => artist.id === artistId || isBossieArtist(String(artist.name ?? "")),
+  );
+}
 
-  const artists = album.artists ?? [];
-  const artistMatch =
-    artists.some((a) => a.id === siteSettings.identities.spotifyArtistId) ||
-    artists.some((a) => isBossieArtist(String(a.name ?? "")));
-  if (!artistMatch) return null;
-
-  let upc = album.external_ids?.upc ?? album.external_ids?.ean;
-  let isrc: string | undefined;
-
-  try {
-    const detail = await spotifyGet<SpotifyAlbum & { tracks?: SpotifyTracksPage }>(
-      `https://api.spotify.com/v1/albums/${encodeURIComponent(album.id)}?market=NL`,
+async function fetchAlbumDetails(token: string, albums: SpotifyAlbum[]): Promise<SpotifyAlbumDetail[]> {
+  const details: SpotifyAlbumDetail[] = [];
+  for (let index = 0; index < albums.length; index += 20) {
+    const ids = albums.slice(index, index + 20).map((album) => album.id).filter(Boolean).join(",");
+    if (!ids) continue;
+    const page = await spotifyGet<{ albums?: Array<SpotifyAlbumDetail | null> }>(
+      `https://api.spotify.com/v1/albums?ids=${encodeURIComponent(ids)}&market=NL`,
       token,
     );
-    upc = detail.external_ids?.upc ?? detail.external_ids?.ean ?? upc;
-    const track = detail.tracks?.items?.[0];
-    isrc = track?.external_ids?.isrc ?? track?.track?.external_ids?.isrc;
-  } catch {
-    // Album list payload is still usable without track enrichment.
+    details.push(...(page.albums ?? []).filter((album): album is SpotifyAlbumDetail => Boolean(album)));
+  }
+  return details;
+}
+
+async function fetchFullTracks(token: string, trackIds: string[]): Promise<Map<string, SpotifyTrack>> {
+  const tracks = new Map<string, SpotifyTrack>();
+  for (let index = 0; index < trackIds.length; index += 50) {
+    const ids = trackIds.slice(index, index + 50).join(",");
+    if (!ids) continue;
+    const page = await spotifyGet<{ tracks?: Array<SpotifyTrack | null> }>(
+      `https://api.spotify.com/v1/tracks?ids=${encodeURIComponent(ids)}&market=NL`,
+      token,
+    );
+    for (const track of page.tracks ?? []) {
+      if (track?.id) tracks.set(track.id, track);
+    }
+  }
+  return tracks;
+}
+
+async function mapSpotifyTracks(
+  token: string,
+  albums: SpotifyAlbum[],
+  artistId: string,
+): Promise<ProviderRelease[]> {
+  const details = await fetchAlbumDetails(token, albums);
+  const simplified = details.flatMap((album) => album.tracks?.items ?? []);
+  const matchingIds = [
+    ...new Set(
+      simplified
+        .filter((track) => spotifyArtistMatch(track.artists, artistId))
+        .map((track) => track.id)
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ];
+  const fullTracks = await fetchFullTracks(token, matchingIds);
+  const releases = new Map<string, ProviderRelease>();
+
+  for (const album of details) {
+    if (!album.id || !album.name) continue;
+    const artwork = album.images?.[0]?.url ? String(album.images[0].url) : undefined;
+    const totalTracks = Number(album.total_tracks ?? album.tracks?.items?.length ?? 1);
+    if (totalTracks > 1 && spotifyArtistMatch(album.artists, artistId)) {
+      const artistNames = (album.artists ?? [])
+        .map((artist) => canonicalizeArtistCredit(String(artist.name ?? "")))
+        .filter(Boolean);
+      const artist = artistNames.join(", ") || siteSettings.artistName;
+      releases.set(`collection:${album.id}`, {
+        title: album.name,
+        artist,
+        type: totalTracks <= 6 ? "ep" : "album",
+        releaseDate: normalizeReleaseDate(album.release_date),
+        artworkUrl: artwork,
+        spotifyId: album.id,
+        upc: album.external_ids?.upc ?? album.external_ids?.ean,
+        credits: artistNames.map((name) => ({ role: "Performing artist", name })),
+        officialArtist: true,
+        links: [{
+          platform: "spotify",
+          url: album.external_urls?.spotify ?? `https://open.spotify.com/album/${album.id}`,
+          verified: true,
+        }],
+      });
+    }
+    for (const simplifiedTrack of album.tracks?.items ?? []) {
+      if (!simplifiedTrack.id || !spotifyArtistMatch(simplifiedTrack.artists, artistId)) continue;
+      const track = fullTracks.get(simplifiedTrack.id) ?? simplifiedTrack;
+      if (!track.name) continue;
+      const trackId = track.id ?? simplifiedTrack.id;
+      const artistNames = (track.artists ?? [])
+        .map((artist) => canonicalizeArtistCredit(String(artist.name ?? "")))
+        .filter(Boolean);
+      const artist = artistNames.join(", ") || siteSettings.artistName;
+      releases.set(trackId, {
+        title: track.name,
+        artist,
+        type: totalTracks > 1 ? "track" : "single",
+        collectionTitle: album.name,
+        releaseDate: normalizeReleaseDate(album.release_date),
+        artworkUrl: artwork,
+        spotifyId: trackId,
+        isrc: track.external_ids?.isrc,
+        credits: artistNames.map((name) => ({ role: "Performing artist", name })),
+        officialArtist: true,
+        links: [
+          {
+            platform: "spotify",
+            url: track.external_urls?.spotify ?? `https://open.spotify.com/track/${trackId}`,
+            verified: true,
+          },
+        ],
+      });
+    }
   }
 
-  const artwork =
-    Array.isArray(album.images) && album.images[0]?.url ? String(album.images[0].url) : undefined;
-  const spotifyUrl = album.external_urls?.spotify
-    ? String(album.external_urls.spotify)
-    : `https://open.spotify.com/album/${album.id}`;
-
-  return {
-    title: String(album.name),
-    releaseDate: normalizeReleaseDate(album.release_date ? String(album.release_date) : undefined),
-    artworkUrl: artwork,
-    spotifyId: String(album.id),
-    upc: upc ? String(upc) : undefined,
-    isrc: isrc ? String(isrc) : undefined,
-    links: [{ platform: "spotify", url: spotifyUrl, verified: true }],
-  };
+  return [...releases.values()];
 }
 
 /**
@@ -209,12 +337,7 @@ export function createSpotifyProvider(
       }
 
       const albums = await fetchAllArtistAlbums(token, resolvedArtistId);
-      const releases: ProviderRelease[] = [];
-      for (const album of albums) {
-        const mapped = await enrichAlbumMeta(token, album);
-        if (mapped) releases.push(mapped);
-      }
-      return releases;
+      return mapSpotifyTracks(token, albums, resolvedArtistId);
     },
   };
 }

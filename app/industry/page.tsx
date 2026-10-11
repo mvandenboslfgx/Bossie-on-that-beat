@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Industry",
   description:
-    "Music licensing, custom production and collaborations with Bossie on the beat for film, advertising, games and brands.",
+    "Music licensing, custom production and collaborations with Bossie on that beat for film, advertising, games and brands.",
   alternates: { canonical: "/industry" },
 };
 

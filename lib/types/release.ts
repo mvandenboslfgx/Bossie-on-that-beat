@@ -6,7 +6,7 @@ export type ReleaseStatus =
   | "archived"
   | "pending_review";
 
-export type ReleaseType = "single" | "ep" | "album" | "soundtrack";
+export type ReleaseType = "track" | "single" | "ep" | "album" | "soundtrack";
 
 export type StreamingPlatform =
   | "spotify"
@@ -41,6 +41,7 @@ export interface Release {
   title: string;
   artist: string;
   type: ReleaseType;
+  collectionTitle?: string;
   status: ReleaseStatus;
   releaseDate?: string;
   announcementDate?: string;

@@ -34,7 +34,7 @@ export const brandAssets = {
   primary: {
     variant: "primary",
     src: "/brand/logo-primary.jpg",
-    alt: "Bossie on the beat — official logo",
+    alt: "Bossie on that beat — official logo",
     available: true,
     downloadLabel: "Primary Logo (JPG)",
     mimeType: "image/jpeg",
@@ -65,7 +65,7 @@ export const brandAssets = {
   socialShare: {
     variant: "socialShare",
     src: "/brand/logo-primary.jpg",
-    alt: "Bossie on the beat",
+    alt: "Bossie on that beat",
     available: true,
     mimeType: "image/jpeg",
   },

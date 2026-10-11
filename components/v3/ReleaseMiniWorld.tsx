@@ -37,8 +37,8 @@ export function ReleaseMiniWorld({
       <div className="world-hero-lightstripes" aria-hidden="true" />
       <div className="release-signal-block">
         <p className="eyebrow">
-          TRANSMISSION {tx} · {formatWorldLabel(release.worldSlug)}
-          {skin ? ` · WORLD ${skin.number}` : ""}
+          RELEASE {tx} · {formatWorldLabel(release.worldSlug)}
+          {skin ? ` · CHAPTER ${skin.number}` : ""}
         </p>
         <StatusBadge status={release.status} />
         <h1>{release.title}</h1>
@@ -62,7 +62,7 @@ export function ReleaseSignalBlock({ release }: { release: ReleaseWithLinks }) {
   if (!signal) return null;
   return (
     <section className="section-pad release-signal-section">
-      <p className="eyebrow">THE SIGNAL</p>
+      <p className="eyebrow">THE RELEASE</p>
       <blockquote>{signal}</blockquote>
     </section>
   );
