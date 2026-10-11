@@ -120,6 +120,7 @@
   }
 
   .current-world-hero {
+    padding: 0 !important;
     background:
       radial-gradient(circle at 82% 18%, rgba(202, 164, 92, 0.11), transparent 22rem),
       #050505;
@@ -154,6 +155,33 @@
     min-height: 44px;
     display: inline-flex;
     align-items: center;
+  }
+}
+
+/* Phone hero: text is the first-frame LCP; cover art becomes a deliberate reveal below it. */
+@media (max-width: 600px) {
+  .current-world-grid {
+    padding: 4.75rem 1rem 2.75rem !important;
+    gap: 2rem !important;
+  }
+
+  .current-world-inner {
+    order: 1 !important;
+    min-height: calc(100svh - 8.5rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .current-world-art {
+    order: 2 !important;
+    width: min(76vw, 300px) !important;
+    justify-self: center !important;
+    margin-inline: auto;
+  }
+
+  .current-world-title {
+    text-wrap: balance;
   }
 }
 
