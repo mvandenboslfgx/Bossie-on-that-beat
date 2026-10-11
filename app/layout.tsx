@@ -16,15 +16,17 @@ import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 const displayFont = Cormorant_Garamond({
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  style: "normal",
   variable: "--font-display",
-  display: "swap",
+  display: "optional",
+  preload: true,
 });
 
 const sansFont = Manrope({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
+  preload: true,
 });
 
 const siteUrl = siteSettings.siteUrl;

@@ -106,6 +106,14 @@
   contain-intrinsic-size: auto 720px;
 }
 
+/* The tablet/mobile nav hides the visual wordmark; hide its link wrapper too so
+   it cannot remain as a zero-size focus target in the accessibility tree. */
+@media (max-width: 1100px) {
+  .site-nav .bossie-logo-link-wordmark {
+    display: none !important;
+  }
+}
+
 /* Keep the fixed noise layer and decorative backdrop off the constrained mobile GPU/network path. */
 @media (max-width: 900px) {
   .grain {

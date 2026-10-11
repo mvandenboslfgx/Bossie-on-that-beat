@@ -56,7 +56,11 @@ export function BossieLogo({
 
   if (!href) return inner;
   return (
-    <Link href={href} className="bossie-logo-link">
+    <Link
+      href={href}
+      className={`bossie-logo-link bossie-logo-link-${variant}`}
+      aria-label={`${siteSettings.artistName} — home`}
+    >
       {inner}
     </Link>
   );
