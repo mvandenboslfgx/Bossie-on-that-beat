@@ -23,22 +23,27 @@ export function CurrentWorldHero({
 }) {
   const tx = getTransmissionNumber(live, release.slug);
   const world = formatWorldLabel(release.worldSlug);
-  const visual = release.artworkUrl;
+  const visual = release.heroImageUrl || release.artworkUrl;
 
   return (
-    <header
-      className={`current-world-hero world-skin-${release.worldSlug ?? "default"}`}
-      style={
-        visual
-          ? {
-              backgroundImage: `linear-gradient(180deg, rgba(5,5,5,.55) 0%, rgba(5,5,5,.92) 68%), url(${visual})`,
-            }
-          : undefined
-      }
-    >
+    <header className={`current-world-hero world-skin-${release.worldSlug ?? "default"}`}>
+      {visual ? (
+        <div className="current-world-bg" aria-hidden="true">
+          {/* Deliberately a native image: OpenNext/Cloudflare can serve it without a runtime image-optimizer dependency. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={visual}
+            alt=""
+            className="current-world-bg-image"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </div>
+      ) : null}
       <BossieMark size="xl" className="current-world-watermark" />
       <div className="current-world-inner">
-        <BossieLogo variant="primary" href="/" className="current-world-logo" priority />
+        <BossieLogo variant="primary" href="/" className="current-world-logo" />
         <p className="eyebrow transmission-eyebrow">CURRENT WORLD · TRANSMISSION {tx}</p>
         <h1 className="current-world-title">{release.title}</h1>
         <p className="current-world-world">{world}</p>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { BossieLogo } from "@/components/brand/BossieLogo";
-import { FooterSocialGrid, HeaderSocialStrip, MobileSocialLinks } from "@/components/brand/SocialLinks";
+import { FooterSocialGrid, MobileSocialLinks } from "@/components/brand/SocialLinks";
 import { getListenSocials } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
 
@@ -46,16 +46,21 @@ export function SiteNav() {
 
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
     closeBtnRef.current?.focus();
 
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(false);
     }
+
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = previous;
+      document.body.style.overflow = previousBodyOverflow;
+      document.documentElement.style.overflow = previousHtmlOverflow;
       window.removeEventListener("keydown", onKey);
     };
   }, [open]);
@@ -68,19 +73,33 @@ export function SiteNav() {
       <div className="nav-inner">
         <BossieLogo variant="mark" href="/" />
 
-        <HeaderSocialStrip />
-
         <div className="site-links desktop-nav" aria-hidden={open}>
-          {primaryNav.map(([label, itemHref]) => (
-            <Link key={itemHref} href={itemHref} className={isActive(itemHref) ? "active" : undefined}>
-              {label === "Create Your Song" ? "Create" : label}
-            </Link>
-          ))}
-          {secondaryNav.map(([label, itemHref]) => (
-            <Link key={itemHref} href={itemHref} className={isActive(itemHref) ? "active" : undefined}>
-              {label}
-            </Link>
-          ))}
+          {primaryNav.map(([label, itemHref]) => {
+            const active = isActive(itemHref);
+            return (
+              <Link
+                key={itemHref}
+                href={itemHref}
+                className={active ? "active" : undefined}
+                aria-current={active ? "page" : undefined}
+              >
+                {label === "Create Your Song" ? "Create" : label}
+              </Link>
+            );
+          })}
+          {secondaryNav.map(([label, itemHref]) => {
+            const active = isActive(itemHref);
+            return (
+              <Link
+                key={itemHref}
+                href={itemHref}
+                className={active ? "active" : undefined}
+                aria-current={active ? "page" : undefined}
+              >
+                {label}
+              </Link>
+            );
+          })}
         </div>
 
         <a
@@ -97,8 +116,9 @@ export function SiteNav() {
           className="nav-menu-toggle"
           aria-expanded={open}
           aria-controls={panelId}
+          aria-haspopup="dialog"
           aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((value) => !value)}
         >
           <span className="nav-menu-bars" aria-hidden="true">
             <span />
@@ -117,20 +137,28 @@ export function SiteNav() {
             role="dialog"
             aria-modal="true"
             aria-label="Site menu"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(event) => event.stopPropagation()}
           >
             <button ref={closeBtnRef} type="button" className="mobile-nav-close" onClick={() => setOpen(false)}>
               Close
             </button>
             <BossieLogo variant="primary" href="/" className="mobile-nav-logo" />
             <ul className="mobile-nav-list">
-              {[...primaryNav, ...secondaryNav].map(([label, itemHref]) => (
-                <li key={itemHref}>
-                  <Link href={itemHref} className={isActive(itemHref) ? "active" : undefined} onClick={() => setOpen(false)}>
-                    {label}
-                  </Link>
-                </li>
-              ))}
+              {[...primaryNav, ...secondaryNav].map(([label, itemHref]) => {
+                const active = isActive(itemHref);
+                return (
+                  <li key={itemHref}>
+                    <Link
+                      href={itemHref}
+                      className={active ? "active" : undefined}
+                      aria-current={active ? "page" : undefined}
+                      onClick={() => setOpen(false)}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
             <MobileSocialLinks />
             <a

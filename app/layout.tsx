@@ -6,6 +6,7 @@ import "./request.css";
 import "./v2.css";
 import "./bossie-v3.css";
 import "./bossie-mobile.css";
+import "./performance-fixes.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
@@ -95,6 +96,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://is1-ssl.mzstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://i.scdn.co" crossOrigin="anonymous" />
+      </head>
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(artistSchema) }} />
         {children}
