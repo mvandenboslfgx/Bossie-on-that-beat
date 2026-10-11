@@ -37,6 +37,9 @@ export function ReleaseArtwork({
           fill
           unoptimized
           priority={priority}
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "auto"}
+          decoding="async"
           sizes={large ? "(max-width: 900px) 92vw, 50vw" : "(max-width: 760px) 92vw, 32vw"}
         />
         <span className="release-artwork-sheen" aria-hidden="true" />
@@ -162,7 +165,7 @@ export function ReleaseHero({ release }: { release: ReleaseWithLinks }) {
   return (
     <section className={`release-hero section-pad world-accent-${release.worldSlug ?? "default"}`}>
       <div className="release-hero-grid">
-        <ReleaseArtwork release={release} large />
+        <ReleaseArtwork release={release} large priority />
         <div className="release-hero-copy">
           <StatusBadge status={release.status} />
           <p className="eyebrow">{release.type.toUpperCase()}</p>

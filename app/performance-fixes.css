@@ -1,4 +1,9 @@
-/* Production-only reliability and paint-cost fixes layered after luxury.css. */
+/* Production-only reliability, accessibility and paint-cost fixes layered after luxury.css. */
+
+:root {
+  /* Keep small secondary copy above WCAG AA contrast on the near-black surface. */
+  --muted-deep: #918b82;
+}
 
 .site-nav {
   background: rgba(5, 5, 5, 0.97);
@@ -37,25 +42,136 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Keep the fixed noise layer off the constrained mobile GPU path. */
+/* Hero backdrop is decorative. Keeping it as CSS lets mobile skip the request entirely. */
+.current-world-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: -4;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: saturate(0.62) contrast(1.08);
+  transform: scale(1.035);
+  animation: hero-drift 16s ease-out both;
+  pointer-events: none;
+}
+
+/* Cinema thumbnails become real lazy-loaded images instead of eager CSS backgrounds. */
+.cinema-editorial-thumb {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  background: #0b0b0a;
+}
+
+.cinema-editorial-thumb-image {
+  object-fit: cover;
+  transition: transform 700ms var(--ease-luxury), filter 400ms ease;
+}
+
+.cinema-editorial-thumb-link:hover .cinema-editorial-thumb-image,
+.cinema-editorial-thumb-link:focus-visible .cinema-editorial-thumb-image {
+  transform: scale(1.012);
+  filter: saturate(1.08);
+}
+
+/* Small footer copy previously fell below AA contrast on the dark canvas. */
+.vdb-credit,
+.footer-copy,
+.footer-copy small,
+.mobile-nav-foot > p {
+  color: #918b82 !important;
+}
+
+/* Comfortable pointer/touch targets for Lighthouse accessibility on phone-sized viewports. */
+.mobile-nav-close,
+.nav-menu-toggle {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.social-links a,
+.footer-social-heading {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Keep below-the-fold editorial surfaces out of initial layout/paint work. */
+.home-section,
+.complete-track-section,
+.upcoming-section,
+.cinema-editorial-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+}
+
+/* Keep the fixed noise layer and decorative backdrop off the constrained mobile GPU/network path. */
 @media (max-width: 900px) {
   .grain {
     display: none !important;
   }
 
   .current-world-backdrop {
+    background-image: none !important;
     animation: none !important;
-    transform: scale(1.01);
+    filter: none !important;
+    transform: none !important;
+  }
+
+  .current-world-hero {
+    background:
+      radial-gradient(circle at 82% 18%, rgba(202, 164, 92, 0.11), transparent 22rem),
+      #050505;
+  }
+
+  .current-world-art {
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
   }
 
   .site-nav {
     contain: layout;
   }
+
+  .nav-menu-toggle {
+    min-width: 48px !important;
+    min-height: 48px !important;
+    padding: 0.45rem 0.5rem !important;
+  }
+
+  .mobile-nav-close {
+    min-width: 48px;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-social-links a,
+  .footer-social-grid a,
+  .footer-social-heading,
+  .vdb-credit {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+@media (hover: none) {
+  .release-artwork-image,
+  .cinema-editorial-thumb-image,
+  .world-card-v2::before,
+  .current-world-art {
+    transition: none !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .mobile-nav-panel,
-  .current-world-backdrop {
+  .current-world-backdrop,
+  .release-artwork-image,
+  .cinema-editorial-thumb-image {
     animation: none !important;
+    transition: none !important;
   }
 }

@@ -16,7 +16,6 @@ import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 const displayFont = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-display",
   display: "swap",
@@ -24,7 +23,6 @@ const displayFont = Cormorant_Garamond({
 
 const sansFont = Manrope({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-sans",
   display: "swap",
 });

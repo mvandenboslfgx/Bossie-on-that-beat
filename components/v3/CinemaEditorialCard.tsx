@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { CinemaItem } from "@/lib/types/cinema";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { formatCinemaMeta, getPublicCinemaSummary, getPublicCinemaTitle } from "@/lib/cinema/editorial";
@@ -18,7 +19,17 @@ export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; feat
         aria-label={`${title} — ${meta}`}
       >
         {item.thumbnailUrl ? (
-          <div className="cinema-editorial-thumb" style={{ backgroundImage: `url(${item.thumbnailUrl})` }}>
+          <div className="cinema-editorial-thumb">
+            <Image
+              className="cinema-editorial-thumb-image"
+              src={item.thumbnailUrl}
+              alt=""
+              fill
+              unoptimized
+              loading="lazy"
+              decoding="async"
+              sizes="(max-width: 900px) 100vw, 62vw"
+            />
             {canWatch && (
               <>
                 <BossieMark size="sm" className="cinema-play-mark" />

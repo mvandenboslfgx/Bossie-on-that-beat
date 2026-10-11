@@ -1,6 +1,5 @@
 import type { ReleaseWithLinks } from "@/lib/types/release";
 import Link from "next/link";
-import Image from "next/image";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { ReleaseActions, ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { formatWorldLabel, getTransmissionNumber } from "@/lib/catalog/transmission";
@@ -26,19 +25,14 @@ export function CurrentWorldHero({
   const tx = getTransmissionNumber(live, release.slug);
   const world = formatWorldLabel(release.worldSlug);
   const visual = release.heroImageUrl || release.artworkUrl;
+  const backdropStyle = visual
+    ? { backgroundImage: `url("${visual.replace(/"/g, "%22")}")` }
+    : undefined;
 
   return (
     <header className={`current-world-hero world-skin-${release.worldSlug ?? "default"}`}>
-      {visual ? (
-        <Image
-          className="current-world-backdrop"
-          src={visual}
-          alt=""
-          fill
-          unoptimized
-          priority
-          sizes="100vw"
-        />
+      {backdropStyle ? (
+        <div className="current-world-backdrop" style={backdropStyle} aria-hidden="true" />
       ) : null}
       <div className="current-world-scrim" aria-hidden="true" />
       <BossieMark size="xl" className="current-world-watermark" />
@@ -64,7 +58,7 @@ export function CurrentWorldHero({
         </div>
         <Link className="current-world-art" href={`/music/${release.slug}`} aria-label={`Explore ${release.title}`}>
           <span className="current-world-art-index">B/{tx}</span>
-          <ReleaseArtwork release={release} large />
+          <ReleaseArtwork release={release} large priority />
           <span className="current-world-art-caption">Sound · Image · Story</span>
         </Link>
       </div>
