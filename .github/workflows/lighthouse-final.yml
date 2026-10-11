@@ -43,5 +43,17 @@ jobs:
           for(const id of ['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift','link-name','agent-accessibility-tree','llms-txt']){
             const a=r.audits[id]; if(a) console.log(`AUDIT ${id}: score=${a.score} value=${a.displayValue||''}`);
           }
-          const lcp=r.audits['lcp-breakdown-insight']; if(lcp) console.log('LCP_DETAILS '+JSON.stringify(lcp.details));
+          for(const id of ['long-tasks','bootup-time','mainthread-work-breakdown','unused-javascript','total-byte-weight']){
+            const a=r.audits[id];
+            if(!a) continue;
+            console.log(`\nDETAIL ${id} score=${a.score} value=${a.displayValue||''}`);
+            console.log(JSON.stringify(a.details||{}, null, 2));
+          }
+          const req=r.audits['network-requests'];
+          if(req?.details?.items){
+            console.log('\nLARGEST_NETWORK_REQUESTS');
+            for(const x of [...req.details.items].sort((a,b)=>(b.transferSize||0)-(a.transferSize||0)).slice(0,20)){
+              console.log(`${x.transferSize||0}\t${x.resourceType||''}\t${x.url}`);
+            }
+          }
           NODE
