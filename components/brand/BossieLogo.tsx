@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { brandAssets } from "@/lib/brand/assets";
 import { siteSettings } from "@/lib/site-settings";
 
@@ -46,6 +45,7 @@ export function BossieLogo({
         height={cfg.height}
         className={`${cfg.className} ${className ?? ""}`.trim()}
         fetchPriority={priority ? "high" : undefined}
+        decoding="async"
       />
     ) : (
       <span className={`bossie-logo-wordmark ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
@@ -56,12 +56,12 @@ export function BossieLogo({
 
   if (!href) return inner;
   return (
-    <Link
+    <a
       href={href}
       className={`bossie-logo-link bossie-logo-link-${variant}`}
       aria-label={`${siteSettings.artistName} — home`}
     >
       {inner}
-    </Link>
+    </a>
   );
 }

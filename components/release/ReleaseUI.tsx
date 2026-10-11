@@ -1,5 +1,3 @@
-import Link from "next/link";
-import Image from "next/image";
 import type { ReleaseWithLinks } from "@/lib/types/release";
 import { getPrimaryListenLink, getWatchLink } from "@/lib/repository/release-repository";
 import { platformDisplayNames } from "@/lib/site-settings";
@@ -17,6 +15,18 @@ const platformOrder = [
   "qobuz",
 ] as const;
 
+function artworkVariant(url: string, size: number) {
+  if (!/mzstatic\.com/i.test(url)) return url;
+  return url.replace(/\/\d+x\d+bb\.(jpg|jpeg|png)(?:\?.*)?$/i, (_match, ext: string) => `/${size}x${size}bb.${ext}`);
+}
+
+function artworkSrcSet(url: string) {
+  if (!/mzstatic\.com/i.test(url)) return undefined;
+  return [300, 400, 600, 800]
+    .map((size) => `${artworkVariant(url, size)} ${size}w`)
+    .join(", ");
+}
+
 export function ReleaseArtwork({
   release,
   large,
@@ -28,19 +38,22 @@ export function ReleaseArtwork({
 }) {
   const className = large ? "release-artwork large" : "release-artwork";
   if (release.artworkUrl && isVerifiedListenUrl(release.artworkUrl)) {
+    const src = artworkVariant(release.artworkUrl, large ? 600 : 400);
+    const srcSet = artworkSrcSet(release.artworkUrl);
     return (
       <div className={className}>
-        <Image
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
           className="release-artwork-image"
-          src={release.artworkUrl}
+          src={src}
+          srcSet={srcSet}
           alt={`${release.title} artwork`}
-          fill
-          unoptimized
-          priority={priority}
+          width={800}
+          height={800}
           loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
+          fetchPriority={priority ? "high" : "low"}
           decoding="async"
-          sizes={large ? "(max-width: 900px) 92vw, 50vw" : "(max-width: 760px) 92vw, 32vw"}
+          sizes={large ? "(max-width: 600px) 300px, (max-width: 900px) 92vw, 460px" : "(max-width: 760px) 92vw, 420px"}
         />
         <span className="release-artwork-sheen" aria-hidden="true" />
       </div>
@@ -122,9 +135,9 @@ export function ReleaseActions({ release }: { release: ReleaseWithLinks }) {
         </TrackedLink>
       )}
       {release.worldSlug && (
-        <Link className="button button-ghost" href={`/worlds/${release.worldSlug}`}>
+        <a className="button button-ghost" href={`/worlds/${release.worldSlug}`}>
           ENTER WORLD ↗
-        </Link>
+        </a>
       )}
     </div>
   );
@@ -135,7 +148,7 @@ export function ReleaseCard({ release, withListen }: { release: ReleaseWithLinks
 
   return (
     <article className={`release-card-v2 world-accent-${release.worldSlug ?? "default"}`}>
-      <Link href={`/music/${release.slug}`} className="release-card-link">
+      <a href={`/music/${release.slug}`} className="release-card-link">
         <ReleaseArtwork release={release} />
         <div className="release-card-body">
           <StatusBadge status={release.status} />
@@ -146,15 +159,15 @@ export function ReleaseCard({ release, withListen }: { release: ReleaseWithLinks
             {release.releaseDate ? ` · ${release.releaseDate.slice(0, 4)}` : ""}
           </span>
         </div>
-      </Link>
+      </a>
       {withListen && listen && (
         <div className="release-card-actions">
           <TrackedLink className="button button-gold" href={`/go/${release.slug}`} releaseId={release.id} platform="smartlink">
             LISTEN ↗
           </TrackedLink>
-          <Link className="text-link" href={`/music/${release.slug}`}>
+          <a className="text-link" href={`/music/${release.slug}`}>
             Explore ↗
-          </Link>
+          </a>
         </div>
       )}
     </article>
@@ -177,9 +190,7 @@ export function ReleaseHero({ release }: { release: ReleaseWithLinks }) {
           {release.tagline && <p className="release-tagline">{release.tagline}</p>}
           <div className="release-meta-row">
             {release.genres.map((g) => (
-              <span key={g} className="meta-chip">
-                {g}
-              </span>
+              <span key={g} className="meta-chip">{g}</span>
             ))}
             {release.releaseDate && <span className="meta-chip">{release.releaseDate}</span>}
           </div>

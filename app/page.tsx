@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
 import { getAllWorlds, getAllCinema } from "@/lib/repository/release-repository";
 import { CatalogProof, CurrentWorldHero } from "@/components/v3/BossieV3";
@@ -84,8 +83,8 @@ export default async function HomePage() {
               without losing one recognizable identity.
             </p>
             <div className="identity-actions">
-              <Link className="button button-gold" href="/about">Meet Bossie ↗</Link>
-              <Link className="text-link" href="/epk">Official EPK ↗</Link>
+              <a className="button button-gold" href="/about">Meet Bossie ↗</a>
+              <a className="text-link" href="/epk">Official EPK ↗</a>
             </div>
           </div>
           <dl className="identity-proof-grid">
@@ -102,9 +101,7 @@ export default async function HomePage() {
               <p className="eyebrow">LATEST RELEASES</p>
               <h2 id="latest-releases-title">Every official track. One living archive.</h2>
             </div>
-            <Link className="text-link" href="/music">
-              Full archive ↗
-            </Link>
+            <a className="text-link" href="/music">Full archive ↗</a>
           </div>
           <MusicEditorialArchive live={latestReleases.slice(0, 4)} catalog={live} />
         </section>
@@ -115,13 +112,11 @@ export default async function HomePage() {
               <p className="eyebrow">WORLDS</p>
               <h2 id="worlds-home-title">Every sound becomes a place.</h2>
             </div>
-            <Link className="text-link" href="/worlds">
-              All worlds ↗
-            </Link>
+            <a className="text-link" href="/worlds">All worlds ↗</a>
           </div>
           <div className="world-grid-v2">
             {worlds.slice(0, 4).map((world) => (
-              <Link
+              <a
                 key={world.slug}
                 href={`/worlds/${world.slug}`}
                 className={`world-card-v2 world-theme-${world.slug} world-skin-${world.slug}`}
@@ -131,7 +126,7 @@ export default async function HomePage() {
                 <h3>{world.title}</h3>
                 <p>{world.description}</p>
                 <span className="text-link">Enter world ↗</span>
-              </Link>
+              </a>
             ))}
           </div>
         </section>
@@ -142,9 +137,7 @@ export default async function HomePage() {
               <p className="eyebrow">CINEMA</p>
               <h2 id="cinema-home-title">The picture continues where the track ends.</h2>
             </div>
-            <Link className="text-link" href="/cinema">
-              Bossie Cinema ↗
-            </Link>
+            <a className="text-link" href="/cinema">Bossie Cinema ↗</a>
           </div>
           <div className="cinema-editorial-stack">
             {cinema.slice(0, 3).map((item, i) => (
@@ -157,9 +150,7 @@ export default async function HomePage() {
           <BossieMark size="lg" className="section-mark" />
           <p className="eyebrow">BESPOKE PRODUCTION</p>
           <h2 id="bespoke-home-title">Commission a world of your own.</h2>
-          <Link className="button button-gold" href="/request">
-            Start your song ↗
-          </Link>
+          <a className="button button-gold" href="/request">Start your song ↗</a>
         </section>
 
         {streaming.length > 0 && (
@@ -167,9 +158,7 @@ export default async function HomePage() {
             <p className="eyebrow" id="listen-home-title">LISTEN</p>
             <div className="platform-grid-v2">
               {streaming.map(({ key, href, label }) => (
-                <a key={key} href={href} target="_blank" rel="noreferrer">
-                  {label} ↗
-                </a>
+                <a key={key} href={href} target="_blank" rel="noreferrer">{label} ↗</a>
               ))}
             </div>
           </section>

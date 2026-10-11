@@ -32,6 +32,8 @@ const sansFont = Manrope({
 const siteUrl = siteSettings.siteUrl;
 const ogImage = getBrandAssetUrl("socialShare", siteUrl);
 
+const clickTrackingScript = `(()=>{if(window.__bossieClickTracking)return;window.__bossieClickTracking=1;document.addEventListener("click",e=>{const n=e.target instanceof Element?e.target.closest('a[data-analytics-event="release-click"]'):null;if(!n)return;const q=new URLSearchParams(location.search),p=JSON.stringify({releaseId:n.dataset.releaseId||undefined,platform:n.dataset.platform||undefined,source:q.get("utm_source")||document.referrer||undefined,medium:q.get("utm_medium")||undefined,campaign:q.get("utm_campaign")||undefined,deviceType:matchMedia("(max-width: 760px)").matches?"mobile":"desktop"});if(navigator.sendBeacon){navigator.sendBeacon("/api/smartlink/track",new Blob([p],{type:"application/json"}))}else{fetch("/api/smartlink/track",{method:"POST",headers:{"Content-Type":"application/json"},body:p,keepalive:true}).catch(()=>{})}},true)})();`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
@@ -126,12 +128,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="en" className={`${displayFont.variable} ${sansFont.variable}`}>
-      <head>
-        <link rel="preconnect" href="https://i.scdn.co" />
-      </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to content</a>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteSchema) }} />
+        <script dangerouslySetInnerHTML={{ __html: clickTrackingScript }} />
         {children}
       </body>
     </html>
