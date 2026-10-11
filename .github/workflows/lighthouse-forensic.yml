@@ -50,7 +50,7 @@ jobs:
             --output-path=lighthouse-mobile.json \
             --quiet
 
-      - name: Print scored failures
+      - name: Print forensic audit details
         shell: bash
         run: |
           node <<'NODE'
@@ -76,6 +76,12 @@ jobs:
                 console.log(`${ref.id}: score=${audit.score} :: ${audit.title}${audit.displayValue ? ` :: ${audit.displayValue}` : ''}`);
               }
             }
+          }
+          for (const id of ['link-name', 'agent-accessibility-tree', 'largest-contentful-paint-element', 'lcp-breakdown-insight', 'long-tasks']) {
+            const audit = report.audits[id];
+            if (!audit) continue;
+            console.log(`\n=== DETAILS: ${id} ===`);
+            console.log(JSON.stringify({score:audit.score,title:audit.title,displayValue:audit.displayValue,details:audit.details}, null, 2));
           }
           console.log('\n=== AGENTIC / LLMS AUDITS ===');
           for (const [id, audit] of Object.entries(report.audits || {})) {
