@@ -1,0 +1,124 @@
+name: Bossie full-site forensic
+
+on:
+  push:
+    branches: [audit/fullsite-20261012]
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run build
+
+      - name: Start production app
+        shell: bash
+        run: |
+          NEXT_TELEMETRY_DISABLED=1 npm start > /tmp/bossie-next.log 2>&1 &
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              echo "Bossie ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/bossie-next.log
+          exit 1
+
+      - name: Smoke every public route
+        shell: bash
+        run: |
+          set -euo pipefail
+          for route in / /music /music/latest /music/upcoming /worlds /cinema /about /epk /industry /request /links /privacy /robots.txt /sitemap.xml /llms.txt /llms-full.txt; do
+            code=$(curl -sS -L -o /tmp/body -w '%{http_code}' "http://127.0.0.1:3000$route")
+            echo "$code $route"
+            test "$code" = "200"
+          done
+
+      - name: Install browser tester
+        run: |
+          npm install --no-save --no-package-lock @playwright/test@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Prove menu works mobile and desktop
+        shell: bash
+        run: |
+          cat > /tmp/menu-test.cjs <<'NODE'
+          const { chromium } = require('@playwright/test');
+          (async () => {
+            const browser = await chromium.launch({headless:true});
+            const page = await browser.newPage({viewport:{width:390,height:844}});
+            await page.goto('http://127.0.0.1:3000/', {waitUntil:'networkidle'});
+            await page.locator('.nav-menu-toggle').click();
+            const open1 = await page.locator('#bossie-site-menu').evaluate(el => el.matches(':popover-open'));
+            if (!open1) throw new Error('Mobile menu did not open');
+            await page.keyboard.press('Escape');
+            const closed = await page.locator('#bossie-site-menu').evaluate(el => !el.matches(':popover-open'));
+            if (!closed) throw new Error('Mobile menu did not close with Escape');
+            await page.locator('.nav-menu-toggle').click();
+            await Promise.all([
+              page.waitForURL('**/music'),
+              page.locator('#bossie-site-menu a[href="/music"]').click(),
+            ]);
+            if (!page.url().endsWith('/music')) throw new Error('Mobile Music navigation failed');
+
+            const desktop = await browser.newPage({viewport:{width:1440,height:1000}});
+            await desktop.goto('http://127.0.0.1:3000/', {waitUntil:'networkidle'});
+            await Promise.all([
+              desktop.waitForURL('**/worlds'),
+              desktop.locator('.desktop-nav a[href="/worlds"]').click(),
+            ]);
+            if (!desktop.url().endsWith('/worlds')) throw new Error('Desktop Worlds navigation failed');
+            await browser.close();
+            console.log('MENU PASS: open, Escape-close, mobile route, desktop route');
+          })().catch(err => { console.error(err); process.exit(1); });
+          NODE
+          NODE_PATH="$PWD/node_modules" node /tmp/menu-test.cjs
+
+      - name: Lighthouse public pages
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lh
+          routes=(home music worlds cinema about epk industry request links)
+          paths=(/ /music /worlds /cinema /about /epk /industry /request /links)
+          for i in "${!routes[@]}"; do
+            name="${routes[$i]}"
+            path="${paths[$i]}"
+            echo "Auditing $name $path"
+            npx --yes lighthouse@13.4.1 "http://127.0.0.1:3000$path" \
+              --chrome-flags="--headless --no-sandbox --disable-gpu" \
+              --output=json --output-path="/tmp/lh/$name.json" --quiet
+          done
+
+      - name: Report full-site scores
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const dir='/tmp/lh';
+          const files=fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort();
+          let hardFail=false;
+          console.log('\nPAGE\tPERF\tA11Y\tBP\tSEO\tAGENTIC\tLCP\tTBT\tCLS');
+          for(const f of files){
+            const r=JSON.parse(fs.readFileSync(`${dir}/${f}`,'utf8'));
+            const c=r.categories||{};
+            const score=id=>c[id]?.score==null?'NA':Math.round(c[id].score*100);
+            const metric=id=>r.audits[id]?.displayValue||'';
+            const row=[f.replace('.json',''),score('performance'),score('accessibility'),score('best-practices'),score('seo'),score('agentic-browsing'),metric('largest-contentful-paint'),metric('total-blocking-time'),metric('cumulative-layout-shift')];
+            console.log(row.join('\t'));
+            for(const id of ['accessibility','best-practices','seo']) if(c[id]?.score !== 1) hardFail=true;
+            if(c['agentic-browsing'] && c['agentic-browsing'].score !== 1) hardFail=true;
+          }
+          if(hardFail){ console.error('Non-performance 100/100 regression detected'); process.exit(1); }
+          NODE
