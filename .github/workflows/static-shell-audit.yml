@@ -1,0 +1,55 @@
+name: Bossie static shell audit
+
+on:
+  push:
+    branches: [perf/static-shell-20261012]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Build
+        run: npm run build
+      - name: Start production app
+        shell: bash
+        run: |
+          NEXT_TELEMETRY_DISABLED=1 npm start > /tmp/bossie-next.log 2>&1 &
+          for i in {1..45}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/bossie-next.log
+          exit 1
+      - name: Lighthouse mobile
+        run: |
+          npx --yes lighthouse@13.4.1 http://127.0.0.1:3000/ \
+            --chrome-flags="--headless --no-sandbox --disable-gpu" \
+            --output=json --output-path=lighthouse-mobile.json --quiet
+      - name: Report
+        shell: bash
+        run: |
+          node <<'NODE'
+          const r=require('./lighthouse-mobile.json');
+          for(const [id,c] of Object.entries(r.categories||{})) console.log(`CATEGORY ${id}: ${Math.round((c.score||0)*100)}`);
+          for(const id of ['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift','link-name','agent-accessibility-tree','llms-txt']){
+            const a=r.audits[id]; if(a) console.log(`AUDIT ${id}: score=${a.score} value=${a.displayValue||''}`);
+          }
+          const req=r.audits['network-requests'];
+          if(req?.details?.items){
+            console.log('TOP_REQUESTS');
+            for(const x of [...req.details.items].sort((a,b)=>(b.transferSize||0)-(a.transferSize||0)).slice(0,15)) console.log(`${x.transferSize||0}\t${x.resourceType||''}\t${x.url}`);
+          }
+          const unused=r.audits['unused-javascript']; if(unused) console.log(`UNUSED_JS ${unused.displayValue||''} score=${unused.score}`);
+          NODE
