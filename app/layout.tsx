@@ -124,6 +124,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <html lang="en" className={`${displayFont.variable} ${sansFont.variable}`}>
+      <head>
+        <link rel="preconnect" href="https://i.scdn.co" />
+      </head>
       <body>
         <a className="skip-link" href="#main-content">Skip to content</a>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteSchema) }} />
