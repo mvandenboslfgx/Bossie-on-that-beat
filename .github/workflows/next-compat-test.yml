@@ -1,0 +1,72 @@
+name: Bossie Next compatibility test
+
+on:
+  push:
+    branches: [runtime-next-16-3-8-test]
+
+permissions:
+  contents: read
+
+jobs:
+  compat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install known-compatible patched versions
+        run: npm install --save-exact next@16.3.8 @opennextjs/cloudflare@1.20.3
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+
+      - name: Runtime versions
+        run: npm list next @opennextjs/cloudflare wrangler --depth=0
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build OpenNext Worker
+        run: npm run cf:build
+
+      - name: Start local Worker and require healthy routes
+        run: |
+          set +e
+          npx wrangler dev --local --port 8787 > /tmp/wrangler-local.log 2>&1 &
+          pid=$!
+          root_code=000
+          for attempt in $(seq 1 30); do
+            root_code=$(curl -sS -o /tmp/root.html -w '%{http_code}' --max-time 5 http://127.0.0.1:8787/ || true)
+            echo "root attempt ${attempt}: HTTP ${root_code}"
+            if [ "$root_code" != "000" ]; then break; fi
+            sleep 2
+          done
+          failed=0
+          for path in / /robots.txt /llms.txt /music; do
+            code=$(curl -sS -o /tmp/body.txt -w '%{http_code}' --max-time 15 "http://127.0.0.1:8787${path}" || true)
+            echo "${path}: HTTP ${code}"
+            if [ "$code" != "200" ]; then failed=1; fi
+          done
+          if [ "$failed" = "1" ]; then
+            echo '===== WRANGLER LOG ====='
+            cat /tmp/wrangler-local.log || true
+          fi
+          kill "$pid" 2>/dev/null || true
+          wait "$pid" 2>/dev/null || true
+          if [ "$root_code" != "200" ] || [ "$failed" = "1" ]; then exit 1; fi
+
+      - name: Upload compatible dependency lock
+        uses: actions/upload-artifact@v4
+        with:
+          name: bossie-compatible-dependencies
+          path: |
+            package.json
+            package-lock.json
+          retention-days: 2
