@@ -31,7 +31,6 @@ jobs:
         run: npm ci
 
       - name: Dependency audit
-        continue-on-error: true
         run: npm audit --audit-level=high
 
       - name: Typecheck
@@ -39,3 +38,59 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+  live-audit:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Wait for Cloudflare production deployment
+        run: sleep 120
+
+      - name: Lighthouse mobile
+        run: >-
+          npx --yes lighthouse@13.5.0 https://bossieonthatbeat.com/
+          --quiet
+          --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+          --output=json
+          --output-path=./lighthouse-mobile.json
+
+      - name: Lighthouse desktop
+        run: >-
+          npx --yes lighthouse@13.5.0 https://bossieonthatbeat.com/
+          --quiet
+          --preset=desktop
+          --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
+          --output=json
+          --output-path=./lighthouse-desktop.json
+
+      - name: Print Bossie quality scores
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          for (const [label, file] of [['MOBILE', 'lighthouse-mobile.json'], ['DESKTOP', 'lighthouse-desktop.json']]) {
+            const lhr = JSON.parse(fs.readFileSync(file, 'utf8'));
+            const score = (id) => Math.round((lhr.categories[id]?.score ?? 0) * 100);
+            const agent = lhr.categories['agentic-browsing'];
+            const refs = (agent?.auditRefs ?? []).filter((ref) => {
+              const audit = lhr.audits[ref.id];
+              return audit && !['notApplicable', 'informative', 'manual'].includes(audit.scoreDisplayMode);
+            });
+            const passed = refs.filter((ref) => lhr.audits[ref.id]?.score === 1).length;
+            const metric = (id) => lhr.audits[id]?.displayValue ?? 'n/a';
+            console.log(`${label}: Performance ${score('performance')} / Accessibility ${score('accessibility')} / Best Practices ${score('best-practices')} / SEO ${score('seo')} / Agentic ${passed}/${refs.length}`);
+            console.log(`${label}: FCP ${metric('first-contentful-paint')} | LCP ${metric('largest-contentful-paint')} | TBT ${metric('total-blocking-time')} | CLS ${metric('cumulative-layout-shift')} | SI ${metric('speed-index')}`);
+            const failing = refs.filter((ref) => lhr.audits[ref.id]?.score !== 1).map((ref) => ref.id);
+            if (failing.length) console.log(`${label}: Agentic failing audits: ${failing.join(', ')}`);
+          }
+          NODE
+
+      - name: Upload Lighthouse reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: bossie-lighthouse-${{ github.sha }}
+          path: |
+            lighthouse-mobile.json
+            lighthouse-desktop.json
+          retention-days: 14
