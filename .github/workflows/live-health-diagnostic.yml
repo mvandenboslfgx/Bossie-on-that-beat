@@ -1,0 +1,47 @@
+name: Bossie live health diagnostic
+
+on:
+  push:
+    branches: [diagnostic-live-health]
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Probe production endpoints
+        run: |
+          set +e
+          probe() {
+            label="$1"
+            url="$2"
+            echo "===== ${label} :: ${url} ====="
+            curl -L -sS -D /tmp/headers.txt -o /tmp/body.txt \
+              --connect-timeout 10 --max-time 30 \
+              -A 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 Chrome/141.0.0.0 Mobile Safari/537.36' \
+              -w '\nHTTP=%{http_code} TOTAL=%{time_total}s TTFB=%{time_starttransfer}s SIZE=%{size_download}\n' \
+              "$url"
+            echo '--- headers ---'
+            sed -n '1,80p' /tmp/headers.txt
+            echo '--- body first 1200 bytes ---'
+            head -c 1200 /tmp/body.txt
+            echo
+          }
+          probe apex https://bossieonthatbeat.com/
+          probe robots https://bossieonthatbeat.com/robots.txt
+          probe llms https://bossieonthatbeat.com/llms.txt
+          probe music https://bossieonthatbeat.com/music
+          probe www https://www.bossieonthatbeat.com/
+
+      - name: Probe Googlebot response
+        run: |
+          curl -L -sS -D - -o /tmp/googlebot-body.txt \
+            --connect-timeout 10 --max-time 30 \
+            -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' \
+            -w '\nHTTP=%{http_code} TOTAL=%{time_total}s TTFB=%{time_starttransfer}s SIZE=%{size_download}\n' \
+            https://bossieonthatbeat.com/ || true
+          echo '--- Googlebot body first 1200 bytes ---'
+          head -c 1200 /tmp/googlebot-body.txt || true
