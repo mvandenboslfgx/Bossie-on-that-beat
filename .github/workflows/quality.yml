@@ -43,27 +43,57 @@ jobs:
     if: github.event_name == 'push'
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
-      - name: Wait for Cloudflare production deployment
-        run: sleep 120
+      - name: Wait for healthy Cloudflare production
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            code=$(curl -L -sS -o /tmp/bossie-home.html -w '%{http_code}' --max-time 20 https://bossieonthatbeat.com/ || true)
+            echo "Production readiness attempt ${attempt}/36: HTTP ${code}"
+            if [ "$code" = "200" ] && grep -qi "Bossie on that beat" /tmp/bossie-home.html; then
+              echo "Production is healthy and serving Bossie."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Production never reached a healthy HTTP 200 state."
+          exit 1
 
       - name: Lighthouse mobile
-        run: >-
-          npx --yes lighthouse@13.5.0 https://bossieonthatbeat.com/
-          --quiet
-          --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
-          --output=json
-          --output-path=./lighthouse-mobile.json
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if npx --yes lighthouse@13.5.0 https://bossieonthatbeat.com/ \
+              --quiet \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --max-wait-for-load=60000 \
+              --output=json \
+              --output-path=./lighthouse-mobile.json; then
+              exit 0
+            fi
+            echo "Mobile Lighthouse attempt ${attempt}/3 failed; retrying..."
+            sleep 20
+          done
+          exit 1
 
       - name: Lighthouse desktop
-        run: >-
-          npx --yes lighthouse@13.5.0 https://bossieonthatbeat.com/
-          --quiet
-          --preset=desktop
-          --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage"
-          --output=json
-          --output-path=./lighthouse-desktop.json
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            if npx --yes lighthouse@13.5.0 https://bossieonthatbeat.com/ \
+              --quiet \
+              --preset=desktop \
+              --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+              --max-wait-for-load=60000 \
+              --output=json \
+              --output-path=./lighthouse-desktop.json; then
+              exit 0
+            fi
+            echo "Desktop Lighthouse attempt ${attempt}/3 failed; retrying..."
+            sleep 20
+          done
+          exit 1
 
       - name: Print Bossie quality scores
         run: |
@@ -87,10 +117,12 @@ jobs:
           NODE
 
       - name: Upload Lighthouse reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: bossie-lighthouse-${{ github.sha }}
           path: |
             lighthouse-mobile.json
             lighthouse-desktop.json
+          if-no-files-found: ignore
           retention-days: 14
