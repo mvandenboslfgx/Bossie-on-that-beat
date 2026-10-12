@@ -24,12 +24,12 @@ export function BossieLogo({
 
   const inner =
     variant === "wordmark" ? (
-      <span className={`${cfg.className} ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
+      <span className={`${cfg.className} ${className ?? ""}`.trim()}>
         <span className="bossie-wordmark-name">BOSSIE</span>
         <span className="bossie-wordmark-tail">ON THAT BEAT</span>
       </span>
     ) : variant === "primary" ? (
-      <span className={`${cfg.className} bossie-lockup ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
+      <span className={`${cfg.className} bossie-lockup ${className ?? ""}`.trim()}>
         <span className="bossie-lockup-monogram" aria-hidden="true">B</span>
         <span className="bossie-lockup-copy">
           <span className="bossie-lockup-name">BOSSIE</span>
@@ -40,7 +40,7 @@ export function BossieLogo({
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={brandAssets.mark.src}
-        alt={brandAssets.mark.alt}
+        alt=""
         width={cfg.width}
         height={cfg.height}
         className={`${cfg.className} ${className ?? ""}`.trim()}
@@ -48,7 +48,7 @@ export function BossieLogo({
         decoding="async"
       />
     ) : (
-      <span className={`bossie-logo-wordmark ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
+      <span className={`bossie-logo-wordmark ${className ?? ""}`.trim()}>
         <span className="bossie-wordmark-name">BOSSIE</span>
         <span className="bossie-wordmark-tail">ON THAT BEAT</span>
       </span>
