@@ -1,3 +1,5 @@
+import Link from "next/link";
+import Image from "next/image";
 import type { CinemaItem } from "@/lib/types/cinema";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { formatCinemaMeta, getPublicCinemaSummary, getPublicCinemaTitle } from "@/lib/cinema/editorial";
@@ -11,34 +13,36 @@ export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; feat
 
   return (
     <article className={`cinema-editorial-card ${featured ? "cinema-editorial-featured" : ""}`}>
-      <a
+      <Link
         href={`/cinema/${item.slug}`}
         className="cinema-editorial-thumb-link"
         aria-label={`${title} — ${meta}`}
       >
         {item.thumbnailUrl ? (
           <div className="cinema-editorial-thumb">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               className="cinema-editorial-thumb-image"
               src={item.thumbnailUrl}
               alt=""
-              width={1280}
-              height={720}
+              fill
+              unoptimized
               loading="lazy"
               decoding="async"
+              sizes="(max-width: 900px) 100vw, 62vw"
             />
             {canWatch && (
               <>
                 <BossieMark size="sm" className="cinema-play-mark" />
-                <span className="cinema-play-label" aria-hidden="true">▶</span>
+                <span className="cinema-play-label" aria-hidden="true">
+                  ▶
+                </span>
               </>
             )}
           </div>
         ) : (
           <div className="cinema-editorial-thumb cinema-thumb-empty" />
         )}
-      </a>
+      </Link>
       <div className="cinema-editorial-body">
         <p className="cinema-editorial-meta">{meta}</p>
         <h3>{title}</h3>
@@ -49,9 +53,9 @@ export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; feat
               WATCH →
             </a>
           )}
-          <a className="text-link" href={`/cinema/${item.slug}`}>
+          <Link className="text-link" href={`/cinema/${item.slug}`}>
             Details ↗
-          </a>
+          </Link>
         </div>
       </div>
     </article>

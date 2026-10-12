@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { brandAssets } from "@/lib/brand/assets";
 import { siteSettings } from "@/lib/site-settings";
 
@@ -24,12 +25,12 @@ export function BossieLogo({
 
   const inner =
     variant === "wordmark" ? (
-      <span className={`${cfg.className} ${className ?? ""}`.trim()}>
+      <span className={`${cfg.className} ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
         <span className="bossie-wordmark-name">BOSSIE</span>
         <span className="bossie-wordmark-tail">ON THAT BEAT</span>
       </span>
     ) : variant === "primary" ? (
-      <span className={`${cfg.className} bossie-lockup ${className ?? ""}`.trim()}>
+      <span className={`${cfg.className} bossie-lockup ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
         <span className="bossie-lockup-monogram" aria-hidden="true">B</span>
         <span className="bossie-lockup-copy">
           <span className="bossie-lockup-name">BOSSIE</span>
@@ -40,15 +41,14 @@ export function BossieLogo({
       // eslint-disable-next-line @next/next/no-img-element
       <img
         src={brandAssets.mark.src}
-        alt=""
+        alt={brandAssets.mark.alt}
         width={cfg.width}
         height={cfg.height}
         className={`${cfg.className} ${className ?? ""}`.trim()}
         fetchPriority={priority ? "high" : undefined}
-        decoding="async"
       />
     ) : (
-      <span className={`bossie-logo-wordmark ${className ?? ""}`.trim()}>
+      <span className={`bossie-logo-wordmark ${className ?? ""}`.trim()} aria-label={siteSettings.artistName}>
         <span className="bossie-wordmark-name">BOSSIE</span>
         <span className="bossie-wordmark-tail">ON THAT BEAT</span>
       </span>
@@ -56,12 +56,8 @@ export function BossieLogo({
 
   if (!href) return inner;
   return (
-    <a
-      href={href}
-      className={`bossie-logo-link bossie-logo-link-${variant}`}
-      aria-label={`${siteSettings.artistName} — home`}
-    >
+    <Link href={href} className="bossie-logo-link">
       {inner}
-    </a>
+    </Link>
   );
 }

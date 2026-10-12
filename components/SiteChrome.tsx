@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { BossieLogo } from "@/components/brand/BossieLogo";
 import { FooterSocialGrid } from "@/components/brand/SocialLinks";
@@ -16,7 +17,7 @@ export function SiteFooter() {
       <FooterSocialGrid />
       <div className="footer-copy">
         <small>
-          © 2026 BOSSIE ON THAT BEAT · <a href="/privacy">PRIVACY</a>
+          © 2026 BOSSIE ON THAT BEAT · <Link href="/privacy">PRIVACY</Link>
         </small>
       </div>
       <a className="vdb-credit" href="https://vdbdigital.nl" target="_blank" rel="noreferrer">

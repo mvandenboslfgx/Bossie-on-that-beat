@@ -1,6 +1,7 @@
 /* Production-only reliability, accessibility and paint-cost fixes layered after luxury.css. */
 
 :root {
+  /* Keep small secondary copy above WCAG AA contrast on the near-black surface. */
   --muted-deep: #918b82;
 }
 
@@ -23,50 +24,12 @@
   z-index: 2;
 }
 
-/* Native Popover API replaces the React menu state/hydration path. */
-.mobile-nav-overlay[popover] {
-  inset: 0;
-  width: 100vw;
-  max-width: none;
-  height: 100vh;
-  height: 100dvh;
-  max-height: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  color: inherit;
-  background: rgba(0, 0, 0, 0.82);
+.mobile-nav-overlay {
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   overscroll-behavior: contain;
   touch-action: manipulation;
   contain: layout paint;
-}
-
-.mobile-nav-overlay[popover]:not(:popover-open) {
-  display: none;
-}
-
-.mobile-nav-overlay[popover]:popover-open {
-  display: block;
-}
-
-.mobile-nav-overlay[popover]::backdrop {
-  background: rgba(0, 0, 0, 0.58);
-}
-
-html:has(.mobile-nav-overlay:popover-open),
-body:has(.mobile-nav-overlay:popover-open) {
-  overflow: hidden;
-}
-
-body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:first-child {
-  transform: translateY(3px) rotate(45deg);
-}
-
-body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
-  width: 100%;
-  transform: translateY(-3px) rotate(-45deg);
 }
 
 .mobile-nav-panel {
@@ -79,6 +42,7 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Hero backdrop is decorative. Keeping it as CSS lets mobile skip the request entirely. */
 .current-world-backdrop {
   position: absolute;
   inset: 0;
@@ -92,14 +56,7 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   pointer-events: none;
 }
 
-.release-artwork-image,
-.cinema-editorial-thumb-image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-}
-
+/* Cinema thumbnails become real lazy-loaded images instead of eager CSS backgrounds. */
 .cinema-editorial-thumb {
   position: relative;
   overflow: hidden;
@@ -108,6 +65,7 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
 }
 
 .cinema-editorial-thumb-image {
+  object-fit: cover;
   transition: transform 700ms var(--ease-luxury), filter 400ms ease;
 }
 
@@ -117,16 +75,15 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   filter: saturate(1.08);
 }
 
-/* Keep all small secondary copy above WCAG AA on the near-black canvas. */
+/* Small footer copy previously fell below AA contrast on the dark canvas. */
 .vdb-credit,
 .footer-copy,
 .footer-copy small,
-.mobile-nav-foot > p,
-.bossie-project-card dt,
-.world-transit-card span {
+.mobile-nav-foot > p {
   color: #918b82 !important;
 }
 
+/* Comfortable pointer/touch targets for Lighthouse accessibility on phone-sized viewports. */
 .mobile-nav-close,
 .nav-menu-toggle {
   min-width: 44px;
@@ -140,6 +97,7 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   align-items: center;
 }
 
+/* Keep below-the-fold editorial surfaces out of initial layout/paint work. */
 .home-section,
 .complete-track-section,
 .upcoming-section,
@@ -148,22 +106,10 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   contain-intrinsic-size: auto 720px;
 }
 
-@media (max-width: 1100px) {
-  .site-nav .bossie-logo-link-wordmark {
-    display: none !important;
-  }
-}
-
+/* Keep the fixed noise layer and decorative backdrop off the constrained mobile GPU/network path. */
 @media (max-width: 900px) {
-  /* Mobile gets a deliberately clean first paint: no fixed grain/backdrop layers. */
-  body::before,
   .grain {
     display: none !important;
-  }
-
-  main,
-  .subpage {
-    background: var(--bg) !important;
   }
 
   .current-world-backdrop {
@@ -174,8 +120,9 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   }
 
   .current-world-hero {
-    padding: 0 !important;
-    background: #050505 !important;
+    background:
+      radial-gradient(circle at 82% 18%, rgba(202, 164, 92, 0.11), transparent 22rem),
+      #050505;
   }
 
   .current-world-art {
@@ -207,32 +154,6 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
-  }
-}
-
-@media (max-width: 600px) {
-  .current-world-grid {
-    padding: 4.75rem 1rem 2.75rem !important;
-    gap: 2rem !important;
-  }
-
-  .current-world-inner {
-    order: 1 !important;
-    min-height: calc(100svh - 8.5rem);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .current-world-art {
-    order: 2 !important;
-    width: min(76vw, 300px) !important;
-    justify-self: center !important;
-    margin-inline: auto;
-  }
-
-  .current-world-title {
-    text-wrap: balance;
   }
 }
 

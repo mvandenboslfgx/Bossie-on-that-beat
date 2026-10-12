@@ -1,4 +1,5 @@
 import type { ReleaseWithLinks } from "@/lib/types/release";
+import Link from "next/link";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { ReleaseActions, ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { formatWorldLabel, getTransmissionNumber } from "@/lib/catalog/transmission";
@@ -55,11 +56,11 @@ export function CurrentWorldHero({
           </div>
           <ReleaseActions release={release} />
         </div>
-        <a className="current-world-art" href={`/music/${release.slug}`} aria-label={`Explore ${release.title}`}>
+        <Link className="current-world-art" href={`/music/${release.slug}`} aria-label={`Explore ${release.title}`}>
           <span className="current-world-art-index">B/{tx}</span>
-          <ReleaseArtwork release={release} large />
+          <ReleaseArtwork release={release} large priority />
           <span className="current-world-art-caption">Sound · Image · Story</span>
-        </a>
+        </Link>
       </div>
       <div className="transmission-bar" aria-label="Latest release">
         <span className="transmission-bar-label">NEWEST RELEASE</span>
@@ -72,9 +73,9 @@ export function CurrentWorldHero({
         <TrackedLink className="transmission-bar-link" href={`/go/${release.slug}`} releaseId={release.id} platform="smartlink">
           LISTEN →
         </TrackedLink>
-        <a className="transmission-bar-link" href="/cinema">
+        <Link className="transmission-bar-link" href="/cinema">
           CINEMA →
-        </a>
+        </Link>
       </div>
     </header>
   );

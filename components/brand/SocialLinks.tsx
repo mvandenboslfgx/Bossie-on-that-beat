@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   getFollowSocials,
   getHeaderSocials,
@@ -78,7 +79,7 @@ export function FooterSocialGrid() {
         <ul className="social-links">
           {explore.map(({ href, label }) => (
             <li key={href}>
-              <a href={href}>{label} ↗</a>
+              <Link href={href}>{label} ↗</Link>
             </li>
           ))}
         </ul>

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReleaseWithLinks } from "@/lib/types/release";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
@@ -28,14 +29,14 @@ export function MusicEditorialArchive({
               <span className="music-editorial-num">{tx}</span>
             </div>
             <div className="music-editorial-visual">
-              <a href={`/music/${release.slug}`}>
+              <Link href={`/music/${release.slug}`}>
                 <ReleaseArtwork release={release} large={isHero} />
-              </a>
+              </Link>
             </div>
             <div className="music-editorial-copy">
               <p className="eyebrow">{formatWorldLabel(release.worldSlug)}</p>
               <h2>
-                <a href={`/music/${release.slug}`}>{release.title}</a>
+                <Link href={`/music/${release.slug}`}>{release.title}</Link>
               </h2>
               <p className="music-editorial-meta">
                 {[release.type, release.releaseDate?.slice(0, 4), ...(release.genres ?? []).slice(0, 2)].filter(Boolean).join(" / ")}
@@ -48,9 +49,9 @@ export function MusicEditorialArchive({
                 <TrackedLink className="button button-gold" href={`/go/${release.slug}`} releaseId={release.id} platform="smartlink">
                   LISTEN ↗
                 </TrackedLink>
-                <a className="text-link" href={`/music/${release.slug}`}>
+                <Link className="text-link" href={`/music/${release.slug}`}>
                   Explore ↗
-                </a>
+                </Link>
               </div>
             </div>
           </article>
