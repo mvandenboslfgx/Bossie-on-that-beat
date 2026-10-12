@@ -117,10 +117,13 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
   filter: saturate(1.08);
 }
 
+/* Keep all small secondary copy above WCAG AA on the near-black canvas. */
 .vdb-credit,
 .footer-copy,
 .footer-copy small,
-.mobile-nav-foot > p {
+.mobile-nav-foot > p,
+.bossie-project-card dt,
+.world-transit-card span {
   color: #918b82 !important;
 }
 
@@ -152,8 +155,15 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
 }
 
 @media (max-width: 900px) {
+  /* Mobile gets a deliberately clean first paint: no fixed grain/backdrop layers. */
+  body::before,
   .grain {
     display: none !important;
+  }
+
+  main,
+  .subpage {
+    background: var(--bg) !important;
   }
 
   .current-world-backdrop {
@@ -165,9 +175,7 @@ body:has(.mobile-nav-overlay:popover-open) .nav-menu-bars span:last-child {
 
   .current-world-hero {
     padding: 0 !important;
-    background:
-      radial-gradient(circle at 82% 18%, rgba(202, 164, 92, 0.11), transparent 22rem),
-      #050505;
+    background: #050505 !important;
   }
 
   .current-world-art {
