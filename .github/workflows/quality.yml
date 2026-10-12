@@ -39,3 +39,31 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+  live-health:
+    if: github.event_name == 'push'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify public production routes
+        run: |
+          set -euo pipefail
+          routes=("/" "/music" "/worlds" "/cinema" "/about")
+          for attempt in $(seq 1 24); do
+            all_ok=1
+            for route in "${routes[@]}"; do
+              code=$(curl -L -sS -o /tmp/bossie.html -w '%{http_code}' --max-time 20 "https://bossieonthatbeat.com${route}" || true)
+              echo "Attempt ${attempt}/24 ${route}: HTTP ${code}"
+              if [ "$code" != "200" ]; then
+                all_ok=0
+              fi
+            done
+            if [ "$all_ok" = "1" ]; then
+              echo "BOSSIE_PRODUCTION_HEALTH=PASS"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "BOSSIE_PRODUCTION_HEALTH=FAIL"
+          exit 1
