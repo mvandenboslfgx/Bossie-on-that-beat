@@ -45,3 +45,28 @@ jobs:
             https://bossieonthatbeat.com/ || true
           echo '--- Googlebot body first 1200 bytes ---'
           head -c 1200 /tmp/googlebot-body.txt || true
+
+      - name: Report Cloudflare credential availability
+        env:
+          HAS_CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+          HAS_CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+        run: |
+          echo "CLOUDFLARE_API_TOKEN configured: ${HAS_CF_TOKEN}"
+          echo "CLOUDFLARE_ACCOUNT_ID configured: ${HAS_CF_ACCOUNT}"
+
+      - name: Capture Worker exception
+        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set +e
+          timeout 25s npx --yes wrangler@4.141.0 tail bossie-on-that-beat --format=json > /tmp/wrangler-tail.log 2>&1 &
+          tail_pid=$!
+          sleep 8
+          curl -L -sS -o /dev/null --max-time 15 https://bossieonthatbeat.com/ || true
+          sleep 8
+          kill "$tail_pid" 2>/dev/null || true
+          wait "$tail_pid" 2>/dev/null || true
+          echo '===== WRANGLER TAIL ====='
+          cat /tmp/wrangler-tail.log || true
