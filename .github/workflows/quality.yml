@@ -40,9 +40,40 @@ jobs:
       - name: Production build
         run: npm run build
 
-  live-health:
+  deploy:
     if: github.event_name == 'push'
     needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: 4f59aa5b14f5882688437af50ee8c2ac
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify Cloudflare deployment credentials
+        run: |
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "CLOUDFLARE_API_TOKEN is missing from GitHub Actions secrets."
+            exit 1
+          fi
+
+      - name: Deploy Bossie production Worker
+        run: npm run cf:deploy
+
+  live-health:
+    if: github.event_name == 'push'
+    needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
