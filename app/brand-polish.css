@@ -1,0 +1,249 @@
+/* Final brand-system polish. Loaded last so canonical marks and credits win over legacy layers. */
+
+.bossie-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 1em;
+  height: 1em;
+  line-height: 1;
+}
+
+.bossie-mark > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: saturate(.9) contrast(1.06);
+}
+
+.bossie-mark-sm { font-size: 2rem; }
+.bossie-mark-md { font-size: 3rem; }
+.bossie-mark-lg { font-size: 4.75rem; }
+.bossie-mark-xl { font-size: 7rem; }
+
+/* Keep oversized contextual Bossie marks driven by their parent selectors. */
+.current-world-watermark.bossie-mark,
+.world-hero-mark.bossie-mark,
+.release-mini-world .bossie-mark,
+.manifesto-hero .bossie-mark {
+  width: 1em;
+  height: 1em;
+}
+
+.platform-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+.platform-logo svg {
+  display: block;
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+}
+
+.social-links a,
+.header-social-item a {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+}
+
+.social-platform-logo {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--gold-soft);
+}
+
+.social-platform-logo svg {
+  width: 100%;
+  height: 100%;
+}
+
+.header-platform-logo {
+  width: .9rem;
+  height: .9rem;
+  color: var(--gold-soft);
+}
+
+.music-platform-jump {
+  margin: 0 0 1.35rem;
+}
+
+/* Footer: brand proof + agency credit should feel intentional, not like a stray text link. */
+.site-footer {
+  grid-template-columns: minmax(220px, .8fr) minmax(360px, 1.45fr) minmax(285px, .75fr) !important;
+  align-items: start !important;
+}
+
+.footer-proof-column {
+  display: grid;
+  gap: 12px;
+  justify-self: stretch;
+}
+
+.footer-platform-proof {
+  min-height: 88px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 16px;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(202,164,92,.08), transparent 55%),
+    #080807;
+  transition: border-color 180ms ease, transform 220ms var(--ease-luxury, ease), background 180ms ease;
+}
+
+.footer-platform-proof:hover,
+.footer-platform-proof:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(236,214,159,.46);
+  background:
+    linear-gradient(135deg, rgba(202,164,92,.13), transparent 55%),
+    #0b0a08;
+}
+
+.footer-platform-proof > strong {
+  color: var(--gold-soft);
+  font: 500 3rem/.78 var(--serif, Georgia, serif);
+  letter-spacing: -.05em;
+}
+
+.footer-platform-proof > span {
+  display: grid;
+  gap: 5px;
+}
+
+.footer-platform-proof small {
+  color: var(--muted-deep);
+  font: 800 .48rem/1 var(--sans, Arial, sans-serif);
+  letter-spacing: .17em;
+}
+
+.footer-platform-proof b {
+  color: var(--ink);
+  font: 700 .69rem/1.2 var(--sans, Arial, sans-serif);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.footer-platform-proof i {
+  color: var(--gold);
+  font-style: normal;
+}
+
+.vdb-credit {
+  min-height: 100px;
+  display: grid !important;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center !important;
+  gap: 14px;
+  justify-self: stretch !important;
+  padding: 15px 16px !important;
+  border: 1px solid rgba(236,214,159,.24) !important;
+  border-left: 1px solid rgba(236,214,159,.24) !important;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(202,164,92,.12), transparent 48%),
+    linear-gradient(145deg, #0c0b09, #060606) !important;
+  color: var(--ink) !important;
+  text-align: left !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+  transition: border-color 180ms ease, transform 220ms var(--ease-luxury, ease), box-shadow 220ms ease;
+}
+
+.vdb-credit:hover,
+.vdb-credit:focus-visible {
+  transform: translateY(-2px);
+  border-color: rgba(236,214,159,.58) !important;
+  box-shadow: 0 22px 60px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.vdb-credit-mark {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(236,214,159,.42);
+  color: var(--gold-soft);
+  font: 800 .72rem/1 var(--sans, Arial, sans-serif);
+  letter-spacing: .12em;
+  background: rgba(202,164,92,.055);
+}
+
+.vdb-credit-copy {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.vdb-credit-copy small {
+  color: var(--muted-deep) !important;
+  font: 800 .45rem/1 var(--sans, Arial, sans-serif) !important;
+  letter-spacing: .16em !important;
+}
+
+.vdb-credit-copy strong {
+  color: var(--ink-strong, var(--ink)) !important;
+  font: 800 .82rem/1 var(--sans, Arial, sans-serif) !important;
+  letter-spacing: .11em !important;
+}
+
+.vdb-credit-copy > span {
+  color: var(--gold-soft);
+  font: 700 .48rem/1 var(--sans, Arial, sans-serif);
+  letter-spacing: .12em;
+}
+
+.vdb-credit-arrow {
+  color: var(--gold);
+  font-size: 1rem;
+}
+
+.footer-copy {
+  grid-column: 1 / -1 !important;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+
+@media (max-width: 1100px) {
+  .site-footer {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .footer-proof-column {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .bossie-mark-sm { font-size: 1.8rem; }
+  .bossie-mark-md { font-size: 2.6rem; }
+  .bossie-mark-lg { font-size: 3.75rem; }
+  .bossie-mark-xl { font-size: 5rem; }
+
+  .site-footer {
+    grid-template-columns: 1fr !important;
+  }
+
+  .footer-social-grid,
+  .footer-proof-column {
+    grid-column: 1;
+    grid-template-columns: 1fr !important;
+    width: 100%;
+  }
+
+  .footer-platform-proof,
+  .vdb-credit {
+    width: 100%;
+  }
+
+  .footer-copy {
+    grid-column: 1 !important;
+  }
+}
