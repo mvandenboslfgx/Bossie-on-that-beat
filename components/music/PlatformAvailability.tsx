@@ -3,6 +3,7 @@ import {
   getDistributionPlatforms,
   type DistributionCategory,
 } from "@/lib/music/distribution-platforms";
+import { PlatformLogo } from "@/components/brand/PlatformLogo";
 import styles from "./PlatformAvailability.module.css";
 
 const groups: Array<{ key: DistributionCategory; label: string; description: string }> = [
@@ -25,19 +26,19 @@ const groups: Array<{ key: DistributionCategory; label: string; description: str
 
 export function PlatformAvailability() {
   return (
-    <section className={`section-pad ${styles.section}`} aria-labelledby="available-worldwide-title">
+    <section id="platforms" className={`section-pad ${styles.section}`} aria-labelledby="available-worldwide-title">
       <div className={styles.heading}>
         <div>
           <p className="eyebrow">AVAILABLE WORLDWIDE</p>
           <h2 id="available-worldwide-title">Listen everywhere.</h2>
           <p className={styles.lede}>
             Bossie on that beat is distributed to {distributionPlatformCount} streaming, music discovery and social
-            platforms worldwide. Direct artist links are only shown when an official profile has been verified.
+            platforms worldwide. Official artist links open directly where a verified Bossie profile is available.
           </p>
         </div>
         <div className={styles.count} aria-label={`${distributionPlatformCount} distribution platforms`}>
           <strong>{distributionPlatformCount}</strong>
-          <span>platforms</span>
+          <span>platforms worldwide</span>
         </div>
       </div>
 
@@ -54,10 +55,10 @@ export function PlatformAvailability() {
                 {platforms.map((platform) => {
                   const content = (
                     <>
-                      <span className={styles.mark} aria-hidden="true">{platform.mark}</span>
+                      <PlatformLogo id={platform.id} name={platform.name} className={styles.mark} />
                       <span className={styles.copy}>
                         <strong>{platform.name}</strong>
-                        <small>{platform.href ? "Official profile" : "Available"}</small>
+                        <small>{platform.href ? "Official Bossie profile" : "Distributed here"}</small>
                       </span>
                       <span className={styles.action} aria-hidden="true">{platform.href ? "↗" : "✓"}</span>
                     </>
