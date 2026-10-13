@@ -37,6 +37,7 @@ export function BossieLogo({
         width={cfg.width}
         height={cfg.height}
         className={`${cfg.className} ${className ?? ""}`.trim()}
+        style={{ width: "min(100%, 320px)", height: "auto" }}
         fetchPriority={priority ? "high" : undefined}
       />
     ) : brandAssets.mark.available ? (
