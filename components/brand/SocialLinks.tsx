@@ -5,6 +5,21 @@ import {
   getListenSocials,
   type SocialEntry,
 } from "@/lib/brand/socials";
+import { PlatformLogo } from "@/components/brand/PlatformLogo";
+
+const logoIds: Record<string, string> = {
+  spotify: "spotify",
+  appleMusic: "apple-music",
+  youtube: "youtube",
+  youtubeMusic: "youtube-music",
+  tiktok: "tiktok-bytedance",
+  instagram: "instagram",
+  facebook: "facebook",
+  deezer: "deezer",
+  tidal: "tidal",
+  amazonMusic: "amazon",
+  soundcloud: "soundcloud",
+};
 
 function SocialList({
   items,
@@ -20,8 +35,9 @@ function SocialList({
     <ul className={`social-links ${compact ? "social-links-compact" : ""} ${className ?? ""}`.trim()}>
       {items.map(({ key, href, label }) => (
         <li key={key}>
-          <a href={href} target="_blank" rel="noreferrer">
-            {compact ? label : `${label} ↗`}
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            <PlatformLogo id={logoIds[key] ?? key} name={label} className="social-platform-logo" />
+            <span>{compact ? label : `${label} ↗`}</span>
           </a>
         </li>
       ))}
@@ -37,8 +53,9 @@ export function HeaderSocialStrip() {
       {items.map(({ key, href, label }, i) => (
         <span key={key} className="header-social-item">
           {i > 0 && <span className="header-social-sep" aria-hidden="true">·</span>}
-          <a href={href} target="_blank" rel="noreferrer">
-            {label}
+          <a href={href} target="_blank" rel="noopener noreferrer">
+            <PlatformLogo id={logoIds[key] ?? key} name={label} className="header-platform-logo" />
+            <span>{label}</span>
           </a>
         </span>
       ))}

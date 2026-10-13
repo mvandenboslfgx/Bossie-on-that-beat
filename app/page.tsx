@@ -7,10 +7,12 @@ import { CatalogProof, CurrentWorldHero } from "@/components/v3/BossieV3";
 import { CinemaEditorialCard } from "@/components/v3/CinemaEditorialCard";
 import { MusicEditorialArchive } from "@/components/v3/MusicEditorialArchive";
 import { BossieMark } from "@/components/brand/BossieMark";
+import { PlatformLogo } from "@/components/brand/PlatformLogo";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
+import { distributionPlatformCount } from "@/lib/music/distribution-platforms";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 export const dynamic = "force-dynamic";
@@ -90,7 +92,7 @@ export default async function HomePage() {
         </div>
         <dl className="identity-proof-grid">
           <div><dt>Official catalogue</dt><dd>{trackCount} verified tracks</dd></div>
-          <div><dt>Creative system</dt><dd>{worlds.length} distinct worlds</dd></div>
+          <div><dt>Global distribution</dt><dd>{distributionPlatformCount} platforms</dd></div>
           <div><dt>Visual archive</dt><dd>{cinema.length ? `${cinema.length} films & transmissions` : "Sound · image · story"}</dd></div>
         </dl>
       </section>
@@ -164,11 +166,18 @@ export default async function HomePage() {
 
       {streaming.length > 0 && (
         <section className="section-pad home-section stream-section">
-          <p className="eyebrow">LISTEN</p>
+          <div className="home-stream-heading">
+            <p className="eyebrow">LISTEN WORLDWIDE</p>
+            <Link className="text-link" href="/music#platforms">
+              All {distributionPlatformCount} platforms ↘
+            </Link>
+          </div>
           <div className="platform-grid-v2">
             {streaming.map(({ key, href, label }) => (
-              <a key={key} href={href} target="_blank" rel="noreferrer">
-                {label} ↗
+              <a key={key} href={href} target="_blank" rel="noopener noreferrer">
+                <PlatformLogo id={key === "appleMusic" ? "apple-music" : key} name={label} className="home-platform-logo" />
+                <span>{label}</span>
+                <span aria-hidden="true">↗</span>
               </a>
             ))}
           </div>

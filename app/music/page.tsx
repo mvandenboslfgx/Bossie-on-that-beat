@@ -8,6 +8,7 @@ import { PageShell } from "@/components/SiteChrome";
 import { CatalogProof } from "@/components/v3/BossieV3";
 import { TrackCatalog } from "@/components/release/TrackCatalog";
 import { PlatformAvailability } from "@/components/music/PlatformAvailability";
+import { distributionPlatformCount } from "@/lib/music/distribution-platforms";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,9 @@ export default async function MusicPage() {
         <BossieMark size="lg" className="section-mark" />
         <p className="eyebrow">ALL OFFICIAL TRACKS &amp; RELEASES</p>
         <h1>MUSIC</h1>
+        <Link className="text-link music-platform-jump" href="#platforms">
+          Available on {distributionPlatformCount} platforms ↓
+        </Link>
         <p>{trackCount} verified tracks across {collections.length || live.length} releases. One identity, no genre borders.</p>
       </section>
 
@@ -46,6 +50,8 @@ export default async function MusicPage() {
         </div>
       </section>
 
+      <PlatformAvailability />
+
       <section className="section-pad">
         <div className="section-heading">
           <div>
@@ -55,8 +61,6 @@ export default async function MusicPage() {
         </div>
         <MusicEditorialArchive live={releaseShowcase} catalog={live} />
       </section>
-
-      <PlatformAvailability />
 
       <section className="section-pad complete-track-section" aria-labelledby="complete-track-title">
         <div className="section-heading">
