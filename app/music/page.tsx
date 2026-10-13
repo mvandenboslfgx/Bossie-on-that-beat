@@ -7,12 +7,14 @@ import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
 import { CatalogProof } from "@/components/v3/BossieV3";
 import { TrackCatalog } from "@/components/release/TrackCatalog";
+import { PlatformAvailability } from "@/components/music/PlatformAvailability";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Music",
-  description: "Complete official Bossie on that beat track and release archive with verified streaming links.",
+  description:
+    "Complete official Bossie on that beat track and release archive with verified streaming links and worldwide distribution across 26 platforms.",
   alternates: { canonical: "/music" },
 };
 
@@ -53,6 +55,8 @@ export default async function MusicPage() {
         </div>
         <MusicEditorialArchive live={releaseShowcase} catalog={live} />
       </section>
+
+      <PlatformAvailability />
 
       <section className="section-pad complete-track-section" aria-labelledby="complete-track-title">
         <div className="section-heading">
