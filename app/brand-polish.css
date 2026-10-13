@@ -73,6 +73,32 @@
   margin: 0 0 1.35rem;
 }
 
+.home-stream-heading {
+  display: grid;
+  gap: .8rem;
+}
+
+.home-stream-heading .text-link {
+  margin-top: 0;
+}
+
+.platform-grid-v2 a {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.home-platform-logo {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--gold-soft);
+}
+
+.home-platform-logo svg {
+  width: 100%;
+  height: 100%;
+}
+
 /* Footer: brand proof + agency credit should feel intentional, not like a stray text link. */
 .site-footer {
   grid-template-columns: minmax(220px, .8fr) minmax(360px, 1.45fr) minmax(285px, .75fr) !important;
