@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:
-      - name: Verify public production routes
+      - name: Verify public production routes and deployed content
         run: |
           set -euo pipefail
           routes=("/" "/music" "/worlds" "/cinema" "/about")
@@ -90,6 +90,13 @@ jobs:
                 all_ok=0
               fi
             done
+
+            music_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/music" || true)
+            if ! printf '%s' "$music_html" | grep -q "Listen everywhere"; then
+              echo "Attempt ${attempt}/24: /music is still serving an older deployment."
+              all_ok=0
+            fi
+
             if [ "$all_ok" = "1" ]; then
               echo "BOSSIE_PRODUCTION_HEALTH=PASS"
               exit 0
