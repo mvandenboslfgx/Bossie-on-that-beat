@@ -9,6 +9,7 @@ import "./bossie-v3.css";
 import "./bossie-mobile.css";
 import "./luxury.css";
 import "./performance-fixes.css";
+import "./brand-polish.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
