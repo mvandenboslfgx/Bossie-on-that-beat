@@ -14,6 +14,7 @@ import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
+import { MetricoolTracker } from "@/components/analytics/MetricoolTracker";
 
 const displayFont = Cormorant_Garamond({
   subsets: ["latin"],
@@ -129,6 +130,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <a className="skip-link" href="#main-content">Skip to content</a>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteSchema) }} />
         {children}
+        <MetricoolTracker />
       </body>
     </html>
   );
