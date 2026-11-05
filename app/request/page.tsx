@@ -4,8 +4,8 @@ import { BossieLogo } from "@/components/brand/BossieLogo";
 import { PageShell } from "@/components/SiteChrome";
 
 export const metadata: Metadata = {
-  title: "Build Your World",
-  description: "Request a custom Bossie production — build your world with cinematic music production.",
+  title: "Commission Original Music",
+  description: "Request original songs, custom productions and commercial music licensing from Bossie on that beat.",
   alternates: { canonical: "/request" },
 };
 
@@ -17,7 +17,7 @@ export default function RequestPage() {
         <div className="page-hero-inner">
           <p className="eyebrow">COMMISSION</p>
           <h1>BUILD YOUR WORLD</h1>
-          <p>Tell Bossie your story — every track is a new world.</p>
+          <p>Commission a personal song, an original production or music for commercial use. Tell us what you have in mind.</p>
         </div>
       </header>
       <section className="request-section section-pad">
