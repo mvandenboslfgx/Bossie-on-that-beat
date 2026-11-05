@@ -156,6 +156,25 @@ curl -sS https://bossieonthatbeat.com/api/admin/review \
 
 `CRON_SECRET` does **not** grant admin access. Missing or wrong `x-admin-secret` → `401`.
 
+### Project requests: saved before email
+
+The public `POST /api/request` endpoint validates the enquiry, stores it in the existing
+D1 `project_requests` table and responds with a unique `BOS-YYYYMMDD-XXXXXXXX`
+reference. Only after the database insert does it attempt a Resend notification.
+Missing Resend credentials or a notification failure never delete a saved request.
+If D1 is unavailable, the request is **not acknowledged as received**.
+
+All requests can be reviewed from the authenticated `/admin` page or with
+`GET /api/admin/requests` using the existing `x-admin-secret` header.
+Use `GET /api/admin/requests?reference=BOS-...` for the full brief. This API must
+never be exposed to unauthenticated users.
+
+**Production checklist:** verify the existing D1 migration is applied, ensure
+`ADMIN_SECRET`, `RESEND_API_KEY`, `REQUEST_TO_EMAIL` and a verified
+`REQUEST_FROM_EMAIL` are configured, then submit one authorized test brief and
+check its reference in the admin queue. Do not submit a test until the deployment
+and mail destination are verified.
+
 ### Catalog truth (single source)
 
 All public catalog routes read D1 at **request time** via `getCatalog()` in `lib/repository/catalog.ts`. Seed data is dev-only fallback when D1 is unavailable at build.
