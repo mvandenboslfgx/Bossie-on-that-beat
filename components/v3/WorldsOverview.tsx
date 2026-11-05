@@ -29,12 +29,12 @@ export function WorldOverviewCard({ item }: { item: WorldOverviewItem }) {
   const { world, skin, count, genres, visual } = item;
   const layout = skin?.overviewLayout ?? "noir";
   const teaser = skin?.teaser ?? world.description.split(/[.!?]/)[0] + ".";
-  const cta = skin?.ctaLabel ?? "ENTER";
+  const cta = count === 0 ? "PREVIEW WORLD" : skin?.ctaLabel ?? "ENTER";
   const minimal = Boolean(skin?.overviewMinimalCopy);
   const brandedArt = Boolean(skin?.artworkContainsBrandMark);
   const hasVisual = Boolean(visual);
   const meta = [
-    `${count} ${count === 1 ? "RELEASE" : "RELEASES"}`,
+    count === 0 ? "IN DEVELOPMENT" : `${count} ${count === 1 ? "RELEASE" : "RELEASES"}`,
     ...genres.slice(0, 2).map((g) => g.toUpperCase()),
   ].join(" · ");
 
