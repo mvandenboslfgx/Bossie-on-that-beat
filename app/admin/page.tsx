@@ -12,8 +12,8 @@ export default function AdminPage() {
     <PageShell>
       <div className="page-intro">
         <p className="eyebrow">INTERNAL</p>
-        <h1>Admin review queue</h1>
-        <p>Approve or reject synced releases and cinema items.</p>
+        <h1>Bossie administration</h1>
+        <p>Review incoming project briefs, release quality and synced cinema items.</p>
       </div>
       <AdminReviewQueue />
     </PageShell>
