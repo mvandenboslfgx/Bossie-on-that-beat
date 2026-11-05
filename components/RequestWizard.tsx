@@ -53,6 +53,7 @@ export default function RequestWizard() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("Could not send request. Please try again later.");
   const [fieldError, setFieldError] = useState<string | null>(null);
+  const [reference, setReference] = useState<string | null>(null);
   const [form, setForm] = useState<FormData>({
     genres: [],
     songType: "",
@@ -126,6 +127,8 @@ export default function RequestWizard() {
       const payload = {
         name: form.name,
         email: form.email,
+        website: form.website,
+        commercialUse: form.commercialUse,
         company: form.company,
         country: form.country,
         projectType: form.songType,
@@ -154,14 +157,17 @@ export default function RequestWizard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!response.ok) {
+      const result = await response.json().catch(() => ({})) as { ok?: boolean; reference?: string; error?: string };
+      if (!response.ok || !result.ok) {
         setErrorMessage(
-          response.status === 503
-            ? "Mail delivery is temporarily unavailable. Your details are still here — please try again later or use Industry contact."
-            : "Could not send request. Please try again later.",
+          result.error ||
+            (response.status === 503
+              ? "Requests are temporarily unavailable. Please try again later."
+              : "Could not save your request. Please try again."),
         );
         throw new Error("failed");
       }
+      setReference(result.reference ?? null);
       setStatus("sent");
     } catch {
       setStatus("error");
@@ -182,7 +188,6 @@ export default function RequestWizard() {
   }
 
   const genresLabel = Array.isArray(form.genres) && form.genres.length ? form.genres.join(", ") : "";
-  const projectId = useMemo(() => String(2900 + step + (form.songType ? 1 : 0)), [step, form.songType]);
 
   return (
     <div className="request-v3-layout">
@@ -212,6 +217,16 @@ export default function RequestWizard() {
           {fieldError}
         </p>
       )}
+
+      <label className="request-honeypot" aria-hidden="true">
+        Website
+        <input
+          tabIndex={-1}
+          autoComplete="off"
+          value={String(form.website ?? "")}
+          onChange={(event) => update("website", event.target.value)}
+        />
+      </label>
 
       {step === 0 && (
         <div className="wizard-panel">
@@ -321,6 +336,16 @@ export default function RequestWizard() {
                 value={String(form.email ?? "")}
                 onChange={(e) => update("email", e.target.value)}
               />
+            </label>
+          </div>
+          <div className="request-grid two">
+            <label>
+              <span>Company / artist (optional)</span>
+              <input value={String(form.company ?? "")} onChange={(e) => update("company", e.target.value)} />
+            </label>
+            <label>
+              <span>Country (optional)</span>
+              <input value={String(form.country ?? "")} onChange={(e) => update("country", e.target.value)} />
             </label>
           </div>
           <label>
@@ -440,7 +465,11 @@ export default function RequestWizard() {
         )}
       </div>
 
-      {status === "sent" && <p className="form-success">Request received. Bossie will review your brief.</p>}
+      {status === "sent" && (
+        <p className="form-success" role="status">
+          Your request has been saved{reference ? ` (reference: ${reference})` : ""}. Bossie will review your brief and reply by email.
+        </p>
+      )}
       {status === "error" && (
         <p className="form-error" role="alert">
           {errorMessage}{" "}
@@ -454,7 +483,7 @@ export default function RequestWizard() {
       <aside className="bossie-project-card" aria-live="polite">
         <BossieMark size="md" decorative={false} />
         <p className="eyebrow">YOUR WORLD</p>
-        <p className="project-id">PROJECT {projectId}</p>
+        <p className="project-id">{reference ?? "PROJECT PREVIEW"}</p>
         <dl>
           <div>
             <dt>Type</dt>
@@ -477,7 +506,7 @@ export default function RequestWizard() {
             <dd>{String(form.emotions || "Forming…")}</dd>
           </div>
         </dl>
-        <p className="project-forming">{status === "sent" ? "Brief transmitted." : "YOUR WORLD IS FORMING…"}</p>
+        <p className="project-forming">{status === "sent" ? "Request saved." : "YOUR WORLD IS FORMING…"}</p>
       </aside>
     </div>
   );
