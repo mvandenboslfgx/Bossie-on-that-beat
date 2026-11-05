@@ -68,7 +68,7 @@ function cleanSeparators(text: string): string {
  * Doubtful cases (nothing meaningful stripped) stay effectively unchanged.
  */
 export function normalizeCinemaDisplayTitle(providerTitle: string): string {
-  const original = providerTitle.trim();
+  const original = providerTitle.trim().replace(/\s+#\s*$/g, "").trim();
   if (!original) return original;
 
   const hasCategoryCue = CATEGORY_STRIP.test(original);
@@ -146,7 +146,7 @@ export function normalizeCinemaDisplayTitle(providerTitle: string): string {
 export function getPublicCinemaTitle(
   item: Pick<CinemaItem, "title" | "providerTitle" | "displayTitle" | "manualOverride">,
 ): string {
-  if (item.displayTitle?.trim()) return item.displayTitle.trim();
+  if (item.displayTitle?.trim()) return item.displayTitle.trim().replace(/\s+#\s*$/g, "").trim();
   const provider = item.providerTitle?.trim() || item.title;
   return normalizeCinemaDisplayTitle(provider);
 }
@@ -163,7 +163,14 @@ export function generateCinemaEditorialSummary(title: string, type: CinemaCatego
   const t = title.toLowerCase();
   const label = getCinemaCategoryLabel(type).toLowerCase();
 
-  if (type === "short") return "A short film from the Bossie universe.";
+  if (type === "short") {
+    if (/nims|maybe tomorrow/i.test(t)) return "A focused short about determination, inspired by the Nims Dai release.";
+    if (/dil go boom|india.*ready/i.test(t)) return "An energetic introduction to Dil Go Boom for listeners in India.";
+    if (/ed heeft|luie hond ed|reggae anthem/i.test(t)) return "Ed takes the spotlight in a playful reggae-themed Bossie short.";
+    if (/crown|abyss|storm/i.test(t)) return "A brief look into Bossie's darker cinematic sound.";
+    const cleanTitle = title.replace(/\s+#\s*$/g, "").trim();
+    return "A quick visual chapter accompanying " + cleanTitle.slice(0, 64) + ".";
+  }
   if (type === "official-audio" || /\bofficial audio\b/i.test(title)) {
     if (/crown|abyss/i.test(t)) return "A descent into Bossie's darkest orchestral world.";
     if (/anthem/i.test(t)) return "The Bossie anthem — official audio.";
