@@ -122,6 +122,7 @@ export function SiteNav() {
           </div>
 
           <div className="nav-actions">
+            <Link className="site-commission desktop-only" href="/request">Create Your Song ↗</Link>
             <a
               className="site-listen desktop-only"
               href={href}

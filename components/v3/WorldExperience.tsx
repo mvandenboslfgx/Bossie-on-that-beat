@@ -84,6 +84,15 @@ export function WorldExperience({
         )}
       </section>
 
+      {releases.length === 0 && cinema.length === 0 && (
+        <section className="section-pad world-releases">
+          <p className="eyebrow">WORLD IN DEVELOPMENT</p>
+          <h2>More from this world is on the way.</h2>
+          <p>Explore the wider music catalogue while this world takes shape.</p>
+          <Link className="text-link" href="/music">Explore music ↗</Link>
+        </section>
+      )}
+
       {releases.length > 0 && (
         <section className="section-pad world-releases">
           <p className="eyebrow">RELEASES IN THIS WORLD</p>
