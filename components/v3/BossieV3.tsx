@@ -47,7 +47,7 @@ export function CurrentWorldHero({
           <p className="current-world-role">Independent producer · composer · artist</p>
           <h1 className="current-world-title">{release.title}</h1>
           <p className="current-world-lede">
-            {release.tagline ?? release.description ?? "A new world in sound and image."}
+            {release.tagline ?? release.description ?? "Discover the latest release, its official artwork and listening links."}
           </p>
           <div className="current-world-details" aria-label="Release details">
             <span>{world}</span>
@@ -55,6 +55,7 @@ export function CurrentWorldHero({
             {release.genres?.slice(0, 2).map((genre) => <span key={genre}>{genre}</span>)}
           </div>
           <ReleaseActions release={release} />
+          <Link className="text-link hero-commission-link" href="/request">Commission your own production ↗</Link>
         </div>
         <Link className="current-world-art" href={`/music/${release.slug}`} aria-label={`Explore ${release.title}`}>
           <span className="current-world-art-index">B/{tx}</span>
