@@ -65,7 +65,8 @@ export default function RequestWizard() {
   });
   const errorRef = useRef<HTMLParagraphElement>(null);
 
-  const steps = ["Type", "Sound", "Story", "Details", "Review"];
+  const isLicensing = form.songType === "Existing Track Licensing";
+  const steps = ["Type", isLicensing ? "Recording" : "Sound", isLicensing ? "Usage" : "Story", "Details", "Review"];
   const progress = useMemo(() => Math.round(((step + 1) / steps.length) * 100), [step, steps.length]);
 
   function update(key: string, value: string | boolean) {
@@ -89,10 +90,14 @@ export default function RequestWizard() {
       return "Please select a request type.";
     }
     if (current === 1) {
-      const genres = Array.isArray(form.genres) ? form.genres : [];
-      if (!genres.length) return "Please select at least one genre.";
-      if (!String(form.vocals || "").trim()) return "Please choose a vocal direction.";
-      if (!String(form.language || "").trim()) return "Please choose a language.";
+      if (isLicensing) {
+        if (!String(form.releaseTitle || "").trim()) return "Please enter the track you want to license.";
+      } else {
+        const genres = Array.isArray(form.genres) ? form.genres : [];
+        if (!genres.length) return "Please select at least one genre.";
+        if (!String(form.vocals || "").trim()) return "Please choose a vocal direction.";
+        if (!String(form.language || "").trim()) return "Please choose a language.";
+      }
     }
     if (current === 2) {
       const story = String(form.story ?? "").trim();
@@ -133,11 +138,12 @@ export default function RequestWizard() {
         company: form.company,
         country: form.country,
         projectType: form.songType,
-        genre: Array.isArray(form.genres) ? form.genres.join(", ") : "",
+        genre: isLicensing ? "Existing track licensing" : Array.isArray(form.genres) ? form.genres.join(", ") : "",
         language: form.language,
         vocals: form.vocals,
         brief: [
           form.story,
+          isLicensing ? "Requested recording: " + String(form.releaseTitle || "") : "",
           form.namesInclude ? `Names to include: ${form.namesInclude}` : "",
           form.namesExclude ? `Names to exclude: ${form.namesExclude}` : "",
           form.emotions ? `Emotions: ${form.emotions}` : "",
@@ -149,7 +155,9 @@ export default function RequestWizard() {
         references: form.references,
         deadline: form.deadline,
         budget: form.budget,
-        extra: form.commercialUse ? "Commercial use requested." : "Personal use.",
+        extra: isLicensing
+          ? "Existing recording licensing enquiry; usage and rights to be agreed."
+          : form.commercialUse ? "Commercial use requested." : "Personal use.",
         consent: "yes",
       };
 
@@ -250,7 +258,19 @@ export default function RequestWizard() {
 
       {step === 1 && (
         <div className="wizard-panel">
-          <h2>Sound direction</h2>
+          <h2>{isLicensing ? "License an existing track" : "Sound direction"}</h2>
+          {isLicensing ? (
+            <label>
+              <span>Which Bossie track would you like to license? *</span>
+              <input
+                required
+                placeholder="Song or release title"
+                value={String(form.releaseTitle ?? "")}
+                onChange={(e) => update("releaseTitle", e.target.value)}
+              />
+            </label>
+          ) : (
+            <>
           <div className="wizard-chips" role="group" aria-label="Genres" aria-describedby={fieldError ? "wizard-field-error" : undefined}>
             {["Cinematic", "Metal", "Electronic", "Rap", "Pop", "World", "Orchestral", "Other / Custom"].map(
               (genre) => (
@@ -282,14 +302,16 @@ export default function RequestWizard() {
               ))}
             </select>
           </label>
+            </>
+          )}
         </div>
       )}
 
       {step === 2 && (
         <div className="wizard-panel">
-          <h2>The story</h2>
+          <h2>{isLicensing ? "How will you use the music?" : "The story"}</h2>
           <label>
-            <span>What is the song about? *</span>
+            <span>{isLicensing ? "Where will the track be used? Include media, territory, timeframe and any other details. *" : "What is the song about? *"}</span>
             <textarea
               required
               rows={5}
@@ -411,7 +433,7 @@ export default function RequestWizard() {
             </div>
             <div className="review-row">
               <p>
-                <strong>Genres:</strong> {genresLabel}
+                <strong>{isLicensing ? "Track:" : "Genres:"}</strong> {isLicensing ? String(form.releaseTitle || "") : genresLabel}
               </p>
               <button type="button" className="text-link" onClick={() => setStep(1)}>
                 Edit
@@ -492,7 +514,7 @@ export default function RequestWizard() {
           </div>
           <div>
             <dt>Genre</dt>
-            <dd>{genresLabel || "—"}</dd>
+            <dd>{isLicensing ? String(form.releaseTitle || "—") : genresLabel || "—"}</dd>
           </div>
           <div>
             <dt>Voice</dt>
