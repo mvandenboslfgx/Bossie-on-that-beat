@@ -81,13 +81,14 @@ export default async function HomePage() {
         <div className="identity-intro-copy">
           <h2 id="who-is-bossie">Producer. Composer. Artist. World builder.</h2>
           <p className="identity-intro-lede">
-            Bossie on that beat is an independent music project that turns every release into a complete world of sound,
-            image and story. The catalogue moves through cinematic, orchestral, metal, electronic, rap and global music
-            without losing one recognizable identity.
+            Original music for listeners, cinematic storytelling for audiences and custom productions for artists,
+            creators and brands. Bossie combines orchestral scale, metal, electronic energy, rap and global influences
+            with a distinctive visual identity.
           </p>
           <div className="identity-actions">
-            <Link className="button button-gold" href="/about">Meet Bossie ↗</Link>
-            <Link className="text-link" href="/epk">Official EPK ↗</Link>
+            <Link className="button button-gold" href="/request">Commission music ↗</Link>
+            <Link className="text-link" href="/about">Meet Bossie ↗</Link>
+            <Link className="text-link" href="/epk">Press kit ↗</Link>
           </div>
         </div>
         <dl className="identity-proof-grid">
@@ -158,9 +159,10 @@ export default async function HomePage() {
       <section className="section-pad home-section cta-section">
         <BossieMark size="lg" className="section-mark" />
         <p className="eyebrow">BESPOKE PRODUCTION</p>
-        <h2>Commission a world of your own.</h2>
+        <h2>Original music for your story.</h2>
+        <p>Personal songs, artist projects, cinematic scores and branded music — share your idea and receive a proposal tailored to your brief.</p>
         <Link className="button button-gold" href="/request">
-          Start your song ↗
+          Request a production ↗
         </Link>
       </section>
 
