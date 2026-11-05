@@ -7,7 +7,7 @@ import { getCatalog } from "@/lib/repository/catalog";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Industry",
+  title: "Music Licensing, Production & Collaborations",
   description:
     "Music licensing, custom production and collaborations with Bossie on that beat for film, advertising, games and brands.",
   alternates: { canonical: "/industry" },
@@ -22,8 +22,8 @@ export default async function IndustryPage() {
       <section className="page-hero compact-hero industry-hero">
         <BossieMark size="lg" className="section-mark" />
         <p className="eyebrow">INDUSTRY / COLLABORATION</p>
-        <h1>CAPABILITY SHOWCASE</h1>
-        <p>Licensing, custom music and collaborations — proven through real Bossie worlds.</p>
+        <h1>MUSIC FOR YOUR STORY</h1>
+        <p>Original productions, existing-track licensing and creative collaborations for artists, filmmakers, games and brands.</p>
         <Link className="button button-gold" href="/request">
           Build your world ↗
         </Link>
@@ -34,13 +34,13 @@ export default async function IndustryPage() {
           <BossieMark size="sm" />
           <span>01</span>
           <h2>Music licensing</h2>
-          <p>Original Bossie productions for film, advertising, games and digital campaigns.</p>
+          <p>Ask about using an existing Bossie release in film, advertising, games or digital campaigns. Usage rights are agreed per project.</p>
         </article>
         <article>
           <BossieMark size="sm" />
           <span>02</span>
           <h2>Custom music</h2>
-          <p>Company songs, cinematic scores and release-world production scoped per brief.</p>
+          <p>New tracks, brand music, personal commissions and cinematic scores — developed from a brief with clear deliverables.</p>
         </article>
         <article>
           <BossieMark size="sm" />
@@ -79,7 +79,7 @@ export default async function IndustryPage() {
       <section className="section-pad industry-cta">
         <p className="eyebrow">NEXT STEP</p>
         <h2>Start with a clear brief.</h2>
-        <p>Use the request form with business context. Response scope is confirmed per project.</p>
+        <p>Tell us about your use case, deadline and budget. We will review availability, scope, rights and next steps before any commitment.</p>
         <Link className="button button-gold" href="/request">
           Build your world ↗
         </Link>
