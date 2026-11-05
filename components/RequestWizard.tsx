@@ -16,6 +16,7 @@ const songTypes = [
   "EDM Track",
   "Cinematic Soundtrack",
   "Custom Music",
+  "Existing Track Licensing",
   "Other",
 ];
 
@@ -195,13 +196,13 @@ export default function RequestWizard() {
       <div className="request-process">
         <p className="eyebrow">HOW IT WORKS</p>
         <ol>
-          <li>Share the type, sound and story of your song.</li>
+          <li>Tell us what music you need, how you plan to use it and the story behind your idea.</li>
           <li>Bossie reviews your brief and replies with next steps.</li>
           <li>Production, revisions and delivery are confirmed per project.</li>
         </ol>
         <p className="request-process-note">
-          No fixed prices or timelines are published here — every brief is scoped individually. Personal and commercial use
-          are declared in your request.
+          Every request is reviewed individually. Pricing, production scope, deadlines and any licensing rights are confirmed
+          in writing before work begins. Submitting this form does not constitute a purchase.
         </p>
       </div>
 
@@ -230,7 +231,7 @@ export default function RequestWizard() {
 
       {step === 0 && (
         <div className="wizard-panel">
-          <h2>What kind of song?</h2>
+          <h2>What music do you need?</h2>
           <div className="wizard-cards" role="group" aria-label="Request type">
             {songTypes.map((type) => (
               <button
