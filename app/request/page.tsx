@@ -16,7 +16,7 @@ export default function RequestPage() {
         <BossieLogo variant="primary" href="/" className="request-hero-logo" />
         <div className="page-hero-inner">
           <p className="eyebrow">PROJECT ENQUIRY / MUSIC LICENSING</p>
-          <h1>LET\u0027S TALK MUSIC</h1>
+          <h1>LET'S TALK MUSIC</h1>
           <p>Tell us what you need: an original song, music for a film or brand, an artist collaboration or a licence for an existing Bossie recording.</p>
         </div>
       </header>
