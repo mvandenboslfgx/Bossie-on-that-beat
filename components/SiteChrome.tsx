@@ -46,9 +46,18 @@ export function SiteFooter() {
       </div>
 
       <div className="footer-copy">
-        <small>
-          © 2026 BOSSIE ON THAT BEAT · <Link href="/privacy">PRIVACY</Link>
-        </small>
+        <nav className="footer-business-links" aria-label="Business and legal information">
+          <Link href="/industry">Music licensing &amp; services</Link>
+          <Link href="/request">Project enquiries</Link>
+          <Link href="/epk">Press &amp; EPK</Link>
+          <Link href="/privacy">Privacy</Link>
+          <a href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20on%20that%20beat%20enquiry">Business contact</a>
+        </nav>
+        <p className="footer-legal-note">
+          Bossie on that beat is an independent music project operated by VDB Digital Software, the Netherlands · KvK 99981440.
+          Music use, licensing terms and delivery are agreed in writing per project.
+        </p>
+        <small>© {new Date().getFullYear()} BOSSIE ON THAT BEAT</small>
       </div>
     </footer>
   );

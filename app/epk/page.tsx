@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "EPK / Press",
   description:
-    "Electronic press kit for Bossie on that beat — artist overview, newest music, cinema and official links.",
+    "Official Bossie on that beat press kit: artist biography, verified releases, video, logos and contact for press, sync licensing and production enquiries.",
   alternates: { canonical: "/epk" },
 };
 
@@ -170,13 +170,14 @@ export default async function EpkPage() {
       </section>
       <section className="section-pad">
         <p className="eyebrow">Contact</p>
-        <p>For press, sync and collaboration enquiries:</p>
+        <p>For press, sync licensing, music production and collaboration enquiries. Licensing and usage rights are reviewed and agreed per project.</p>
+        <p><a className="text-link" href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20press%20or%20licensing">Contact: algemeen@vdbdigital.nl ↗</a></p>
         <div className="cta-row">
           <Link className="button button-gold" href="/request">
-            Work with Bossie ↗
+            Submit a project brief ↗
           </Link>
           <Link className="button button-ghost" href="/industry">
-            Industry ↗
+            Services &amp; licensing ↗
           </Link>
         </div>
       </section>
