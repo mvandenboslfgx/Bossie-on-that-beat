@@ -72,6 +72,19 @@ jobs:
               all_ok=0
             fi
 
+            # Verify the deployed HTML contains this release's business-site content,
+            # rather than treating an older reachable Cloudflare version as healthy.
+            if [[ "$home_html" != *"A creative sound. A professional process."* ]]; then
+              echo "Attempt ${attempt}/36: new business homepage content not deployed yet."
+              all_ok=0
+            fi
+
+            industry_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/industry" || true)
+            if [[ "$industry_html" != *"Original music. Clear rights. Creative partnerships."* ]]; then
+              echo "Attempt ${attempt}/36: new services and licensing page not deployed yet."
+              all_ok=0
+            fi
+
             if [ "$all_ok" = "1" ]; then
               echo "BOSSIE_PRODUCTION_HEALTH=PASS"
               exit 0
