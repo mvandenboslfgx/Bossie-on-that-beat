@@ -11,6 +11,7 @@ import "./luxury.css";
 import "./performance-fixes.css";
 import "./brand-polish.css";
 import "./business.css";
+import "./studio-2026.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
@@ -84,8 +85,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Bossie on that beat | Producer, Composer & Artist",
-    description: "Independent music production, licensing and original releases. Every track is a new world.",
+    title: "Bossie on that beat | Custom Music, Original Releases & Licensing",
+    description: "Create your own song, discover official releases and request music production or licensing.",
     ...(ogImage ? { images: [ogImage] } : {}),
   },
 };
