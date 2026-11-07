@@ -9,17 +9,17 @@ import { getListenSocials } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
 
 const primaryNav = [
-  ["Music", "/music"],
+  ["Listen", "/music"],
+  ["Create music", "/request"],
   ["Services", "/industry"],
-  ["Worlds", "/worlds"],
-  ["EPK", "/epk"],
+  ["About", "/about"],
 ] as const;
 
 const secondaryNav = [
+  ["Worlds", "/worlds"],
   ["Cinema", "/cinema"],
-  ["About", "/about"],
-  ["Links", "/links"],
-  ["Request Music", "/request"],
+  ["EPK", "/epk"],
+  ["Official links", "/links"],
 ] as const;
 
 const menuNav = [...primaryNav, ...secondaryNav] as const;
@@ -102,8 +102,7 @@ export function SiteNav() {
     <>
       <nav className="site-nav" aria-label="Primary navigation">
         <div className="nav-inner">
-          <BossieLogo variant="mark" href="/" />
-          <BossieLogo variant="wordmark" href="/" className="nav-wordmark" />
+          <BossieLogo variant="primary" href="/" className="nav-brand" />
 
           <div className="site-links desktop-nav" aria-hidden={open}>
             {primaryNav.map(([label, itemHref]) => {
@@ -122,7 +121,7 @@ export function SiteNav() {
           </div>
 
           <div className="nav-actions">
-            <Link className="site-commission desktop-only" href="/request">Request Music ↗</Link>
+            <Link className="site-commission desktop-only" href="/request?type=personal">Request your song ↗</Link>
             <a
               className="site-listen desktop-only"
               href={href}
@@ -169,7 +168,7 @@ export function SiteNav() {
                 Close
               </button>
             </div>
-            <p className="menu-kicker">Music, services & collaborations</p>
+            <p className="menu-kicker">LISTEN · CREATE · COLLABORATE</p>
             <ul className="mobile-nav-list">
               {menuNav.map(([label, itemHref], index) => {
                 const active = isActive(itemHref);
@@ -192,12 +191,10 @@ export function SiteNav() {
               <MobileSocialLinks />
               <a
                 className="button button-gold mobile-nav-listen"
-                href={href}
-                target={external ? "_blank" : undefined}
-                rel={external ? "noreferrer" : undefined}
+                href="/request?type=personal"
                 onClick={() => setOpen(false)}
               >
-                {listenLabel()} ↗
+                Create your song ↗
               </a>
               <p>{siteSettings.slogan}</p>
             </div>
