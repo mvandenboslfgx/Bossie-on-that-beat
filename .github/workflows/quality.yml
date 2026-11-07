@@ -99,13 +99,7 @@ jobs:
             fi
 
             home_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/" || true)
-            if ! printf '%s' "$home_html" | grep -q "Global distribution"; then
-              echo "Attempt ${attempt}/36: home is still serving an older deployment."
-              all_ok=0
-            fi
-
-            # Verify the deployed HTML contains this release's business-site content,
-            # rather than treating an older reachable Cloudflare version as healthy.
+            # Compare actual homepage copy against the newly deployed studio design.
             if [[ "$home_html" != *"What brings you here?"* ]] || [[ "$home_html" != *"Music made"* ]]; then
               echo "Attempt ${attempt}/36: new music studio homepage content not deployed yet."
               all_ok=0
