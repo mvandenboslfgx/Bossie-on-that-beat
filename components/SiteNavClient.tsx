@@ -10,16 +10,16 @@ import { siteSettings } from "@/lib/site-settings";
 
 const primaryNav = [
   ["Music", "/music"],
+  ["Services", "/industry"],
   ["Worlds", "/worlds"],
-  ["Cinema", "/cinema"],
   ["EPK", "/epk"],
 ] as const;
 
 const secondaryNav = [
+  ["Cinema", "/cinema"],
   ["About", "/about"],
-  ["Industry", "/industry"],
   ["Links", "/links"],
-  ["Create Your Song", "/request"],
+  ["Request Music", "/request"],
 ] as const;
 
 const menuNav = [...primaryNav, ...secondaryNav] as const;
@@ -122,7 +122,7 @@ export function SiteNav() {
           </div>
 
           <div className="nav-actions">
-            <Link className="site-commission desktop-only" href="/request">Create Your Song ↗</Link>
+            <Link className="site-commission desktop-only" href="/request">Request Music ↗</Link>
             <a
               className="site-listen desktop-only"
               href={href}
@@ -169,7 +169,7 @@ export function SiteNav() {
                 Close
               </button>
             </div>
-            <p className="menu-kicker">Explore the universe</p>
+            <p className="menu-kicker">Music, services & collaborations</p>
             <ul className="mobile-nav-list">
               {menuNav.map(([label, itemHref], index) => {
                 const active = isActive(itemHref);
