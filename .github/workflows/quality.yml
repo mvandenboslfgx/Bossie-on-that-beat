@@ -40,16 +40,48 @@ jobs:
       - name: Production build
         run: npm run build
 
-  live-health:
+  deploy-cloudflare:
     if: github.event_name == 'push'
     needs: validate
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
-      - name: Wait for Cloudflare Git deployment and verify production content
+      - name: Verify dedicated Bossie Cloudflare credentials
         run: |
           set -euo pipefail
-          routes=("/" "/music" "/worlds" "/cinema" "/about")
+          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ]; then
+            echo "::error::Deployment unavailable: configure CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID as GitHub Actions repository secrets for the Bossie Cloudflare account."
+            exit 1
+          fi
+          if [ "${CLOUDFLARE_ACCOUNT_ID}" != "4f59aa5b14f5882688437af50ee8c2ac" ]; then
+            echo "::error::Cloudflare account ID does not match the documented Bossie-only deployment account. Refusing cross-project deployment."
+            exit 1
+          fi
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Publish Bossie Worker only
+        run: npm run cf:deploy
+
+  live-health:
+    if: github.event_name == 'push'
+    needs: deploy-cloudflare
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Verify newly deployed studio homepage and production routes
+        run: |
+          set -euo pipefail
+          routes=("/" "/music" "/worlds" "/cinema" "/about" "/industry" "/request")
           for attempt in $(seq 1 36); do
             all_ok=1
             for route in "${routes[@]}"; do
@@ -67,21 +99,21 @@ jobs:
             fi
 
             home_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/" || true)
-            if ! printf '%s' "$home_html" | grep -q "Global distribution"; then
-              echo "Attempt ${attempt}/36: home is still serving an older deployment."
-              all_ok=0
-            fi
-
-            # Verify the deployed HTML contains this release's business-site content,
-            # rather than treating an older reachable Cloudflare version as healthy.
-            if [[ "$home_html" != *"A creative sound. A professional process."* ]]; then
-              echo "Attempt ${attempt}/36: new business homepage content not deployed yet."
+            # Compare actual homepage copy against the newly deployed studio design.
+            if [[ "$home_html" != *"What brings you here?"* ]] || [[ "$home_html" != *"Music made"* ]]; then
+              echo "Attempt ${attempt}/36: new music studio homepage content not deployed yet."
               all_ok=0
             fi
 
             industry_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/industry" || true)
             if [[ "$industry_html" != *"Original music. Clear rights. Creative partnerships."* ]]; then
               echo "Attempt ${attempt}/36: new services and licensing page not deployed yet."
+              all_ok=0
+            fi
+
+            request_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/request" || true)
+            if [[ "$request_html" != *"Start your request."* ]]; then
+              echo "Attempt ${attempt}/36: redesigned request form has not been deployed."
               all_ok=0
             fi
 

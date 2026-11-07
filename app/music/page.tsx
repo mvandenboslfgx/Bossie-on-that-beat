@@ -1,84 +1,132 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
-import { slugifyGenre } from "@/lib/repository/release-repository";
-import { MusicEditorialArchive } from "@/components/v3/MusicEditorialArchive";
-import { BossieMark } from "@/components/brand/BossieMark";
+import { slugifyGenre, getPrimaryListenLink } from "@/lib/repository/release-repository";
+import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { PageShell } from "@/components/SiteChrome";
 import { CatalogProof } from "@/components/v3/BossieV3";
 import { TrackCatalog } from "@/components/release/TrackCatalog";
 import { PlatformAvailability } from "@/components/music/PlatformAvailability";
-import { distributionPlatformCount } from "@/lib/music/distribution-platforms";
+import { getOfficialProfileEntries } from "@/lib/site-settings";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Music",
+  title: "Listen to Music | Bossie Official Releases",
   description:
-    "Complete official Bossie on that beat track and release archive with verified streaming links and worldwide distribution across 26 platforms.",
+    "Explore the original music of Bossie on that beat. Listen to verified releases, browse genres, find streaming links and explore the complete official discography.",
   alternates: { canonical: "/music" },
 };
 
 export default async function MusicPage() {
   const catalog = await getCatalog();
   const { live, trackCount, collections, upcoming, genres, refreshedAt, latest } = catalog;
-  const releaseShowcase = collections.length ? collections.slice(0, 6) : live.slice(0, 6);
+  const releaseShowcase = (collections.length ? collections : live).slice(0, 9);
+  const official = getOfficialProfileEntries("streaming").filter((entry) => isVerifiedListenUrl(entry.href));
 
   return (
     <PageShell>
-      <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
-      <section className="page-hero compact-hero">
-        <BossieMark size="lg" className="section-mark" />
-        <p className="eyebrow">ALL OFFICIAL TRACKS &amp; RELEASES</p>
-        <h1>MUSIC</h1>
-        <Link className="text-link music-platform-jump" href="#platforms">
-          Available on {distributionPlatformCount} platforms ↓
-        </Link>
-        <p>{trackCount} verified tracks across {collections.length || live.length} releases. One identity, no genre borders.</p>
-      </section>
-
-      <section className="music-filters section-pad">
-        <div className="filter-row" role="navigation" aria-label="Genre filters">
-          <Link className="filter-chip active" href="/music">
-            All
-          </Link>
-          {genres.map((genre) => (
-            <Link key={genre} className="filter-chip" href={`/music/genre/${slugifyGenre(genre)}`}>
-              {genre}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <PlatformAvailability />
-
-      <section className="section-pad">
-        <div className="section-heading">
+      <div className="studio-music-page">
+        <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
+        <header className="studio-music-header section-pad">
           <div>
-            <p className="eyebrow">LATEST RELEASES</p>
-            <h2>Start with the worlds.</h2>
+            <p className="studio-kicker">OFFICIAL BOSSIE MUSIC CATALOGUE</p>
+            <h1>Listen to<br /><em>the music.</em></h1>
+            <p>
+              Every release has its own sound. Discover the official Bossie on that beat catalogue,
+              explore the latest songs and open verified links to your preferred music platform.
+            </p>
+            <div className="studio-music-header-actions">
+              <Link className="studio-btn studio-btn-primary" href="#latest-releases">Browse releases ↓</Link>
+              <Link className="studio-btn studio-btn-outline" href="/request?type=custom">Want your own song? ↗</Link>
+            </div>
           </div>
-        </div>
-        <MusicEditorialArchive live={releaseShowcase} catalog={live} />
-      </section>
-
-      <section className="section-pad complete-track-section" aria-labelledby="complete-track-title">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">COMPLETE DISCOGRAPHY</p>
-            <h2 id="complete-track-title">Every verified track.</h2>
+          <div className="studio-music-count">
+            <strong>{trackCount}</strong>
+            <span>VERIFIED TRACKS</span>
+            <p>Original Bossie music in one official archive.</p>
           </div>
-          <p className="track-count">{live.length} catalogue items</p>
-        </div>
-        <TrackCatalog items={live} />
-      </section>
+        </header>
 
-      {upcoming.length > 0 && (
-        <section className="section-pad upcoming-section">
-          <p className="eyebrow">COMING NEXT</p>
-          <p className="empty-state">{upcoming.length} upcoming releases — <Link href="/music/upcoming">view all ↗</Link></p>
+        <section id="latest-releases" className="studio-music-featured section-pad" aria-labelledby="music-featured-heading">
+          <div className="studio-section-top">
+            <div><p className="studio-kicker">START LISTENING</p><h2 id="music-featured-heading">Latest releases.</h2></div>
+            <p>Tap a cover to see the track details, artwork, credits and verified listening options.</p>
+          </div>
+          <div className="studio-music-grid">
+            {releaseShowcase.map((release) => {
+              const canListen = Boolean(getPrimaryListenLink(release));
+              return (
+                <article className="studio-music-card" key={release.id}>
+                  <Link href={`/music/${release.slug}`} className="studio-music-cover" aria-label={`View ${release.title}`}>
+                    <ReleaseArtwork release={release} />
+                  </Link>
+                  <div className="studio-music-card-body">
+                    <span>{release.type.toUpperCase()} {release.releaseDate ? `· ${release.releaseDate.slice(0, 4)}` : ""}</span>
+                    <h3><Link href={`/music/${release.slug}`}>{release.title}</Link></h3>
+                    <p>{release.genres.slice(0, 3).join(" · ")}</p>
+                    <div className="studio-music-card-links">
+                      {canListen && <Link href={`/go/${release.slug}`}>Listen now ↗</Link>}
+                      <Link href={`/music/${release.slug}`}>Release details ↗</Link>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+          {releaseShowcase.length === 0 && <p className="studio-empty-catalog">Verified releases will appear here when available.</p>}
         </section>
-      )}
+
+        <section className="studio-music-genres section-pad" aria-label="Browse music by genre">
+          <div><p className="studio-kicker">FIND YOUR SOUND</p><h2>Explore by genre.</h2></div>
+          <nav className="studio-genre-links" aria-label="Music genre filters">
+            <Link href="/music" aria-current="page">All music</Link>
+            {genres.map((genre) => <Link key={genre} href={`/music/genre/${slugifyGenre(genre)}`}>{genre}</Link>)}
+          </nav>
+        </section>
+
+        <section className="studio-music-archive section-pad" aria-labelledby="complete-track-title">
+          <div className="studio-section-top">
+            <div><p className="studio-kicker">COMPLETE DISCOGRAPHY</p><h2 id="complete-track-title">Every verified track.</h2></div>
+            <p>{live.length} catalogue items, including individual tracks from albums and EPs.</p>
+          </div>
+          <details className="studio-archive-details">
+            <summary>View full track list <span aria-hidden="true">↓</span></summary>
+            <TrackCatalog items={live} />
+          </details>
+          {upcoming.length > 0 && (
+            <p className="studio-upcoming-note">
+              {upcoming.length} upcoming releases · <Link href="/music/upcoming">See what is next ↗</Link>
+            </p>
+          )}
+        </section>
+
+        <section className="studio-music-listen section-pad" aria-labelledby="studio-streaming-heading">
+          <div>
+            <p className="studio-kicker">OFFICIAL PROFILES</p>
+            <h2 id="studio-streaming-heading">Listen where you like.</h2>
+            <p>Use verified Bossie artist profiles for reliable listening links.</p>
+          </div>
+          <div className="studio-platform-list">
+            {official.map(({ key, href, label }) => (
+              <a key={key} href={href} target="_blank" rel="noopener noreferrer">{label} ↗</a>
+            ))}
+          </div>
+        </section>
+
+        <PlatformAvailability />
+
+        <section className="studio-final section-pad">
+          <p className="studio-kicker">WANT MUSIC OF YOUR OWN?</p>
+          <h2>Let's create<br /><em>your next song.</em></h2>
+          <p>From a personal gift to a company production, send your idea through our guided music request.</p>
+          <div className="studio-hero-actions">
+            <Link className="studio-btn studio-btn-primary" href="/request?type=personal">Create a song ↗</Link>
+            <Link className="studio-btn studio-btn-outline" href="/industry">Business &amp; licensing ↗</Link>
+          </div>
+        </section>
+      </div>
     </PageShell>
   );
 }

@@ -5,7 +5,7 @@ import { siteSettings } from "@/lib/site-settings";
 type BossieLogoVariant = "primary" | "mark" | "wordmark";
 
 const sizes: Record<BossieLogoVariant, { width: number; height: number; className: string }> = {
-  primary: { width: 640, height: 640, className: "bossie-logo bossie-logo-primary" },
+  primary: { width: 780, height: 152, className: "bossie-logo bossie-logo-primary" },
   mark: { width: 44, height: 44, className: "bossie-logo bossie-logo-mark" },
   wordmark: { width: 0, height: 0, className: "bossie-logo bossie-logo-wordmark" },
 };

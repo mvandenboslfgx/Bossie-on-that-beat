@@ -3,10 +3,11 @@
  * Components must import paths from here — never hardcode /brand/* elsewhere.
  *
  * INVENTORY (2026-08-26):
- * ✅ logo-primary.jpg     — full gold logo (crown + B + BOSSIE + ON THAT BEAT + palm)
- * ✅ logo-mark.svg        — compact B monogram (favicon source)
+ * ✅ logo-horizontal.svg  — current official high-contrast horizontal studio logo
+ * ✅ logo-primary.jpg     — archived original logo, retained for legacy social-sharing fallback
+ * ✅ logo-mark.svg        — current official vector B monogram
  * ✅ favicon.svg          — browser/app icon
- * ⬜ logo-wordmark.svg    — not yet exported
+ * ✅ horizontal wordmark available through logo-horizontal.svg
  * ⬜ logo-light.*         — not yet exported
  * ⬜ logo-dark.*          — not yet exported
  * ⬜ logo-horizontal.*    — not yet exported
@@ -33,11 +34,11 @@ export interface BrandAsset {
 export const brandAssets = {
   primary: {
     variant: "primary",
-    src: "/brand/logo-primary.jpg",
-    alt: "Bossie on that beat — official logo",
+    src: "/brand/logo-horizontal.svg",
+    alt: "Bossie on that beat — official gold and ivory horizontal logo",
     available: true,
-    downloadLabel: "Primary Logo (JPG)",
-    mimeType: "image/jpeg",
+    downloadLabel: "Primary Logo (SVG)",
+    mimeType: "image/svg+xml",
   },
   mark: {
     variant: "mark",
