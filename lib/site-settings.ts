@@ -7,9 +7,9 @@ export const siteSettings = {
   domain: "bossieonthatbeat.com",
   siteUrl: "https://bossieonthatbeat.com",
   defaultSeo: {
-    title: "Bossie on that beat | Producer, Composer & Artist",
+    title: "Bossie on that beat | Music Production & Licensing",
     description:
-      "Official website of Bossie on that beat — cinematic, orchestral, metal, electronic, rap and global music. Every track is a new world.",
+      "Independent producer and composer. Original music releases, custom production, sync licensing and artist collaborations. Every track is a new world.",
   },
   /**
    * Canonical provider identities. Env secrets may override at runtime for sync,
