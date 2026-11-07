@@ -363,3 +363,17 @@
  .studio-about-roles article {min-height:230px;}
  .studio-archive-details summary {padding:1rem;}
 }
+
+
+/* Canonical marks are branding, not translucent decorative placeholders. */
+.section-mark.bossie-mark,
+.epk-seal .bossie-mark,
+.request-v3-layout .bossie-mark,
+.industry-capabilities .bossie-mark,
+.about-statements .bossie-mark {opacity:1!important;}
+.mobile-nav-panel .mobile-nav-logo.bossie-logo-primary {
+  display:block;max-width:min(230px,68vw)!important;width:100%;height:auto;
+  margin:0;object-fit:contain;filter:none!important;opacity:1!important;
+}
+.site-footer .footer-brand-block .bossie-logo-link {max-width:245px;}
+.site-footer .footer-brand-block .bossie-logo-primary {max-width:100%;height:auto;opacity:1!important;filter:none!important;}

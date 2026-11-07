@@ -21,6 +21,24 @@ This repository is **Bossie only**. Worker names:
 
 Never deploy to or modify other client Workers (e.g. Vermeulen Bouwservice).
 
+## Production publishing (GitHub → Cloudflare)
+
+The `.github/workflows/quality.yml` workflow now validates the code, deploys only the
+`bossie-on-that-beat` Cloudflare Worker, and checks that the new production content is visible.
+
+**One-time configuration in this repository:**
+
+1. Open GitHub → Settings → Secrets and variables → Actions.
+2. Add `CLOUDFLARE_API_TOKEN` with permission to deploy the Bossie Worker and its routes.
+3. Add `CLOUDFLARE_ACCOUNT_ID` for the documented Bossie account:
+   `4f59aa5b14f5882688437af50ee8c2ac`.
+4. Re-run the previously failed production workflow, or push a new approved change to `main`.
+
+Do not put API tokens in the repository, issues or chat. The workflow refuses to
+publish if the credentials are missing or the account ID does not match the
+Bossie-only account. A passing code build is **not** the same as a verified live
+deployment; the `live-health` job only runs after a successful Cloudflare deploy.
+
 ## Local development
 
 ```bash
