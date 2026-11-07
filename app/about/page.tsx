@@ -1,129 +1,137 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BossieMark } from "@/components/brand/BossieMark";
 import { PageShell } from "@/components/SiteChrome";
-import { getSameAsUrls } from "@/lib/brand/socials";
+import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
-import { siteSettings } from "@/lib/site-settings";
 
 export const metadata: Metadata = {
-  title: "Who is Bossie on that beat?",
+  title: "About Bossie | Independent Music Producer & Composer",
   description:
-    "Meet Bossie on that beat: an independent producer, composer and artist creating cinematic, electronic, metal, rap, orchestral and global music.",
+    "Learn who Bossie on that beat is, what music we make and how to request a personal song, original production or music licensing collaboration.",
   alternates: { canonical: "/about" },
 };
 
+const roles = [
+  {
+    number: "01",
+    heading: "Original artist releases",
+    text: "Bossie makes independent music across cinematic, electronic, pop, rap, metal, orchestral and international influences. Each release is available through verified listening links.",
+  },
+  {
+    number: "02",
+    heading: "Music on request",
+    text: "A personal song for an important moment or an original production for an artist or brand. Every project begins with a brief and a clear written proposal.",
+  },
+  {
+    number: "03",
+    heading: "Creative rights and licensing",
+    text: "For existing recordings, we assess what rights can be licensed for your proposed use. No commercial usage is permitted until the applicable terms have been agreed.",
+  },
+] as const;
+
 export default function AboutPage() {
+  const official = getOfficialProfileEntries("all");
+
   const schema = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "AboutPage",
-        "@id": `${siteSettings.siteUrl}/about#page`,
-        url: `${siteSettings.siteUrl}/about`,
-        name: `Who is ${siteSettings.artistName}?`,
-        mainEntity: { "@id": `${siteSettings.siteUrl}/#artist` },
-      },
-      {
-        "@type": "FAQPage",
-        "@id": `${siteSettings.siteUrl}/about#faq`,
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: `Who is ${siteSettings.artistName}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `${siteSettings.artistName} is an independent producer, composer and artist creating genre-fluid music as complete worlds of sound, image and story.`,
-            },
-          },
-          {
-            "@type": "Question",
-            name: `What kind of music does ${siteSettings.artistName} make?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "The catalogue spans cinematic, orchestral, metal, electronic, rap and global music. Each release has its own sound while remaining part of one creative identity.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: `Where can I hear ${siteSettings.artistName}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `The complete official catalogue and verified listening links are available at ${siteSettings.siteUrl}/music.`,
-            },
-          },
-        ],
-      },
-    ],
+    "@type": "AboutPage",
+    "@id": `${siteSettings.siteUrl}/about#page`,
+    url: `${siteSettings.siteUrl}/about`,
+    name: "About Bossie on that beat",
+    description: "Independent music producer, composer and artist project creating original releases and music to order.",
+    mainEntity: { "@id": `${siteSettings.siteUrl}/#artist` },
   };
 
   return (
     <PageShell>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
-      <section className="manifesto-hero about-identity-hero">
-        <BossieMark size="xl" />
-        <p className="eyebrow">OFFICIAL ARTIST PROFILE</p>
-        <h1>WHO IS<br />BOSSIE ON THAT BEAT?</h1>
-        <p className="about-identity-lede">
-          An independent producer, composer and artist building genre-fluid music as complete worlds of sound, image and
-          story.
-        </p>
-      </section>
+      <div className="studio-about-page">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
+        <header className="studio-about-header section-pad">
+          <p className="studio-kicker">ABOUT THE ARTIST &amp; STUDIO</p>
+          <h1>Behind the sound.<br /><em>Meet Bossie.</em></h1>
+          <p>
+            Bossie on that beat is an independent music producer, composer and artist project.
+            We create original music, produce tracks from individual briefs and explore different
+            styles without being tied to one genre.
+          </p>
+          <div className="studio-hero-actions">
+            <Link className="studio-btn studio-btn-primary" href="/request">Request a song ↗</Link>
+            <Link className="studio-btn studio-btn-outline" href="/music">Listen to releases ↗</Link>
+          </div>
+        </header>
 
-      <section className="section-pad about-definition">
-        <p className="eyebrow">THE SHORT ANSWER</p>
-        <h2>One identity. No fixed genre.</h2>
-        <p>
-          Bossie on that beat moves between cinematic scale, orchestral detail, metal weight, electronic energy, rap and
-          global influences. The style changes with the idea; the creative signature stays focused on contrast, atmosphere
-          and a strong visual world around every track.
-        </p>
-        <div className="about-profile-links">
-          {getSameAsUrls().map((href) => (
-            <a className="text-link" href={href} key={href} target="_blank" rel="noreferrer">Official profile ↗</a>
-          ))}
-        </div>
-      </section>
+        <section className="studio-about-details section-pad" aria-labelledby="studio-about-details-title">
+          <div className="studio-section-top">
+            <div>
+              <p className="studio-kicker">WHAT WE DO</p>
+              <h2 id="studio-about-details-title">Music for listeners and creators.</h2>
+            </div>
+            <p>Three straightforward ways to discover the Bossie sound or start a project.</p>
+          </div>
+          <div className="studio-about-roles">
+            {roles.map((item) => (
+              <article key={item.number}>
+                <span>{item.number}</span>
+                <h3>{item.heading}</h3>
+                <p>{item.text}</p>
+              </article>
+            ))}
+          </div>
+        </section>
 
-      <section className="section-pad about-statements">
-        <article>
-          <BossieMark size="sm" />
-          <h2>SOUND CHANGES. IDENTITY DOESN&apos;T.</h2>
-          <p>Metal today. Cinematic tomorrow. Club at midnight. The lane shifts — the Bossie lens stays.</p>
-        </article>
-        <article>
-          <BossieMark size="sm" />
-          <h2>MUSIC NEEDS AN IMAGE.</h2>
-          <p>Every release is sound, world and cinema together — not a track with a JPEG attached.</p>
-        </article>
-        <article>
-          <BossieMark size="sm" />
-          <h2>EVERY RELEASE STARTS FROM ZERO.</h2>
-          <p>{siteSettings.slogan}. No copy-paste formulas. No sequel-by-default thinking.</p>
-        </article>
-      </section>
+        <section className="studio-about-story section-pad" aria-labelledby="studio-about-story-title">
+          <div className="studio-about-letter-panel" aria-hidden="true">B</div>
+          <div>
+            <p className="studio-kicker">OUR APPROACH</p>
+            <h2 id="studio-about-story-title">Different genres. One identity.</h2>
+            <p>
+              Some ideas call for emotional vocals. Others need cinematic scale, hard-edged
+              guitars, electronic energy or a song that feels personal. Bossie works across
+              genres to shape the sound around the idea, not the other way around.
+            </p>
+            <p>
+              The official releases demonstrate the creative range. For commissions, every
+              project is scoped individually, including any required revisions, delivery
+              expectations and usage rights.
+            </p>
+            <Link className="studio-inline-link" href="/music">Discover the catalogue ↗</Link>
+          </div>
+        </section>
 
-      <section className="section-pad about-faq" aria-labelledby="about-faq-title">
-        <p className="eyebrow">QUICK FACTS</p>
-        <h2 id="about-faq-title">The essentials.</h2>
-        <dl>
-          <div><dt>What is Bossie on that beat?</dt><dd>An independent producer, composer and artist project.</dd></div>
-          <div><dt>What is the sound?</dt><dd>Cinematic, orchestral, metal, electronic, rap and global — built without one fixed genre lane.</dd></div>
-          <div><dt>What makes it different?</dt><dd>Every release is developed as sound, image and story: a complete world rather than an isolated track.</dd></div>
-          <div><dt>Where is the complete catalogue?</dt><dd><Link href="/music">The official Music archive contains every verified track and release.</Link></dd></div>
-        </dl>
-      </section>
+        <section className="studio-about-contact section-pad" aria-labelledby="studio-about-contact-title">
+          <div>
+            <p className="studio-kicker">WORK WITH BOSSIE</p>
+            <h2 id="studio-about-contact-title">Let's create something together.</h2>
+            <p>
+              Send a personal or professional music brief via the official request form. For
+              business and licensing enquiries, include intended use, timeframe and project details.
+            </p>
+            <div className="studio-hero-actions">
+              <Link className="studio-btn studio-btn-primary" href="/request">Start a project ↗</Link>
+              <Link className="studio-btn studio-btn-outline" href="/industry">Business services ↗</Link>
+              <Link className="studio-inline-link" href="/epk">Official press kit ↗</Link>
+            </div>
+          </div>
+          <aside className="studio-about-business">
+            <span>OFFICIAL BUSINESS INFORMATION</span>
+            <strong>Bossie on that beat</strong>
+            <p>Independent music project operated by VDB Digital Software in the Netherlands.</p>
+            <p>Chamber of Commerce (KvK): 99981440</p>
+            <a href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20business%20enquiry">algemeen@vdbdigital.nl ↗</a>
+          </aside>
+        </section>
 
-      <section className="section-pad">
-        <div className="cta-row">
-          <Link className="button button-ghost" href="/worlds">
-            Enter worlds ↗
-          </Link>
-          <Link className="button button-gold" href="/request">
-            Build your world ↗
-          </Link>
-        </div>
-      </section>
+        {official.length > 0 && (
+          <section className="studio-about-profiles section-pad" aria-label="Verified official music and social profiles">
+            <p className="studio-kicker">FOLLOW &amp; LISTEN</p>
+            <div className="studio-platform-list">
+              {official.map((entry) => (
+                <a href={entry.href} key={entry.key} target="_blank" rel="noopener noreferrer">{entry.label} ↗</a>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </PageShell>
   );
 }
