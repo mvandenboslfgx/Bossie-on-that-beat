@@ -10,6 +10,7 @@ import "./bossie-mobile.css";
 import "./luxury.css";
 import "./performance-fixes.css";
 import "./brand-polish.css";
+import "./business.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
@@ -35,11 +36,11 @@ const ogImage = getBrandAssetUrl("socialShare", siteUrl);
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Bossie on that beat | Producer, Composer & Artist",
+    default: "Bossie on that beat | Music Production & Licensing",
     template: "%s | Bossie on that beat",
   },
   description:
-    "Official website of Bossie on that beat, an independent producer, composer and artist creating cinematic, orchestral, metal, electronic, rap and global music. Every track is a new world.",
+    "Bossie on that beat is an independent producer and composer. Explore original music, custom music production, sync licensing, collaborations and official releases.",
   keywords: [
     "Bossie on that beat",
     "Bossie producer",
@@ -76,15 +77,15 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "Bossie on that beat",
-    title: "Bossie on that beat | Producer, Composer & Artist",
+    title: "Bossie on that beat | Music Production & Licensing",
     description:
-      "Official Bossie on that beat website. Music without genre boundaries — every track is a new world.",
+      "Original releases, bespoke music production, sync licensing and creative collaborations. Official Bossie on that beat website.",
     ...(ogImage ? { images: [{ url: ogImage, alt: "Bossie on that beat official logo" }] } : {}),
   },
   twitter: {
     card: "summary_large_image",
     title: "Bossie on that beat | Producer, Composer & Artist",
-    description: "Official website. Music without boundaries. Every track is a new world.",
+    description: "Independent music production, licensing and original releases. Every track is a new world.",
     ...(ogImage ? { images: [ogImage] } : {}),
   },
 };
