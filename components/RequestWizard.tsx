@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { BossieMark } from "@/components/brand/BossieMark";
 
 const songTypes = [
@@ -19,6 +19,19 @@ const songTypes = [
   "Existing Track Licensing",
   "Other",
 ];
+
+const featuredSongTypes = [
+  { type: "Personal Song", description: "A unique song inspired by your own story." },
+  { type: "Birthday Song", description: "Celebrate someone with personalised music." },
+  { type: "Company Song", description: "Music for a brand, company or campaign." },
+  { type: "Custom Music", description: "A new track built to your creative brief." },
+  { type: "Cinematic Soundtrack", description: "Music for film, video or storytelling." },
+  { type: "Existing Track Licensing", description: "Ask to use a published Bossie recording." },
+] as const;
+
+const extraSongTypes = songTypes.filter(
+  (type) => !featuredSongTypes.some((featured) => featured.type === type),
+);
 
 const vocalOptions = [
   "Male",
@@ -51,6 +64,7 @@ const STORY_MIN = 30;
 
 export default function RequestWizard() {
   const [step, setStep] = useState(0);
+  const [showMoreTypes, setShowMoreTypes] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("Could not send request. Please try again later.");
   const [fieldError, setFieldError] = useState<string | null>(null);
@@ -64,6 +78,31 @@ export default function RequestWizard() {
     privacyConsent: false,
   });
   const errorRef = useRef<HTMLParagraphElement>(null);
+
+  // Prefill a matching request from homepage CTAs without skipping review or consent.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const type = params.get("type");
+    const mapped: Record<string, string> = {
+      personal: "Personal Song",
+      birthday: "Birthday Song",
+      business: "Company Song",
+      brand: "Company Song",
+      custom: "Custom Music",
+      cinema: "Cinematic Soundtrack",
+      licensing: "Existing Track Licensing",
+      artist: "Custom Music",
+    };
+    const songType = type ? mapped[type] : undefined;
+    const track = params.get("track")?.trim().slice(0, 160);
+    if (songType || track) {
+      setForm((previous) => ({
+        ...previous,
+        ...(songType ? { songType, commercialUse: ["business", "brand", "licensing"].includes(type || "") } : {}),
+        ...(track ? { releaseTitle: track } : {}),
+      }));
+    }
+  }, []);
 
   const isLicensing = form.songType === "Existing Track Licensing";
   const steps = ["Type", isLicensing ? "Recording" : "Sound", isLicensing ? "Usage" : "Story", "Details", "Review"];
@@ -239,20 +278,47 @@ export default function RequestWizard() {
 
       {step === 0 && (
         <div className="wizard-panel">
-          <h2>What music do you need?</h2>
-          <div className="wizard-cards" role="group" aria-label="Request type">
-            {songTypes.map((type) => (
+          <p className="studio-form-label">CHOOSE YOUR PROJECT</p>
+          <h2>What would you like to create?</h2>
+          <p className="studio-wizard-intro">Select the option that fits best. You can describe all the details in the next steps.</p>
+          <div className="wizard-cards studio-wizard-cards" role="group" aria-label="Request type">
+            {featuredSongTypes.map(({ type, description }) => (
               <button
                 key={type}
                 type="button"
-                className={`wizard-card ${form.songType === type ? "selected" : ""}`}
+                className={`wizard-card studio-wizard-choice ${form.songType === type ? "selected" : ""}`}
                 aria-pressed={form.songType === type}
                 onClick={() => update("songType", type)}
               >
-                {type}
+                <strong>{type}</strong>
+                <span>{description}</span>
+                <small aria-hidden="true">{form.songType === type ? "✓ Selected" : "Select ↗"}</small>
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            className="studio-wizard-more"
+            aria-expanded={showMoreTypes}
+            onClick={() => setShowMoreTypes((value) => !value)}
+          >
+            {showMoreTypes ? "Hide additional music types −" : "Looking for something else? More music types +"}
+          </button>
+          {showMoreTypes && (
+            <div className="wizard-cards studio-extra-types" role="group" aria-label="More request types">
+              {extraSongTypes.map((type) => (
+                <button
+                  key={type}
+                  type="button"
+                  className={`wizard-card ${form.songType === type ? "selected" : ""}`}
+                  aria-pressed={form.songType === type}
+                  onClick={() => update("songType", type)}
+                >
+                  {type}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
