@@ -4,7 +4,6 @@ import { BossieLogo } from "@/components/brand/BossieLogo";
 import { FooterSocialGrid } from "@/components/brand/SocialLinks";
 import { SiteNav } from "@/components/SiteNavClient";
 import { siteSettings } from "@/lib/site-settings";
-import { distributionPlatformCount } from "@/lib/music/distribution-platforms";
 
 export { SiteNav };
 
@@ -12,22 +11,19 @@ export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="footer-brand-block">
-        <BossieLogo variant="wordmark" href="/" />
-        <p className="footer-tagline">{siteSettings.slogan}</p>
+        <BossieLogo variant="primary" href="/" />
+        <p className="footer-tagline">Original music · Custom songs · Licensing</p>
+        <p className="footer-short-intro">Independent music production for people, artists and creative projects.</p>
       </div>
 
       <FooterSocialGrid />
 
       <div className="footer-proof-column">
-        <Link className="footer-platform-proof" href="/music#platforms" aria-label={`See all ${distributionPlatformCount} distribution platforms`}>
-          <strong>{distributionPlatformCount}</strong>
-          <span>
-            <small>GLOBAL DISTRIBUTION</small>
-            <b>Platforms worldwide</b>
-          </span>
-          <i aria-hidden="true">↘</i>
-        </Link>
-
+        <div className="footer-action-card">
+          <span>HAVE AN IDEA?</span>
+          <strong>Let's create something worth hearing.</strong>
+          <Link href="/request?type=personal">Request your music ↗</Link>
+        </div>
         <a
           className="vdb-credit"
           href="https://vdbdigital.nl"
@@ -37,9 +33,8 @@ export function SiteFooter() {
         >
           <span className="vdb-credit-mark" aria-hidden="true">VDB</span>
           <span className="vdb-credit-copy">
-            <small>DESIGNED &amp; DEVELOPED BY</small>
-            <strong>VDB DIGITAL</strong>
-            <span>WEB · SOFTWARE · AI</span>
+            <small>WEBSITE BY</small>
+            <strong>VDB DIGITAL SOFTWARE</strong>
           </span>
           <span className="vdb-credit-arrow" aria-hidden="true">↗</span>
         </a>
