@@ -87,6 +87,7 @@ export default async function HomePage() {
           </p>
           <div className="identity-actions">
             <Link className="button button-gold" href="/request">Commission music ↗</Link>
+            <Link className="text-link" href="/industry">Music services ↗</Link>
             <Link className="text-link" href="/about">Meet Bossie ↗</Link>
             <Link className="text-link" href="/epk">Press kit ↗</Link>
           </div>
@@ -96,6 +97,45 @@ export default async function HomePage() {
           <div><dt>Global distribution</dt><dd>{distributionPlatformCount} platforms</dd></div>
           <div><dt>Visual archive</dt><dd>{cinema.length ? `${cinema.length} films & transmissions` : "Sound · image · story"}</dd></div>
         </dl>
+      </section>
+
+      <section className="section-pad business-services" aria-labelledby="business-services-title">
+        <div className="business-services-head">
+          <div>
+            <p className="eyebrow">FOR FILM · BRANDS · ARTISTS</p>
+            <h2 id="business-services-title">A creative sound. A professional process.</h2>
+          </div>
+          <Link className="text-link" href="/industry">All professional services ↗</Link>
+        </div>
+        <p className="business-services-intro">
+          Beyond the official releases, Bossie works on selected commissions and licensing enquiries.
+          From the first brief to the final agreement, every project starts with clear expectations,
+          defined rights and a purpose for the music.
+        </p>
+        <div className="business-service-grid">
+          <Link className="business-service-card" href="/industry#licensing">
+            <span className="business-card-index">01 / SYNC &amp; LICENSING</span>
+            <h3>Music for picture and campaigns.</h3>
+            <p>Enquire about an existing Bossie track for film, advertising, games or digital content. Usage and rights are reviewed case by case.</p>
+            <span className="business-card-link">Explore music licensing ↗</span>
+          </Link>
+          <Link className="business-service-card" href="/industry#production">
+            <span className="business-card-index">02 / ORIGINAL PRODUCTION</span>
+            <h3>Built around your brief.</h3>
+            <p>Commission original music for a brand, story, video, personal milestone or independent artist project.</p>
+            <span className="business-card-link">Discover custom production ↗</span>
+          </Link>
+          <Link className="business-service-card" href="/industry#collaborations">
+            <span className="business-card-index">03 / COLLABORATIONS</span>
+            <h3>Made with the right people.</h3>
+            <p>Selected collaborations with artists, vocalists and creative teams, with a shared concept and agreed terms.</p>
+            <span className="business-card-link">Discuss a collaboration ↗</span>
+          </Link>
+        </div>
+        <div className="business-proof-strip">
+          <span><strong>Professional enquiries</strong> · Clear scope before commitment · Written agreements for rights and delivery</span>
+          <Link href="/request">Have a brief? Request a proposal ↗</Link>
+        </div>
       </section>
 
       <section className="section-pad home-section">
