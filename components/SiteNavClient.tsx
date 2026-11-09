@@ -11,7 +11,7 @@ import { siteSettings } from "@/lib/site-settings";
 const primaryNav = [
   ["Listen", "/music"],
   ["Create music", "/request"],
-  ["Services", "/industry"],
+  ["For business", "/industry"],
   ["About", "/about"],
 ] as const;
 
@@ -19,7 +19,7 @@ const secondaryNav = [
   ["Worlds", "/worlds"],
   ["Cinema", "/cinema"],
   ["EPK", "/epk"],
-  ["Official links", "/links"],
+  ["All links", "/links"],
 ] as const;
 
 const menuNav = [...primaryNav, ...secondaryNav] as const;
@@ -121,7 +121,7 @@ export function SiteNav() {
           </div>
 
           <div className="nav-actions">
-            <Link className="site-commission desktop-only" href="/request?type=personal">Request your song ↗</Link>
+            <Link className="site-commission desktop-only" href="/request?type=personal">Create a song ↗</Link>
             <a
               className="site-listen desktop-only"
               href={href}
