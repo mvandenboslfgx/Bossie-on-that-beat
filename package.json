@@ -29,5 +29,9 @@
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.0",
     "wrangler": "^4.141.0"
+  },
+  "overrides": {
+    "glob": "14.0.4",
+    "minimatch": "11.0.5"
   }
 }
