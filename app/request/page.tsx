@@ -46,36 +46,32 @@ export default function RequestPage() {
         </div>
         <RequestWizard />
       </section>
-      <section className="studio-services section-pad" aria-labelledby="request-faq-heading">
-        <div className="studio-section-top">
-          <div>
-            <p className="studio-kicker">BEFORE YOU REQUEST</p>
-            <h2 id="request-faq-heading">Clear answers. No surprises.</h2>
+      <section className="studio-request-faq section-pad" aria-labelledby="request-faq-heading">
+        <div className="studio-request-faq-inner">
+          <div className="studio-request-faq-heading">
+            <p className="studio-kicker">THE PRACTICAL DETAILS</p>
+            <h2 id="request-faq-heading">Good to know<br />before we begin.</h2>
+            <p>A request is free and does not constitute a purchase. All commercial terms are confirmed in writing before work begins.</p>
+            <Link className="studio-inline-link" href="/industry#licensing">Read about licensing ↗</Link>
           </div>
-          <p>Your enquiry is free. We only begin a project after agreeing the scope, price and rights in writing.</p>
-        </div>
-        <div className="studio-service-grid">
-          <article className="studio-service">
-            <span className="studio-service-index">01</span>
-            <h3>How much will it cost?</h3>
-            <p>Every song or soundtrack is quoted for its actual requirements. Share your budget in the form; we will discuss a proposal before you commit.</p>
-          </article>
-          <article className="studio-service">
-            <span className="studio-service-index">02</span>
-            <h3>When will it be ready?</h3>
-            <p>Delivery depends on the brief and production scope. Tell us your preferred deadline and we will confirm whether it is feasible.</p>
-          </article>
-          <article className="studio-service">
-            <span className="studio-service-index">03</span>
-            <h3>Can I use it commercially?</h3>
-            <p>Personal, business and advertising rights differ. Intended channels, territory and duration are reviewed before licensing terms are agreed.</p>
-            <Link href="/industry#licensing">Explore licensing ↗</Link>
-          </article>
-          <article className="studio-service">
-            <span className="studio-service-index">04</span>
-            <h3>Are revisions included?</h3>
-            <p>Deliverables, feedback rounds and any revisions are agreed in your proposal. An enquiry alone does not create a paid order.</p>
-          </article>
+          <div className="studio-request-faq-questions">
+            <details>
+              <summary>How much does a custom song cost?</summary>
+              <p>Pricing depends on the arrangement, production requirements and usage. Share your budget and brief; you will receive a proposal before committing.</p>
+            </details>
+            <details>
+              <summary>How long does production take?</summary>
+              <p>Timing depends on the concept, revisions and agreed deliverables. Include your preferred deadline so feasibility can be reviewed.</p>
+            </details>
+            <details>
+              <summary>Can I use the music commercially?</summary>
+              <p>Commercial, advertising and distribution rights are agreed separately. Share intended platforms, territory and duration so the right licence can be considered.</p>
+            </details>
+            <details>
+              <summary>What about revisions and ownership?</summary>
+              <p>Feedback rounds, files delivered, credits and any ownership or licence terms are recorded in your written proposal before a project begins.</p>
+            </details>
+          </div>
         </div>
       </section>
     </PageShell>
