@@ -519,3 +519,13 @@
   .atelier-cinema-image {transition:none;}
   .atelier-cinema-art:hover .atelier-cinema-image {transform:none;}
 }
+
+/* Prevent a fixed studio navigation from obscuring the next wizard step. */
+.studio-request-body .request-wizard {
+  scroll-margin-top: 112px;
+}
+@media(max-width:760px) {
+  .studio-request-body .request-wizard {
+    scroll-margin-top: 92px;
+  }
+}
