@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db/client";
 
 const required = ["name", "email", "projectType", "genre", "brief"] as const;
+const MAX_BODY_BYTES = 32 * 1024;
 
 function clean(value: unknown, max = 5000): string {
   return String(value ?? "").trim().slice(0, max);
@@ -12,12 +13,39 @@ function isEmail(value: string): boolean {
 }
 
 export async function POST(request: Request) {
+  if (!(request.headers.get("content-type") ?? "").toLowerCase().includes("application/json")) {
+    return NextResponse.json({ error: "JSON content type is required." }, { status: 415 });
+  }
+  const declaredLength = Number(request.headers.get("content-length") ?? "0");
+  if (declaredLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+  }
+
   let body: Record<string, unknown>;
   try {
-    body = await request.json() as Record<string, unknown>;
-    if (!body || typeof body !== "object" || Array.isArray(body)) {
+    // Enforce the size limit while reading, even when Content-Length is absent
+    // (streaming/chunked requests). Never parse an unlimited client payload.
+    const reader = request.body?.getReader();
+    if (!reader) return NextResponse.json({ error: "Empty request." }, { status: 400 });
+    const decoder = new TextDecoder();
+    let receivedBytes = 0;
+    let json = "";
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      receivedBytes += chunk.value.byteLength;
+      if (receivedBytes > MAX_BODY_BYTES) {
+        await reader.cancel().catch(() => {});
+        return NextResponse.json({ error: "Request is too large." }, { status: 413 });
+      }
+      json += decoder.decode(chunk.value, { stream: true });
+    }
+    json += decoder.decode();
+    const parsed: unknown = JSON.parse(json);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
+    body = parsed as Record<string, unknown>;
   } catch {
     return NextResponse.json({ error: "Invalid JSON request" }, { status: 400 });
   }
