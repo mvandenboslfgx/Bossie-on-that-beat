@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { getCatalog } from "@/lib/repository/catalog";
-import { getPrimaryListenLink } from "@/lib/repository/release-repository";
+import { getPrimaryListenLink, getAllCinema } from "@/lib/repository/release-repository";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { BossieLogo } from "@/components/brand/BossieLogo";
@@ -10,6 +11,7 @@ import { CatalogProof } from "@/components/v3/BossieV3";
 import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
+import { getPublicCinemaTitle, getPublicCinemaSummary } from "@/lib/cinema/editorial";
 
 export const dynamic = "force-dynamic";
 const socialArt = getBrandAssetUrl("socialShare", siteSettings.siteUrl);
@@ -27,7 +29,9 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  const catalog = await getCatalog();
+  const [catalog, cinema] = await Promise.all([getCatalog(), getAllCinema()]);
+  const featuredFilm = cinema.find((item) => item.thumbnailUrl && isVerifiedListenUrl(item.thumbnailUrl));
+  const sectionTotal = featuredFilm ? "05" : "04";
   const { live, latest, featured, refreshedAt, trackCount, collections } = catalog;
   const headline = latest ?? featured;
   const releases = (collections.length ? collections : live)
@@ -108,7 +112,7 @@ export default async function HomePage() {
         </header>
 
         <section className="atelier-introduction" id="discover" aria-labelledby="atelier-introduction-title">
-          <div className="atelier-section-label">THE IDEA <span>01 / 04</span></div>
+          <div className="atelier-section-label">THE IDEA <span>01 / {sectionTotal}</span></div>
           <div className="atelier-introduction-body">
             <h2 id="atelier-introduction-title">Every track has<br /><em>something to say.</em></h2>
             <div className="atelier-introduction-aside">
@@ -120,7 +124,7 @@ export default async function HomePage() {
         </section>
 
         <section className="atelier-music" aria-labelledby="atelier-music-title">
-          <div className="atelier-section-label">THE DISCOGRAPHY <span>02 / 04</span></div>
+          <div className="atelier-section-label">THE DISCOGRAPHY <span>02 / {sectionTotal}</span></div>
           <div className="atelier-music-head">
             <div>
               <p className="atelier-overline">ORIGINAL MUSIC, NO SINGLE GENRE</p>
@@ -154,8 +158,39 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {featuredFilm && (
+          <section className="atelier-cinema" aria-labelledby="atelier-cinema-title">
+            <div className="atelier-section-label">THE CINEMA <span>03 / {sectionTotal}</span></div>
+            <div className="atelier-cinema-layout">
+              <Link
+                href={`/cinema/${featuredFilm.slug}`}
+                className="atelier-cinema-art"
+                aria-label={`Explore ${getPublicCinemaTitle(featuredFilm)} in Bossie Cinema`}
+              >
+                <Image
+                  src={featuredFilm.thumbnailUrl!}
+                  alt={`Still from ${getPublicCinemaTitle(featuredFilm)}`}
+                  fill
+                  unoptimized
+                  loading="lazy"
+                  sizes="(max-width: 850px) 92vw, 53vw"
+                  className="atelier-cinema-image"
+                />
+                <span className="atelier-cinema-play" aria-hidden="true">▶</span>
+              </Link>
+              <div className="atelier-cinema-copy">
+                <p className="atelier-overline">MUSIC YOU CAN SEE</p>
+                <h2 id="atelier-cinema-title">Sound in<br /><em>motion.</em></h2>
+                <p className="atelier-cinema-feature-label">FEATURED VISUAL / {getPublicCinemaTitle(featuredFilm)}</p>
+                <p className="atelier-cinema-summary">{getPublicCinemaSummary(featuredFilm)}</p>
+                <Link className="atelier-action atelier-action-outline" href="/cinema">Step inside Cinema <span aria-hidden="true">↗</span></Link>
+              </div>
+            </div>
+          </section>
+        )}
+
         <section className="atelier-commission" aria-labelledby="atelier-commission-title">
-          <div className="atelier-section-label">THE STUDIO <span>03 / 04</span></div>
+          <div className="atelier-section-label">THE STUDIO <span>{featuredFilm ? "04" : "03"} / {sectionTotal}</span></div>
           <div className="atelier-commission-intro">
             <p className="atelier-overline">A SOUND CREATED FOR YOU</p>
             <h2 id="atelier-commission-title">Your story.<br /><em>Its own soundtrack.</em></h2>
@@ -178,7 +213,7 @@ export default async function HomePage() {
         </section>
 
         <section className="atelier-process" aria-labelledby="atelier-process-title">
-          <div className="atelier-section-label">THE PROCESS <span>04 / 04</span></div>
+          <div className="atelier-section-label">THE PROCESS <span>{featuredFilm ? "05" : "04"} / {sectionTotal}</span></div>
           <div className="atelier-process-content">
             <div className="atelier-process-heading">
               <p className="atelier-overline">CLEAR FROM THE FIRST CONVERSATION</p>
