@@ -115,7 +115,15 @@ export default async function MusicPage() {
           </div>
         </section>
 
-        <PlatformAvailability />
+        <section className="atelier-distribution section-pad" aria-label="Expanded distribution network">
+          <details className="atelier-distribution-details">
+            <summary>
+              <span><strong>Find Bossie on music platforms</strong><small>View the wider distribution network and discovery services</small></span>
+              <span aria-hidden="true" className="atelier-distribution-toggle">+</span>
+            </summary>
+            <PlatformAvailability />
+          </details>
+        </section>
 
         <section className="studio-final section-pad">
           <p className="studio-kicker">WANT MUSIC OF YOUR OWN?</p>
