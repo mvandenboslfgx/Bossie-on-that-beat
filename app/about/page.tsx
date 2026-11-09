@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { BossieLogo } from "@/components/brand/BossieLogo";
 import { PageShell } from "@/components/SiteChrome";
 import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
@@ -80,7 +81,10 @@ export default function AboutPage() {
         </section>
 
         <section className="studio-about-story section-pad" aria-labelledby="studio-about-story-title">
-          <div className="studio-about-letter-panel" aria-hidden="true">B</div>
+          <div className="studio-about-letter-panel studio-about-brand-panel" aria-hidden="true">
+            <BossieLogo variant="primary" href="" />
+            <span>EVERY TRACK IS A NEW WORLD</span>
+          </div>
           <div>
             <p className="studio-kicker">OUR APPROACH</p>
             <h2 id="studio-about-story-title">Different genres. One identity.</h2>
