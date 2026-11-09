@@ -100,7 +100,7 @@ jobs:
 
             home_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/" || true)
             # Compare actual homepage copy against the newly deployed studio design.
-            if [[ "$home_html" != *"A place for every kind of music."* ]] || [[ "$home_html" != *"Music with a story"* ]]; then
+            if [[ "$home_html" != *"Not just a beat."* ]] || [[ "$home_html" != *"The listening room"* ]] || [[ "$home_html" != *"Your story."* ]]; then
               echo "Attempt ${attempt}/36: new music studio homepage content not deployed yet."
               all_ok=0
             fi

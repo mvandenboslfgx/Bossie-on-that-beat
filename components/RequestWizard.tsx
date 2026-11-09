@@ -240,19 +240,6 @@ export default function RequestWizard() {
   return (
     <div className="request-v3-layout">
       <div className="request-wizard">
-      <div className="request-process">
-        <p className="eyebrow">HOW IT WORKS</p>
-        <ol>
-          <li>Tell us what music you need, how you plan to use it and the story behind your idea.</li>
-          <li>Bossie reviews your brief and replies with next steps.</li>
-          <li>Production, revisions and delivery are confirmed per project.</li>
-        </ol>
-        <p className="request-process-note">
-          Every request is reviewed individually. Pricing, production scope, deadlines and any licensing rights are confirmed
-          in writing before work begins. Submitting this form does not constitute a purchase.
-        </p>
-      </div>
-
       <div className="wizard-progress" aria-hidden="true">
         <span style={{ width: `${progress}%` }} />
       </div>

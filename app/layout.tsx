@@ -12,6 +12,7 @@ import "./performance-fixes.css";
 import "./brand-polish.css";
 import "./business.css";
 import "./studio-2026.css";
+import "./atelier.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
