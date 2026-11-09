@@ -32,10 +32,10 @@ export default async function MusicPage() {
         <header className="studio-music-header section-pad">
           <div>
             <p className="studio-kicker">OFFICIAL BOSSIE MUSIC CATALOGUE</p>
-            <h1>Listen to<br /><em>the music.</em></h1>
+            <h1>Find a world.<br /><em>Press play.</em></h1>
             <p>
-              Every release has its own sound. Discover the official Bossie on that beat catalogue,
-              explore the latest songs and open verified links to your preferred music platform.
+              Cinematic sound, club energy, metal and everything in between. Discover Bossie’s original releases,
+              explore the artwork and open verified links to listen on your favourite platform.
             </p>
             <div className="studio-music-header-actions">
               <Link className="studio-btn studio-btn-primary" href="#latest-releases">Browse releases ↓</Link>
@@ -51,7 +51,7 @@ export default async function MusicPage() {
 
         <section id="latest-releases" className="studio-music-featured section-pad" aria-labelledby="music-featured-heading">
           <div className="studio-section-top">
-            <div><p className="studio-kicker">START LISTENING</p><h2 id="music-featured-heading">Latest releases.</h2></div>
+            <div><p className="studio-kicker">START LISTENING</p><h2 id="music-featured-heading">Start with the latest.</h2></div>
             <p>Tap a cover to see the track details, artwork, credits and verified listening options.</p>
           </div>
           <div className="studio-music-grid">
@@ -88,7 +88,7 @@ export default async function MusicPage() {
 
         <section className="studio-music-archive section-pad" aria-labelledby="complete-track-title">
           <div className="studio-section-top">
-            <div><p className="studio-kicker">COMPLETE DISCOGRAPHY</p><h2 id="complete-track-title">Every verified track.</h2></div>
+            <div><p className="studio-kicker">COMPLETE DISCOGRAPHY</p><h2 id="complete-track-title">The full archive.</h2></div>
             <p>{live.length} catalogue items, including individual tracks from albums and EPs.</p>
           </div>
           <details className="studio-archive-details">
