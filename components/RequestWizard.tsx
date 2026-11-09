@@ -78,6 +78,8 @@ export default function RequestWizard() {
     privacyConsent: false,
   });
   const errorRef = useRef<HTMLParagraphElement>(null);
+  const wizardRef = useRef<HTMLFormElement>(null);
+  const submittingRef = useRef(false);
 
   // Prefill a matching request from homepage CTAs without skipping review or consent.
   useEffect(() => {
@@ -103,6 +105,21 @@ export default function RequestWizard() {
       }));
     }
   }, []);
+
+  useEffect(() => {
+    if (fieldError) errorRef.current?.focus();
+  }, [fieldError]);
+
+  useEffect(() => {
+    if (step === 0) return;
+    // Advancing a multi-step form should not strand mobile visitors at its
+    // previous bottom; preserve reduced-motion preferences.
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    wizardRef.current?.scrollIntoView({
+      block: "start",
+      behavior: reducedMotion ? "instant" : "smooth",
+    });
+  }, [step]);
 
   const isLicensing = form.songType === "Existing Track Licensing";
   const steps = ["Type", isLicensing ? "Recording" : "Sound", isLicensing ? "Usage" : "Story", "Details", "Review"];
@@ -160,6 +177,7 @@ export default function RequestWizard() {
   }
 
   async function submit() {
+    if (submittingRef.current) return;
     const err = validateStep(4);
     if (err) {
       setFieldError(err);
@@ -167,6 +185,7 @@ export default function RequestWizard() {
       return;
     }
 
+    submittingRef.current = true;
     setStatus("sending");
     try {
       const payload = {
@@ -219,6 +238,8 @@ export default function RequestWizard() {
       setStatus("sent");
     } catch {
       setStatus("error");
+    } finally {
+      submittingRef.current = false;
     }
   }
 
@@ -228,7 +249,6 @@ export default function RequestWizard() {
     const err = validateStep(step);
     if (err) {
       setFieldError(err);
-      queueMicrotask(() => errorRef.current?.focus());
       return;
     }
     setFieldError(null);
@@ -240,11 +260,11 @@ export default function RequestWizard() {
 
   return (
     <div className="request-v3-layout">
-      <form className="request-wizard" onSubmit={next} noValidate>
+      <form ref={wizardRef} className="request-wizard" onSubmit={next} noValidate>
       <div className="wizard-progress" aria-hidden="true">
         <span style={{ width: `${progress}%` }} />
       </div>
-      <p className="wizard-step-label">
+      <p className="wizard-step-label" aria-live="polite" aria-atomic="true">
         Step {step + 1} of {steps.length} — {steps[step]}
       </p>
 
