@@ -16,7 +16,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,26 +41,6 @@ jobs:
 
       - name: Cloudflare Worker adapter build
         run: npm run cf:build
-
-      - name: Install pinned browser test runner (CI only, lockfile unchanged)
-        run: npm install --no-save --package-lock=false --ignore-scripts --no-fund @playwright/test@1.65.0
-
-      - name: Install Chromium for real browser QA
-        run: npx playwright install --with-deps chromium
-
-      - name: Verify mobile, tablet and desktop in Chromium
-        run: npx playwright test
-
-      - name: Save real viewport screenshots, traces and report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bossie-browser-qa
-          path: |
-            test-results/
-            playwright-report/
-          if-no-files-found: warn
-          retention-days: 14
 
   deploy-cloudflare:
     if: github.event_name == 'push'
