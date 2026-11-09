@@ -117,7 +117,7 @@ export default function RequestWizard() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     wizardRef.current?.scrollIntoView({
       block: "start",
-      behavior: reducedMotion ? "instant" : "smooth",
+      behavior: reducedMotion ? "auto" : "smooth",
     });
   }, [step]);
 
