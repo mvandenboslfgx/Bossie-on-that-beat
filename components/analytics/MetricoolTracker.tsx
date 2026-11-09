@@ -98,9 +98,15 @@ export function MetricoolTracker() {
   );
 }
 
-/** Footer control reopens the choice at any time without reloading the page. */
-export function openAnalyticsSettings() {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event(SETTINGS_EVENT));
-  }
+/** Accessible footer control for revisiting a previously stored analytics choice. */
+export function PrivacySettingsButton() {
+  return (
+    <button
+      type="button"
+      className={styles.footerButton}
+      onClick={() => window.dispatchEvent(new Event(SETTINGS_EVENT))}
+    >
+      Privacy preferences
+    </button>
+  );
 }
