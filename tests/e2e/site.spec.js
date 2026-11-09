@@ -93,7 +93,7 @@ test("prefilled licensing brief can reach review without submitting", async ({ p
   );
   await page.getByRole("button", { name: /Continue/ }).click();
   await page.getByLabel("Name *").fill("Browser QA");
-  await page.getByRole("label", { name: "Email *" }).fill("qa@example.invalid");
+  await page.getByLabel("Email *").fill("qa@example.invalid");
   await page.getByText("I agree my details may be used").click();
   await page.getByRole("button", { name: /Continue/ }).click();
   await expect(page.getByRole("heading", { name: "Review your request" })).toBeVisible();
