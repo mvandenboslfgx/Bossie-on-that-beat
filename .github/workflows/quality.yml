@@ -93,7 +93,7 @@ jobs:
             done
 
             music_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/music" || true)
-            if ! printf '%s' "$music_html" | grep -q "Listen everywhere"; then
+            if ! printf '%s' "$music_html" | grep -q "Find your next favourite."; then
               echo "Attempt ${attempt}/36: /music is still serving an older deployment."
               all_ok=0
             fi

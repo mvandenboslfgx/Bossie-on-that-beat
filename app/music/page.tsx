@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
-import { slugifyGenre, getPrimaryListenLink } from "@/lib/repository/release-repository";
-import { ReleaseArtwork } from "@/components/release/ReleaseUI";
+import { getPrimaryListenLink } from "@/lib/repository/release-repository";
+import { MusicDiscovery, type MusicDiscoveryItem } from "@/components/music/MusicDiscovery";
 import { PageShell } from "@/components/SiteChrome";
 import { CatalogProof } from "@/components/v3/BossieV3";
 import { TrackCatalog } from "@/components/release/TrackCatalog";
@@ -21,8 +21,18 @@ export const metadata: Metadata = {
 
 export default async function MusicPage() {
   const catalog = await getCatalog();
-  const { live, trackCount, collections, upcoming, genres, refreshedAt, latest } = catalog;
-  const releaseShowcase = (collections.length ? collections : live).slice(0, 9);
+  const { live, trackCount, collections, upcoming, refreshedAt, latest } = catalog;
+  const published = collections.length ? collections : live;
+  const discoveryItems: MusicDiscoveryItem[] = published.map((release) => ({
+    id: release.id,
+    slug: release.slug,
+    title: release.title,
+    type: release.type,
+    year: release.releaseDate?.slice(0, 4) ?? null,
+    genres: release.genres,
+    artworkUrl: release.artworkUrl && isVerifiedListenUrl(release.artworkUrl) ? release.artworkUrl : null,
+    canListen: Boolean(getPrimaryListenLink(release)),
+  }));
   const official = getOfficialProfileEntries("streaming").filter((entry) => isVerifiedListenUrl(entry.href));
 
   return (
@@ -49,41 +59,8 @@ export default async function MusicPage() {
           </div>
         </header>
 
-        <section id="latest-releases" className="studio-music-featured section-pad" aria-labelledby="music-featured-heading">
-          <div className="studio-section-top">
-            <div><p className="studio-kicker">START LISTENING</p><h2 id="music-featured-heading">Start with the latest.</h2></div>
-            <p>Tap a cover to see the track details, artwork, credits and verified listening options.</p>
-          </div>
-          <div className="studio-music-grid">
-            {releaseShowcase.map((release) => {
-              const canListen = Boolean(getPrimaryListenLink(release));
-              return (
-                <article className="studio-music-card" key={release.id}>
-                  <Link href={`/music/${release.slug}`} className="studio-music-cover" aria-label={`View ${release.title}`}>
-                    <ReleaseArtwork release={release} />
-                  </Link>
-                  <div className="studio-music-card-body">
-                    <span>{release.type.toUpperCase()} {release.releaseDate ? `· ${release.releaseDate.slice(0, 4)}` : ""}</span>
-                    <h3><Link href={`/music/${release.slug}`}>{release.title}</Link></h3>
-                    <p>{release.genres.slice(0, 3).join(" · ")}</p>
-                    <div className="studio-music-card-links">
-                      {canListen && <Link href={`/go/${release.slug}`}>Listen now ↗</Link>}
-                      <Link href={`/music/${release.slug}`}>Release details ↗</Link>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-          {releaseShowcase.length === 0 && <p className="studio-empty-catalog">Verified releases will appear here when available.</p>}
-        </section>
-
-        <section className="studio-music-genres section-pad" aria-label="Browse music by genre">
-          <div><p className="studio-kicker">FIND YOUR SOUND</p><h2>Explore by genre.</h2></div>
-          <nav className="studio-genre-links" aria-label="Music genre filters">
-            <Link href="/music" aria-current="page">All music</Link>
-            {genres.map((genre) => <Link key={genre} href={`/music/genre/${slugifyGenre(genre)}`}>{genre}</Link>)}
-          </nav>
+        <section id="latest-releases" className="studio-music-featured section-pad" aria-label="Search and discover official releases">
+          <MusicDiscovery releases={discoveryItems} />
         </section>
 
         <section className="studio-music-archive section-pad" aria-labelledby="complete-track-title">

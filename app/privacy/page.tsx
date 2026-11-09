@@ -20,7 +20,7 @@ export default function PrivacyPage() {
       </section>
       <section className="page-section">
         <div className="page-shell legal-copy">
-          <p>Last updated: 5 November 2026.</p>
+          <p>Last updated: 9 November 2026.</p>
           <h2>Who is responsible?</h2>
           <p>
             This website and its project requests are operated by VDB Digital Software (Netherlands;
@@ -47,9 +47,10 @@ export default function PrivacyPage() {
           </p>
           <h2>Website analytics and external links</h2>
           <p>
-            Metricool helps us understand visits and general website usage. Pages may also link to Spotify, Apple Music,
-            YouTube and other independent services; their privacy practices apply once you visit those services.
-            Any analytics preferences or cookie requirements are assessed against the tracker configuration in use.
+            Metricool analytics are optional and disabled by default. We only load its tracking script after you choose
+            “Allow analytics”. You can change your choice at any time using “Privacy preferences” in the website footer.
+            The preference is saved in your browser's local storage. Pages may also link to Spotify, Apple Music,
+            YouTube and other independent services; their own privacy practices apply once you visit those services.
           </p>
           <h2>How long data is kept</h2>
           <p>
