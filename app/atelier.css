@@ -419,3 +419,103 @@
   .atelier-distribution {padding-inline:22px!important;}
   .atelier-distribution-details>summary {padding:1.25rem;gap:1rem;}
 }
+
+/* Film-led chapter: one authentic published video, no synthetic media. */
+.atelier-cinema {
+  background: #e8e2d8;
+  color: #17191b;
+  padding: clamp(5.5rem,9vw,10rem) clamp(24px,5.5vw,94px);
+}
+.atelier-cinema>.atelier-section-label {
+  max-width: var(--a-max);
+  margin-inline: auto;
+  color: #7d5c31;
+  border-color: #c2b8a8;
+}
+.atelier-cinema-layout {
+  max-width: var(--a-max);
+  margin: clamp(3rem,5.5vw,6rem) auto 0;
+  display: grid;
+  grid-template-columns: minmax(0,1.16fr) minmax(0,.84fr);
+  gap: clamp(2.5rem,7vw,8rem);
+  align-items: center;
+}
+.atelier-cinema-art {
+  position: relative;
+  display: block;
+  aspect-ratio: 16/10;
+  min-height: 320px;
+  overflow: hidden;
+  background: #171919;
+  box-shadow: 24px 25px 0 rgba(23,25,27,.11);
+}
+.atelier-cinema-image {
+  object-fit: cover;
+  transition: transform .7s cubic-bezier(.22,1,.36,1);
+}
+.atelier-cinema-art:hover .atelier-cinema-image {transform: scale(1.035);}
+.atelier-cinema-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.2));
+  pointer-events: none;
+}
+.atelier-cinema-play {
+  position: absolute;
+  z-index: 1;
+  inset: 50% auto auto 50%;
+  transform: translate(-50%,-50%);
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border: 1px solid rgba(255,255,255,.9);
+  border-radius: 50%;
+  background: rgba(15,17,19,.65);
+  color: #f5eee4;
+  font-size: 1.15rem;
+  padding-left: .25rem;
+  backdrop-filter: blur(12px);
+}
+.atelier-cinema-copy .atelier-overline {color:#886338;}
+.atelier-cinema-copy h2 {
+  font-size: clamp(4.3rem,7vw,8rem);
+  line-height: .95;
+  margin: 1.5rem 0 1.8rem;
+}
+.atelier-cinema-copy h2 em {color:#8d673a;}
+.atelier-cinema-feature-label {
+  padding-top: 1.5rem;
+  border-top: 1px solid #bdb3a3;
+  color: #836137;
+  font: 800 .67rem/1.7 var(--font-sans),Arial,sans-serif;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.atelier-cinema-summary {
+  max-width: 560px;
+  color: #505450;
+  line-height: 1.85;
+  font-size: clamp(.95rem,1.23vw,1.1rem);
+  margin: .8rem 0 2.1rem;
+}
+.atelier-cinema-copy .atelier-action-outline {
+  border-color: #252522;
+  color: #252522;
+}
+.atelier-cinema-copy .atelier-action-outline:hover {background:rgba(37,37,34,.08);}
+@media(max-width:900px) {
+  .atelier-cinema-layout {grid-template-columns:1fr;gap:3.5rem;}
+  .atelier-cinema-art {max-width:800px;}
+}
+@media(max-width:700px) {
+  .atelier-cinema {padding:5rem 22px;}
+  .atelier-cinema-art {min-height:210px;aspect-ratio:16/10;box-shadow:12px 14px 0 rgba(23,25,27,.11);}
+  .atelier-cinema-play {width:62px;height:62px;}
+  .atelier-cinema-copy h2 {font-size:clamp(3.8rem,12vw,5.8rem);}
+}
+@media(prefers-reduced-motion:reduce) {
+  .atelier-cinema-image {transition:none;}
+  .atelier-cinema-art:hover .atelier-cinema-image {transform:none;}
+}
