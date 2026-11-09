@@ -16,7 +16,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,31 +42,20 @@ jobs:
       - name: Cloudflare Worker adapter build
         run: npm run cf:build
 
-  browser-quality:
-    needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - name: Install production dependencies
-        run: npm ci --no-fund
-      - name: Install pinned browser test runner without changing lockfile
+      - name: Install pinned browser test runner (CI only, lockfile unchanged)
         run: npm install --no-save --package-lock=false --ignore-scripts --no-fund @playwright/test@1.65.0
-      - name: Install Chromium and required system libraries
+
+      - name: Install Chromium for real browser QA
         run: npx playwright install --with-deps chromium
-      - name: Real browser QA — layouts, interactions and screenshots
+
+      - name: Verify mobile, tablet and desktop in Chromium
         run: npx playwright test
-      - name: Save viewport screenshots, traces and browser report
+
+      - name: Save real viewport screenshots, traces and report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: bossie-browser-qa-${{ github.run_id }}
+          name: bossie-browser-qa
           path: |
             test-results/
             playwright-report/
@@ -75,7 +64,7 @@ jobs:
 
   deploy-cloudflare:
     if: github.event_name == 'push'
-    needs: [validate, browser-quality]
+    needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
