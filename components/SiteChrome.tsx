@@ -4,6 +4,7 @@ import { BossieLogo } from "@/components/brand/BossieLogo";
 import { FooterSocialGrid } from "@/components/brand/SocialLinks";
 import { SiteNav } from "@/components/SiteNavClient";
 import { siteSettings } from "@/lib/site-settings";
+import { PrivacySettingsButton } from "@/components/analytics/MetricoolTracker";
 
 export { SiteNav };
 
@@ -46,6 +47,7 @@ export function SiteFooter() {
           <Link href="/request">Project enquiries</Link>
           <Link href="/epk">Press &amp; EPK</Link>
           <Link href="/privacy">Privacy</Link>
+          <PrivacySettingsButton />
           <a href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20on%20that%20beat%20enquiry">Business contact</a>
         </nav>
         <p className="footer-legal-note">
