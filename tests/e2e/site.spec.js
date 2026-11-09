@@ -92,7 +92,7 @@ test("prefilled licensing brief can reach review without submitting", async ({ p
     "This is a non-commercial browser test description for a proposed film scene, its platforms and territory.",
   );
   await page.getByRole("button", { name: /Continue/ }).click();
-  await page.getByRole("label", { name: "Name *" }).fill("Browser QA");
+  await page.getByLabel("Name *").fill("Browser QA");
   await page.getByRole("label", { name: "Email *" }).fill("qa@example.invalid");
   await page.getByText("I agree my details may be used").click();
   await page.getByRole("button", { name: /Continue/ }).click();
