@@ -46,6 +46,38 @@ export default function RequestPage() {
         </div>
         <RequestWizard />
       </section>
+      <section className="studio-services section-pad" aria-labelledby="request-faq-heading">
+        <div className="studio-section-top">
+          <div>
+            <p className="studio-kicker">BEFORE YOU REQUEST</p>
+            <h2 id="request-faq-heading">Clear answers. No surprises.</h2>
+          </div>
+          <p>Your enquiry is free. We only begin a project after agreeing the scope, price and rights in writing.</p>
+        </div>
+        <div className="studio-service-grid">
+          <article className="studio-service">
+            <span className="studio-service-index">01</span>
+            <h3>How much will it cost?</h3>
+            <p>Every song or soundtrack is quoted for its actual requirements. Share your budget in the form; we will discuss a proposal before you commit.</p>
+          </article>
+          <article className="studio-service">
+            <span className="studio-service-index">02</span>
+            <h3>When will it be ready?</h3>
+            <p>Delivery depends on the brief and production scope. Tell us your preferred deadline and we will confirm whether it is feasible.</p>
+          </article>
+          <article className="studio-service">
+            <span className="studio-service-index">03</span>
+            <h3>Can I use it commercially?</h3>
+            <p>Personal, business and advertising rights differ. Intended channels, territory and duration are reviewed before licensing terms are agreed.</p>
+            <Link href="/industry#licensing">Explore licensing ↗</Link>
+          </article>
+          <article className="studio-service">
+            <span className="studio-service-index">04</span>
+            <h3>Are revisions included?</h3>
+            <p>Deliverables, feedback rounds and any revisions are agreed in your proposal. An enquiry alone does not create a paid order.</p>
+          </article>
+        </div>
+      </section>
     </PageShell>
   );
 }
