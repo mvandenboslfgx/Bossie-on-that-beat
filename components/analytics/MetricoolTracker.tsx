@@ -58,6 +58,7 @@ export function MetricoolTracker() {
   }, [pathname, trackPage]);
 
   function saveChoice(value: boolean) {
+    const wasAllowed = consent === true;
     try {
       window.localStorage.setItem(CONSENT_KEY, value ? "allow" : "deny");
     } catch {
@@ -66,6 +67,9 @@ export function MetricoolTracker() {
     if (!value) lastTrackedUrl.current = null;
     setConsent(value);
     setSettingsOpen(false);
+    // Scripts already loaded into the page cannot be unloaded by React. A
+    // reload is necessary to honour withdrawal without residual trackers.
+    if (!value && wasAllowed) window.location.reload();
   }
 
   return (
