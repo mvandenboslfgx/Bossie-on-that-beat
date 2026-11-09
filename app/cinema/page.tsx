@@ -42,7 +42,7 @@ export default async function CinemaPage() {
       )}
 
       {SECTION_GROUPS.map((group) => {
-        const filtered = items.filter((i) => group.types.includes(i.type));
+        const filtered = items.filter((item) => item.id !== featured?.id && group.types.includes(item.type));
         if (!filtered.length) return null;
         return (
           <section key={group.key} className="section-pad">
