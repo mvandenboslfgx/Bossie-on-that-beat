@@ -32,11 +32,11 @@ export default async function WorldsPage() {
 
   return (
     <PageShell>
-      <section className="page-hero compact-hero worlds-index-hero">
+      <section className="page-hero compact-hero worlds-index-hero studio-secondary-hero">
         <BossieMark size="md" className="section-mark" />
         <p className="eyebrow">CREATIVE UNIVERSES</p>
-        <h1>WORLDS</h1>
-        <p className="worlds-index-lede">Eight homes. One brand. Enter a world.</p>
+        <h1>Every sound.<br /><em>Its own world.</em></h1>
+        <p className="worlds-index-lede">{worlds.length} distinct creative worlds. Explore the stories, sound and releases behind each one.</p>
       </section>
       <WorldsOverview items={items} />
     </PageShell>

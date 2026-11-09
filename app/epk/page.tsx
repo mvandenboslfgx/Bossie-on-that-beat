@@ -41,17 +41,16 @@ export default async function EpkPage() {
   return (
     <PageShell>
       <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
-      <section className="page-hero compact-hero epk-hero">
+      <section className="page-hero compact-hero epk-hero studio-secondary-hero">
         <div className="epk-seal">
           <BossieMark size="sm" decorative={false} />
           <span>OFFICIAL BOSSIE PRESS MATERIAL</span>
         </div>
         <BossieLogo variant="primary" href="/" className="epk-hero-logo" />
         <p className="eyebrow">Electronic press kit</p>
-        <h1>EPK</h1>
+        <h1>Press <em>&amp; media.</em></h1>
         <p className="epk-role">Producer · Composer · Artist</p>
-        <h2 className="epk-artist-name">{siteSettings.artistName}</h2>
-        <p>Curated press destination for media, labels, curators and collaborators.</p>
+        <p>Official artist information, release artwork, music, video and press resources for media, labels and creative collaborators.</p>
       </section>
       <section className="section-pad epk-layout">
         <div className="epk-statement">
@@ -173,7 +172,7 @@ export default async function EpkPage() {
         <p>For press, sync licensing, music production and collaboration enquiries. Licensing and usage rights are reviewed and agreed per project.</p>
         <p><a className="text-link" href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20press%20or%20licensing">Contact: algemeen@vdbdigital.nl ↗</a></p>
         <div className="cta-row">
-          <Link className="button button-gold" href="/request">
+          <Link className="button button-gold" href="/request?type=business">
             Submit a project brief ↗
           </Link>
           <Link className="button button-ghost" href="/industry">

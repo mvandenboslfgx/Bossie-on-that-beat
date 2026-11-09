@@ -27,11 +27,11 @@ export default async function CinemaPage() {
 
   return (
     <PageShell>
-      <section className="page-hero compact-hero">
+      <section className="page-hero compact-hero cinema-index-hero studio-secondary-hero">
         <BossieMark size="lg" className="section-mark" />
         <p className="eyebrow">BOSSIE CINEMA</p>
-        <h1>CINEMA</h1>
-        <p>Sound in motion — films, visualizers and moving release worlds.</p>
+        <h1>Sound in<br /><em>motion.</em></h1>
+        <p>Official music videos, short films, visualizers and moving stories from the Bossie catalogue.</p>
       </section>
 
       {featured && (

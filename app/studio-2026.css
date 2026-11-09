@@ -851,3 +851,165 @@
   .studio-request-faq-heading h2 {font-size:clamp(3.2rem,11vw,5rem);}
   .studio-request-faq-questions summary {padding-block:1.25rem;}
 }
+
+
+/* Worlds, Cinema and press pages share the editorial studio language. */
+.studio-secondary-hero {
+  min-height:clamp(510px,68svh,760px);
+  padding:clamp(130px,13vw,192px) clamp(22px,5vw,84px) clamp(68px,7vw,112px);
+  background:
+    radial-gradient(ellipse at 78% 22%,rgba(176,132,63,.13),transparent 44%),
+    linear-gradient(145deg,#090b0d,#121416);
+  border-bottom:1px solid rgba(228,194,134,.2);
+}
+.studio-secondary-hero .eyebrow {
+  color:#e4c286;
+  font-size:.7rem;
+  letter-spacing:.14em;
+}
+.studio-secondary-hero h1 {
+  max-width:13ch;
+  margin:1.1rem 0 1.5rem;
+  font:600 clamp(4.2rem,8.2vw,9.2rem)/.94 var(--font-display),Georgia,serif;
+  letter-spacing:-.045em;
+  text-transform:none;
+  text-wrap:balance;
+}
+.studio-secondary-hero h1 em {
+  font-style:italic;
+  color:#e4c286;
+  font-weight:500;
+}
+.studio-secondary-hero > p:last-child {
+  max-width:670px;
+  color:#c0bbb2;
+  font-size:clamp(1rem,1.5vw,1.2rem);
+  line-height:1.8;
+}
+.studio-secondary-hero .section-mark {
+  opacity:1!important;
+  margin-bottom:1.2rem;
+}
+.worlds-poster-rail {
+  padding-inline:clamp(22px,5vw,84px);
+  padding-block:clamp(4rem,6vw,7rem);
+  background:#0b0d10;
+}
+.worlds-poster-rail .world-poster {
+  overflow:hidden;
+  border-radius:12px;
+}
+.world-poster .world-poster-copy {
+  text-shadow:0 2px 22px rgba(0,0,0,.3);
+}
+.cinema-index-hero + .section-pad {
+  padding-top:clamp(3.5rem,6vw,6rem);
+}
+.cinema-index-hero ~ .section-pad {
+  padding-inline:clamp(22px,5vw,84px);
+}
+.cinema-editorial-card {
+  min-height:380px;
+  gap:clamp(1.8rem,5vw,6rem);
+}
+.cinema-editorial-thumb {
+  overflow:hidden;
+  border-radius:12px;
+}
+.cinema-editorial-body h3 {
+  font-family:var(--font-display),Georgia,serif;
+  font-size:clamp(2.6rem,5.2vw,5.8rem);
+  font-weight:600;
+  line-height:1.02;
+}
+.cinema-editorial-quote {
+  color:#bdb8b0;
+  line-height:1.8;
+}
+.cinema-editorial-actions .button {
+  border-radius:7px;
+}
+.studio-about-brand-panel {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:1.3rem;
+  padding:clamp(1.5rem,4vw,3rem);
+  border-radius:14px;
+  background:
+    radial-gradient(circle at 50% 40%,rgba(210,166,84,.12),transparent 55%),
+    #0e1012;
+}
+.studio-about-brand-panel .bossie-logo-primary {
+  display:block;
+  max-width:100%;
+  width:min(100%,410px)!important;
+  height:auto!important;
+  filter:none!important;
+  opacity:1!important;
+}
+.studio-about-brand-panel>span {
+  font:800 .66rem/1.5 var(--font-sans),Arial,sans-serif;
+  color:#d5be91;
+  letter-spacing:.16em;
+  text-align:center;
+}
+.epk-hero .epk-hero-logo {
+  max-width:min(320px,70vw);
+  margin:1.7rem 0 1rem;
+}
+.epk-layout,.epk-latest {
+  gap:clamp(2.5rem,6vw,7rem);
+  padding-top:clamp(4.2rem,7vw,7rem);
+  padding-bottom:clamp(4.2rem,7vw,7rem);
+}
+.epk-statement h2,.epk-latest-copy h2 {
+  font-family:var(--font-display),Georgia,serif;
+  font-weight:600;
+  line-height:1.02;
+}
+.epk-release-grid {
+  gap:1rem;
+  border:0;
+  background:none;
+  max-width:1400px;
+}
+.epk-release-card {
+  border:1px solid rgba(228,194,134,.17);
+  border-radius:12px;
+  background:#101214;
+  padding:clamp(1.25rem,2vw,2rem);
+}
+.epk-release-card h3 {
+  font-family:var(--font-display),Georgia,serif;
+  line-height:1.05;
+}
+.epk-brand-grid {
+  gap:1rem;
+  border:0;
+  background:none;
+}
+.epk-brand-asset {
+  padding:1.5rem;
+  border:1px solid rgba(228,194,134,.2);
+  border-radius:12px;
+  background:#131517;
+}
+@media(max-width:760px) {
+  .studio-secondary-hero {
+    min-height:470px;
+    padding:120px 22px 64px;
+  }
+  .studio-secondary-hero h1 {
+    font-size:clamp(3.6rem,12.5vw,5.7rem);
+    line-height:1;
+  }
+  .cinema-editorial-card {min-height:0;}
+  .cinema-editorial-body h3 {font-size:clamp(2.6rem,10vw,4.5rem);}
+  .epk-release-grid {grid-template-columns:1fr;}
+  .studio-about-brand-panel {min-height:265px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .world-poster,.cinema-editorial-thumb {transition:none;}
+}
