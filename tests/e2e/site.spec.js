@@ -123,3 +123,23 @@ test("request API refuses incomplete submissions without writing to D1", async (
   });
   expect(response.status()).toBe(400);
 });
+
+test("request API rejects oversized and unsupported payloads before database writes", async ({ request }) => {
+  const tooLarge = await request.post("/api/request", {
+    data: {
+      name: "Browser QA",
+      email: "qa@example.invalid",
+      projectType: "Custom Music",
+      genre: "Cinematic",
+      brief: "A".repeat(40_000),
+      consent: "yes",
+    },
+  });
+  expect(tooLarge.status()).toBe(413);
+
+  const unsupportedType = await request.post("/api/request", {
+    headers: { "Content-Type": "text/plain" },
+    data: "This should never be parsed as a project brief.",
+  });
+  expect(unsupportedType.status()).toBe(415);
+});
