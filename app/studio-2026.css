@@ -776,3 +776,78 @@
   .studio-home .studio-btn,
   .studio-home .studio-release-art .release-artwork-image {transition:none;}
 }
+
+
+/* Compact, accessible enquiry FAQ — no repeated oversized service cards. */
+.studio-request-faq {
+  padding-block:clamp(4.8rem,8vw,8.5rem);
+  background:#eee9e0;
+  color:#161818;
+  border-top:1px solid #d6d0c5;
+}
+.studio-request-faq-inner {
+  max-width:1160px;
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr);
+  gap:clamp(2.5rem,6vw,6.5rem);
+  align-items:start;
+  margin-inline:auto;
+}
+.studio-request-faq .studio-kicker {color:#7d6138;}
+.studio-request-faq-heading h2 {
+  font:600 clamp(3rem,5vw,5.9rem)/1 var(--font-display),Georgia,serif;
+  letter-spacing:-.035em;
+  margin:1.2rem 0 1.5rem;
+  text-wrap:balance;
+}
+.studio-request-faq-heading>p:not(.studio-kicker) {
+  max-width:470px;
+  color:#5b5c56;
+  font-size:.99rem;
+  line-height:1.8;
+  margin:0 0 1.4rem;
+}
+.studio-request-faq .studio-inline-link {color:#795c33;}
+.studio-request-faq-questions {
+  border-top:1px solid #c9c2b6;
+}
+.studio-request-faq-questions details {
+  border-bottom:1px solid #c9c2b6;
+}
+.studio-request-faq-questions summary {
+  position:relative;
+  display:block;
+  cursor:pointer;
+  list-style:none;
+  padding:1.5rem 2.8rem 1.5rem .1rem;
+  font:750 clamp(1rem,1.3vw,1.15rem)/1.45 var(--font-sans),Arial,sans-serif;
+}
+.studio-request-faq-questions summary::-webkit-details-marker {display:none;}
+.studio-request-faq-questions summary::after {
+  content:"+";
+  position:absolute;
+  right:.1rem;
+  top:50%;
+  transform:translateY(-50%);
+  color:#816238;
+  font:500 1.6rem/1 var(--font-sans),Arial,sans-serif;
+}
+.studio-request-faq-questions details[open] summary::after {content:"−";}
+.studio-request-faq-questions details>p {
+  max-width:600px;
+  margin:0;
+  padding:0 1.2rem 1.6rem .1rem;
+  color:#5d5e5a;
+  font-size:.92rem;
+  line-height:1.85;
+}
+.studio-request-faq-questions summary:hover {color:#785a32;}
+.studio-request-faq-questions summary:focus-visible {
+  outline:2px solid #846335;
+  outline-offset:-2px;
+}
+@media(max-width:760px) {
+  .studio-request-faq-inner {grid-template-columns:1fr;gap:2rem;}
+  .studio-request-faq-heading h2 {font-size:clamp(3.2rem,11vw,5rem);}
+  .studio-request-faq-questions summary {padding-block:1.25rem;}
+}
