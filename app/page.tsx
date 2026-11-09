@@ -1,331 +1,219 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
-import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
-import { isVerifiedListenUrl } from "@/lib/links/url";
-import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getPrimaryListenLink } from "@/lib/repository/release-repository";
-import { CatalogProof } from "@/components/v3/BossieV3";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { BossieLogo } from "@/components/brand/BossieLogo";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
+import { CatalogProof } from "@/components/v3/BossieV3";
+import { getOfficialProfileEntries, siteSettings } from "@/lib/site-settings";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 export const dynamic = "force-dynamic";
 
-const ogArt = getBrandAssetUrl("socialShare", siteSettings.siteUrl);
-
 export const metadata: Metadata = {
-  title: { absolute: "Bossie on that beat | Custom Music, Original Releases & Licensing" },
-  description:
-    "Create your own song, discover original Bossie releases, or request custom music and licensing. Independent music producer and composer for people, artists and brands.",
+  title: { absolute: "Bossie on that beat | Original Music, Custom Songs & Licensing" },
+  description: "Discover the original Bossie on that beat catalogue, commission a personal song or discuss original music and licensing for film, brands and creative projects.",
   alternates: { canonical: "/" },
   openGraph: {
+    title: "Bossie on that beat — Original Music & Creative Production",
+    description: "Every track is a new world. Explore official releases, create your own song or collaborate on a soundtrack.",
     url: siteSettings.siteUrl,
-    title: "Bossie on that beat | Custom Music & Original Releases",
-    description: "Want your own song? Need music for a film, brand or artist project? Discover Bossie and request music through the official website.",
-    ...(ogArt ? { images: [{ url: ogArt, alt: "Bossie on that beat official artwork" }] } : {}),
   },
 };
-
-const audiences = [
-  {
-    index: "01",
-    label: "PERSONAL SONGS",
-    title: "Make it personal.",
-    text: "A birthday, wedding, tribute or milestone deserves music that sounds like your story. Share the moment and the mood.",
-    link: "/request?type=personal",
-    action: "Start my song",
-  },
-  {
-    index: "02",
-    label: "ORIGINAL RELEASES",
-    title: "Find your sound.",
-    text: "Explore the official catalogue, discover the newest releases and listen through verified artist profiles.",
-    link: "/music",
-    action: "Explore the music",
-  },
-  {
-    index: "03",
-    label: "MUSIC FOR PROJECTS",
-    title: "Bring a brief.",
-    text: "Commission a soundtrack or discuss using an existing recording for your film, brand, game or creative project.",
-    link: "/industry",
-    action: "Explore business services",
-  },
-] as const;
-
-const services = [
-  {
-    n: "01",
-    title: "Personalised songs",
-    description: "A meaningful song for birthdays, weddings, tributes and moments that deserve their own soundtrack.",
-    action: "Request a personal song",
-    href: "/request?type=personal",
-  },
-  {
-    n: "02",
-    title: "Custom productions",
-    description: "Original music built around your story, genre and creative direction — from pop and rap to cinematic sound.",
-    action: "Request a production",
-    href: "/request?type=custom",
-  },
-  {
-    n: "03",
-    title: "Music for brands & film",
-    description: "Music briefs for campaigns, video, film, games and digital projects. Scope and usage are agreed first.",
-    action: "Discuss a project",
-    href: "/request?type=business",
-  },
-  {
-    n: "04",
-    title: "Licensing & collaborations",
-    description: "Enquire about an existing Bossie track or propose a creative project with defined rights and credits.",
-    action: "Explore licensing",
-    href: "/industry#licensing",
-  },
-] as const;
 
 export default async function HomePage() {
   const catalog = await getCatalog();
   const { live, latest, featured, refreshedAt, trackCount, collections } = catalog;
-  const current = latest ?? featured;
-  const releases = (collections.length ? collections : live).slice(0, 3);
-  const streaming = getOfficialProfileEntries("streaming").filter((entry) => isVerifiedListenUrl(entry.href));
-  const latestCanListen = current ? Boolean(getPrimaryListenLink(current)) : false;
+  const headline = latest ?? featured;
+  const releases = (collections.length ? collections : live)
+    .filter((release) => release.id !== headline?.id)
+    .slice(0, 6);
+  const listen = headline ? Boolean(getPrimaryListenLink(headline)) : false;
+  const profiles = getOfficialProfileEntries("streaming").filter((profile) => isVerifiedListenUrl(profile.href));
 
   const schema = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebPage",
-        "@id": `${siteSettings.siteUrl}/#homepage`,
-        url: siteSettings.siteUrl,
-        name: "Bossie on that beat — Custom music, releases and licensing",
-        description: "Create custom songs, explore official releases and request professional music production.",
-        about: { "@id": `${siteSettings.siteUrl}/#artist` },
-      },
-      {
-        "@type": "ItemList",
-        "@id": `${siteSettings.siteUrl}/#featured-releases`,
-        name: "Official Bossie music releases",
-        numberOfItems: releases.length,
-        itemListElement: releases.map((release, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          name: release.title,
-          url: `${siteSettings.siteUrl}/music/${release.slug}`,
-        })),
-      },
-    ],
+    "@type": "WebPage",
+    "@id": siteSettings.siteUrl + "/#home",
+    url: siteSettings.siteUrl,
+    name: "Bossie on that beat — independent music and custom production",
+    about: { "@id": siteSettings.siteUrl + "/#artist" },
   };
 
   return (
-    <main id="main-content" className="studio-home">
-      <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
+    <>
       <SiteNav />
+      <main id="main-content" className="atelier">
+        <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(schema) }} />
 
-      <header className="studio-hero section-pad">
-        <div className="studio-hero-layout">
-          <div className="studio-hero-copy">
-            <p className="studio-kicker"><span className="studio-kicker-dot" /> INDEPENDENT MUSIC PRODUCTION · WORLDWIDE</p>
-            <h1>Music with a story.<br /><em>Made for yours.</em></h1>
-            <p className="studio-hero-lead">
-              Explore original releases, commission a personal song or find the soundtrack for your next project.
-              <strong> Bossie on that beat</strong> creates music with character — for listeners, people and creative teams.
-            </p>
-            <div className="studio-hero-actions">
-              <Link className="studio-btn studio-btn-primary" href="/request?type=personal">Request a custom song <span aria-hidden="true">↗</span></Link>
-              <Link className="studio-btn studio-btn-outline" href="/music">Listen to music <span aria-hidden="true">↗</span></Link>
-            </div>
-            <div className="studio-hero-meta" aria-label="Studio services">
-              <span>Original composition</span>
-              <span>Custom songs</span>
-              <span>Music licensing</span>
-            </div>
-          </div>
-
-          <div className="studio-hero-visual">
-            {current ? (
-              <article className="studio-feature">
-                <div className="studio-feature-top">
-                  <span className="studio-feature-live"><span aria-hidden="true" /> LATEST RELEASE</span>
-                  <span>BOSSIE ORIGINAL</span>
-                </div>
-                <Link className="studio-feature-art" href={`/music/${current.slug}`} aria-label={`View ${current.title} release details`}>
-                  <ReleaseArtwork release={current} large priority />
-                </Link>
-                <div className="studio-feature-bottom">
-                  <div>
-                    <p>FEATURED FROM THE OFFICIAL CATALOGUE</p>
-                    <h2>{current.title}</h2>
-                    <span>{current.genres.slice(0, 2).join(" · ") || "Original music"}</span>
-                  </div>
-                  <Link href={latestCanListen ? `/go/${current.slug}` : `/music/${current.slug}`} className="studio-feature-play">
-                    {latestCanListen ? "Listen now" : "View release"} ↗
-                  </Link>
-                </div>
-              </article>
-            ) : (
-              <div className="studio-feature studio-feature-empty">
-                <span className="studio-feature-live">OFFICIAL MUSIC CATALOGUE</span>
-                <h2>Every track starts with an idea.</h2>
-                <Link className="studio-btn studio-btn-primary" href="/music">Explore our music ↗</Link>
+        <header className="atelier-hero" aria-labelledby="atelier-hero-title">
+          <div className="atelier-hero-inner">
+            <div className="atelier-hero-copy">
+              <div className="atelier-ident">
+                <span className="atelier-ident-line" aria-hidden="true" />
+                <span>INDEPENDENT MUSIC / EST. IN THE NETHERLANDS</span>
               </div>
-            )}
-            <span className="studio-visual-caption">BOSSIE ON THAT BEAT / SOUND WITH CHARACTER</span>
-          </div>
-        </div>
-      </header>
-
-      <section className="studio-paths section-pad" aria-labelledby="studio-paths-heading">
-        <div className="studio-section-top">
-          <div>
-            <p className="studio-kicker">YOUR STARTING POINT</p>
-            <h2 id="studio-paths-heading">A place for every kind of music.</h2>
-          </div>
-          <p>Whether you came to listen or collaborate, choose the path that suits your idea.</p>
-        </div>
-        <div className="studio-path-grid">
-          {audiences.map((audience) => (
-            <Link className="studio-path" href={audience.link} key={audience.index}>
-              <span className="studio-path-number">{audience.index} / {audience.label}</span>
-              <h3>{audience.title}</h3>
-              <p>{audience.text}</p>
-              <span className="studio-path-action">{audience.action}<span aria-hidden="true">↗</span></span>
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="studio-services section-pad" aria-labelledby="studio-services-heading">
-        <div className="studio-section-top">
-          <div>
-            <p className="studio-kicker">WHAT BOSSIE DOES</p>
-            <h2 id="studio-services-heading">From first idea to final sound.</h2>
-          </div>
-          <p>Personal commissions, original productions and considered licensing enquiries — handled with care.</p>
-        </div>
-        <div className="studio-service-grid">
-          {services.map((service) => (
-            <article className="studio-service" key={service.n}>
-              <span className="studio-service-index">{service.n}</span>
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
-              <Link href={service.href}>{service.action} <span aria-hidden="true">↗</span></Link>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="studio-editorial-bridge section-pad" aria-labelledby="studio-editorial-heading">
-        <p className="studio-kicker">A MORE PERSONAL WAY TO MAKE MUSIC</p>
-        <h2 id="studio-editorial-heading">The sound should feel considered.<br /><em>So should the process.</em></h2>
-        <p>From a personal dedication to a licensing enquiry, we discuss the creative direction, deliverables and rights before a project begins.</p>
-        <Link className="studio-inline-link" href="/request">Tell us what you have in mind ↗</Link>
-      </section>
-
-      {releases.length > 0 && (
-        <section className="studio-releases section-pad" aria-labelledby="studio-releases-heading">
-          <div className="studio-section-top">
-            <div>
-              <p className="studio-kicker">LISTEN &amp; DISCOVER</p>
-              <h2 id="studio-releases-heading">Music you can hear today.</h2>
+              <h1 id="atelier-hero-title">Not just a beat.<br /><em>A whole world.</em></h1>
+              <p className="atelier-intro">
+                Original releases, personal songs and music built for a story.
+                From the first idea to the final note, <strong>Bossie on that beat</strong> makes sound with its own identity.
+              </p>
+              <div className="atelier-actions">
+                <Link className="atelier-action atelier-action-primary" href="/music">Explore the music <span aria-hidden="true">↗</span></Link>
+                <Link className="atelier-action atelier-action-secondary" href="/request?type=personal">Create your song <span aria-hidden="true">↗</span></Link>
+              </div>
+              <div className="atelier-hero-signature">
+                <span>COMPOSED TO CONNECT</span>
+                <span>01 / THE SOUND</span>
+              </div>
             </div>
-            <Link className="studio-inline-link" href="/music">Explore the complete catalogue ↗</Link>
-          </div>
-          <div className="studio-release-grid">
-            {releases.map((release) => (
-              <article className="studio-release-card" key={release.id}>
-                <Link href={`/music/${release.slug}`} className="studio-release-art" aria-label={`Discover ${release.title}`}>
-                  <ReleaseArtwork release={release} />
-                </Link>
-                <div className="studio-release-content">
-                  <p>{release.type.toUpperCase()} {release.releaseDate ? `· ${release.releaseDate.slice(0, 4)}` : ""}</p>
-                  <h3><Link href={`/music/${release.slug}`}>{release.title}</Link></h3>
-                  <span>{release.genres.slice(0, 2).join(" · ") || "Bossie original"}</span>
-                  <Link href={`/music/${release.slug}`} className="studio-inline-link">Listen &amp; explore ↗</Link>
+
+            <div className="atelier-feature">
+              {headline ? (
+                <article className="atelier-feature-card">
+                  <div className="atelier-feature-top"><span><i aria-hidden="true" /> LATEST FROM THE STUDIO</span><span>OFFICIAL RELEASE</span></div>
+                  <Link className="atelier-feature-image" href={"/music/" + headline.slug} aria-label={"Discover " + headline.title}>
+                    <ReleaseArtwork release={headline} large priority />
+                  </Link>
+                  <div className="atelier-feature-bottom">
+                    <div>
+                      <p>IN ROTATION</p>
+                      <h2>{headline.title}</h2>
+                      <span>{headline.genres.slice(0, 2).join(" / ") || "Original music"}</span>
+                    </div>
+                    <Link className="atelier-feature-link" href={listen ? "/go/" + headline.slug : "/music/" + headline.slug} aria-label={listen ? "Listen to " + headline.title : "View " + headline.title}>
+                      {listen ? "LISTEN" : "EXPLORE"} <span aria-hidden="true">↗</span>
+                    </Link>
+                  </div>
+                </article>
+              ) : (
+                <div className="atelier-feature-card atelier-feature-empty">
+                  <span>THE BOSSIE CATALOGUE</span>
+                  <strong>Every track opens another world.</strong>
+                  <Link href="/music">Explore the music ↗</Link>
                 </div>
-              </article>
-            ))}
+              )}
+            </div>
           </div>
-          <p className="studio-release-count">{trackCount} verified tracks in the official catalogue. Explore releases and verified listening links.</p>
+          <div className="atelier-hero-footer">
+            <span>SONGS / SOUNDTRACKS / SONIC WORLDS</span>
+            <a href="#discover" aria-label="Discover the studio">SCROLL TO EXPLORE ↓</a>
+          </div>
+        </header>
+
+        <section className="atelier-introduction" id="discover" aria-labelledby="atelier-introduction-title">
+          <div className="atelier-section-label">THE IDEA <span>01 / 04</span></div>
+          <div className="atelier-introduction-body">
+            <h2 id="atelier-introduction-title">Every track has<br /><em>something to say.</em></h2>
+            <div className="atelier-introduction-aside">
+              <p>Music is more than background. It can hold a memory, build tension, move a crowd or give a brand its own pulse.</p>
+              <p>Bossie crosses cinematic, electronic, metal, pop and global influences to find the sound that fits.</p>
+              <Link className="atelier-text-link" href="/about">Meet the artist <span aria-hidden="true">↗</span></Link>
+            </div>
+          </div>
         </section>
-      )}
 
-      <section className="studio-about section-pad" aria-labelledby="studio-about-heading">
-        <div className="studio-about-signature" aria-hidden="true">
-          <BossieLogo variant="primary" href="" />
-          <span>INDEPENDENT MUSIC PRODUCTION</span>
-          <small>ORIGINAL RELEASES · COMMISSIONS · LICENSING</small>
-        </div>
-        <div className="studio-about-copy">
-          <p className="studio-kicker">MEET THE PRODUCER</p>
-          <h2 id="studio-about-heading">One artist. Many sonic worlds.</h2>
-          <p>
-            Bossie is an independent music producer, composer and artist project.
-            The sound crosses cinematic music, electronic, pop, rap, metal, orchestral
-            and global influences. The goal is straightforward: create music that fits the story.
-          </p>
-          <p>
-            Alongside original releases, Bossie accepts selected custom music and licensing
-            enquiries. Project requests and business arrangements are managed through
-            VDB Digital Software in the Netherlands.
-          </p>
-          <div className="studio-about-actions">
-            <Link className="studio-inline-link" href="/about">More about Bossie ↗</Link>
-            <Link className="studio-inline-link" href="/epk">Official press kit ↗</Link>
+        <section className="atelier-music" aria-labelledby="atelier-music-title">
+          <div className="atelier-section-label">THE DISCOGRAPHY <span>02 / 04</span></div>
+          <div className="atelier-music-head">
+            <div>
+              <p className="atelier-overline">ORIGINAL MUSIC, NO SINGLE GENRE</p>
+              <h2 id="atelier-music-title">The listening room<span className="atelier-stop">.</span></h2>
+            </div>
+            <Link className="atelier-text-link" href="/music">View complete catalogue <span aria-hidden="true">↗</span></Link>
           </div>
-        </div>
-      </section>
+          {releases.length > 0 ? (
+            <div className="atelier-release-grid">
+              {releases.map((release, index) => (
+                <article className="atelier-release" key={release.id}>
+                  <Link className="atelier-release-art" href={"/music/" + release.slug} aria-label={"Explore " + release.title}>
+                    <ReleaseArtwork release={release} />
+                    <span className="atelier-release-open" aria-hidden="true">↗</span>
+                  </Link>
+                  <div className="atelier-release-meta">
+                    <span>{String(index + 1).padStart(2, "0")} / {release.type.toUpperCase()}</span>
+                    <span>{release.releaseDate ? release.releaseDate.slice(0, 4) : "BOSSIE"}</span>
+                  </div>
+                  <h3><Link href={"/music/" + release.slug}>{release.title}</Link></h3>
+                  <p>{release.genres.slice(0, 2).join(" / ") || "Original release"}</p>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="atelier-empty">Official releases appear here as they become available.</p>
+          )}
+          <div className="atelier-music-bottom">
+            <p>{trackCount} verified tracks in the official catalogue. Releases and individual album tracks are grouped clearly in the archive.</p>
+            <Link className="atelier-action atelier-action-outline" href="/music">Discover all releases <span aria-hidden="true">↗</span></Link>
+          </div>
+        </section>
 
-      <section className="studio-process section-pad" aria-labelledby="studio-process-heading">
-        <div className="studio-section-top">
-          <div>
-            <p className="studio-kicker">SIMPLE &amp; TRANSPARENT</p>
-            <h2 id="studio-process-heading">A clear process. A better outcome.</h2>
+        <section className="atelier-commission" aria-labelledby="atelier-commission-title">
+          <div className="atelier-section-label">THE STUDIO <span>03 / 04</span></div>
+          <div className="atelier-commission-intro">
+            <p className="atelier-overline">A SOUND CREATED FOR YOU</p>
+            <h2 id="atelier-commission-title">Your story.<br /><em>Its own soundtrack.</em></h2>
+            <p>Some music is made to be heard. Other music is made for someone, somewhere or something specific.</p>
           </div>
-          <p>Your idea stays yours to explain. Scope, expectations and rights are discussed before work begins.</p>
-        </div>
-        <ol className="studio-process-grid">
-          <li><span>STEP 01</span><h3>Tell us your idea.</h3><p>Choose your project and describe the style, story, audience and deadline.</p></li>
-          <li><span>STEP 02</span><h3>We review your brief.</h3><p>Bossie checks the request and discusses scope, feasibility, price and any usage rights.</p></li>
-          <li><span>STEP 03</span><h3>Agree before we create.</h3><p>Production, revisions, delivery and licensing terms are confirmed in writing before any commitment.</p></li>
-        </ol>
-        <div className="studio-process-cta">
-          <Link className="studio-btn studio-btn-primary" href="/request?type=custom">Start a music request <span aria-hidden="true">↗</span></Link>
-          <p>Sending an enquiry is free and does not obligate you to purchase.</p>
-        </div>
-      </section>
+          <div className="atelier-commission-grid">
+            <article className="atelier-commission-personal">
+              <div className="atelier-commission-count">01 / PERSONAL</div>
+              <h3>A song that means something.</h3>
+              <p>A birthday, a wedding, a tribute or a moment that deserves its own sound. Tell us the story and the atmosphere you imagine.</p>
+              <Link className="atelier-action atelier-action-primary" href="/request?type=personal">Start a personal song <span aria-hidden="true">↗</span></Link>
+            </article>
+            <article className="atelier-commission-business">
+              <div className="atelier-commission-count">02 / CREATIVE PROJECTS</div>
+              <h3>Music that serves the picture.</h3>
+              <p>Original composition, an existing-track licence or an artist collaboration for film, campaigns, creators and brands. Rights and scope are agreed first.</p>
+              <Link className="atelier-action atelier-action-secondary" href="/industry">Explore studio services <span aria-hidden="true">↗</span></Link>
+            </article>
+          </div>
+        </section>
 
-      {streaming.length > 0 && (
-        <section className="studio-platforms section-pad" aria-label="Official streaming profiles">
-          <div>
-            <p className="studio-kicker">OFFICIAL LISTENING LINKS</p>
-            <h2>Listen on your favourite platform.</h2>
+        <section className="atelier-process" aria-labelledby="atelier-process-title">
+          <div className="atelier-section-label">THE PROCESS <span>04 / 04</span></div>
+          <div className="atelier-process-content">
+            <div className="atelier-process-heading">
+              <p className="atelier-overline">CLEAR FROM THE FIRST CONVERSATION</p>
+              <h2 id="atelier-process-title">An idea is<br /><em>where it starts.</em></h2>
+            </div>
+            <ol className="atelier-steps">
+              <li><span>01</span><div><h3>Share the brief.</h3><p>Tell us the story, intended use, sound and timing.</p></div></li>
+              <li><span>02</span><div><h3>Shape the approach.</h3><p>We review the scope and discuss pricing, rights and what is possible.</p></div></li>
+              <li><span>03</span><div><h3>Agree, then create.</h3><p>Production begins after the deliverables and terms are confirmed in writing.</p></div></li>
+            </ol>
           </div>
-          <div className="studio-platform-list">
-            {streaming.map(({ href, label, key }) => (
-              <a key={key} href={href} target="_blank" rel="noopener noreferrer">
-                {label} <span aria-hidden="true">↗</span>
+        </section>
+
+        {profiles.length > 0 && (
+          <aside className="atelier-stream" aria-label="Verified music platforms">
+            <span>FOLLOW THE SOUND</span>
+            <div>{profiles.map((profile) => (
+              <a key={profile.key} href={profile.href} target="_blank" rel="noopener noreferrer">
+                {profile.label} ↗
               </a>
-            ))}
+            ))}</div>
+          </aside>
+        )}
+
+        <section className="atelier-outro" aria-labelledby="atelier-outro-title">
+          <div className="atelier-outro-brand"><BossieLogo variant="primary" href="" /><span>ORIGINAL MUSIC. REAL STORIES.</span></div>
+          <div>
+            <p className="atelier-overline">THE NEXT SOUND STARTS HERE</p>
+            <h2 id="atelier-outro-title">Let’s make it<br /><em>unforgettable.</em></h2>
+            <div className="atelier-outro-actions">
+              <Link className="atelier-action atelier-action-primary" href="/request">Tell us your idea <span aria-hidden="true">↗</span></Link>
+              <Link className="atelier-text-link" href="/epk">Press &amp; artist information <span aria-hidden="true">↗</span></Link>
+            </div>
+            <p className="atelier-outro-note">An enquiry is free. Production, delivery, revisions and usage rights are discussed before any commitment.</p>
           </div>
         </section>
-      )}
-
-      <section className="studio-final section-pad" aria-labelledby="studio-final-heading">
-        <p className="studio-kicker">YOUR IDEA STARTS HERE</p>
-        <h2 id="studio-final-heading">Have an idea?<br /><em>Let’s hear it.</em></h2>
-        <p>Personal music, independent artist projects, licensing or a creative collaboration — tell Bossie what you have in mind.</p>
-        <div className="studio-hero-actions">
-          <Link className="studio-btn studio-btn-primary" href="/request">Request your music ↗</Link>
-          <Link className="studio-btn studio-btn-outline" href="/industry">View studio services ↗</Link>
-        </div>
-      </section>
-
+      </main>
       <SiteFooter />
-    </main>
+    </>
   );
 }
