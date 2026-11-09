@@ -224,6 +224,7 @@ export default function RequestWizard() {
 
   function next(event?: FormEvent) {
     event?.preventDefault();
+    if (status === "sending" || status === "sent") return;
     const err = validateStep(step);
     if (err) {
       setFieldError(err);
@@ -239,7 +240,7 @@ export default function RequestWizard() {
 
   return (
     <div className="request-v3-layout">
-      <div className="request-wizard">
+      <form className="request-wizard" onSubmit={next} noValidate>
       <div className="wizard-progress" aria-hidden="true">
         <span style={{ width: `${progress}%` }} />
       </div>
@@ -535,7 +536,7 @@ export default function RequestWizard() {
           </button>
         )}
         {status !== "sent" && (
-          <button type="button" className="button button-gold" onClick={next} disabled={status === "sending"}>
+          <button type="submit" className="button button-gold" disabled={status === "sending"}>
             {step === steps.length - 1 ? (status === "sending" ? "Sending…" : "Submit request ↗") : "Continue ↗"}
           </button>
         )}
@@ -554,7 +555,7 @@ export default function RequestWizard() {
           </button>
         </p>
       )}
-    </div>
+    </form>
 
       <aside className="bossie-project-card" aria-live="polite">
         <BossieMark size="md" decorative={false} />
