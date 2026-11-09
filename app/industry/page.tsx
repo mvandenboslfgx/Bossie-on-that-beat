@@ -68,13 +68,13 @@ export default async function IndustryPage() {
       <header className="page-hero business-hero section-pad">
         <div className="business-hero-inner">
           <p className="eyebrow">BOSSIE / PROFESSIONAL MUSIC STUDIO</p>
-          <h1>Original music. Clear rights. Creative partnerships.</h1>
+          <h1>Music that moves the story forward.</h1>
           <p>
-            Music production, existing-track licensing and selected collaborations for filmmakers, agencies,
-            creators, artists and brands. The creative ambition is big; the way we work is clear and professional.
+            Original compositions, track licensing and creative collaborations for filmmakers, agencies,
+            creators, artists and brands. Tell us the story, the audience and the purpose — we will discuss the right sound and terms.
           </p>
           <div className="business-hero-actions">
-            <Link className="button button-gold" href="/request">Submit a project brief ↗</Link>
+            <Link className="button button-gold" href="/request?type=business">Discuss your project ↗</Link>
             <Link className="text-link" href="/epk">Explore the official press kit ↗</Link>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default async function IndustryPage() {
               Whether you need an existing recording or an original composition, we need enough context
               to assess your project properly. You can submit a request without committing to a purchase.
             </p>
-            <Link className="text-link" href="/request">Start a music enquiry ↗</Link>
+            <Link className="text-link" href="/request?type=licensing">Ask about licensing ↗</Link>
           </div>
           <div>
             <p className="eyebrow">WHAT TO INCLUDE</p>
@@ -185,7 +185,7 @@ export default async function IndustryPage() {
         <h2>Have a project in mind?</h2>
         <p>Send the essentials through the official request form. For media information, use the EPK. No booking or licence is confirmed merely by making an enquiry.</p>
         <div className="business-contact-actions">
-          <Link className="button button-gold" href="/request">Request a proposal ↗</Link>
+          <Link className="button button-gold" href="/request?type=business">Request a proposal ↗</Link>
           <Link className="text-link" href="/epk">View press material ↗</Link>
           <a className="text-link" href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20business%20enquiry">Email business contact ↗</a>
         </div>

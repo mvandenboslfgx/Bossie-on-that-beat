@@ -7,6 +7,7 @@ import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getPrimaryListenLink } from "@/lib/repository/release-repository";
 import { CatalogProof } from "@/components/v3/BossieV3";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
+import { BossieLogo } from "@/components/brand/BossieLogo";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
 
@@ -30,25 +31,25 @@ export const metadata: Metadata = {
 const audiences = [
   {
     index: "01",
-    label: "MAKE SOMETHING PERSONAL",
-    title: "I want my own song",
-    text: "A song for yourself, a birthday, wedding, tribute or special moment. Tell us your story and preferred sound.",
+    label: "PERSONAL SONGS",
+    title: "Make it personal.",
+    text: "A birthday, wedding, tribute or milestone deserves music that sounds like your story. Share the moment and the mood.",
     link: "/request?type=personal",
     action: "Start my song",
   },
   {
     index: "02",
-    label: "EXPLORE THE ARTIST",
-    title: "I want to listen",
-    text: "Hear Bossie's official releases, discover different styles and follow verified links to streaming platforms.",
+    label: "ORIGINAL RELEASES",
+    title: "Find your sound.",
+    text: "Explore the official catalogue, discover the newest releases and listen through verified artist profiles.",
     link: "/music",
     action: "Explore the music",
   },
   {
     index: "03",
-    label: "CREATE FOR A PROJECT",
-    title: "I need music for work",
-    text: "Original tracks, existing-track licensing and collaborations for brands, creators, filmmakers and artists.",
+    label: "MUSIC FOR PROJECTS",
+    title: "Bring a brief.",
+    text: "Commission a soundtrack or discuss using an existing recording for your film, brand, game or creative project.",
     link: "/industry",
     action: "Explore business services",
   },
@@ -129,20 +130,19 @@ export default async function HomePage() {
         <div className="studio-hero-layout">
           <div className="studio-hero-copy">
             <p className="studio-kicker"><span className="studio-kicker-dot" /> INDEPENDENT MUSIC PRODUCTION · WORLDWIDE</p>
-            <h1>Music made<br />for <em>your story.</em></h1>
+            <h1>Music with a story.<br /><em>Made for yours.</em></h1>
             <p className="studio-hero-lead">
-              Want a song of your own? Looking for original music or a track worth sharing?
-              Welcome to <strong>Bossie on that beat</strong> — an independent producer and composer
-              creating music for people, artists and creative projects.
+              Explore original releases, commission a personal song or find the soundtrack for your next project.
+              <strong> Bossie on that beat</strong> creates music with character — for listeners, people and creative teams.
             </p>
             <div className="studio-hero-actions">
-              <Link className="studio-btn studio-btn-primary" href="/request?type=personal">Create my song <span aria-hidden="true">↗</span></Link>
+              <Link className="studio-btn studio-btn-primary" href="/request?type=personal">Request a custom song <span aria-hidden="true">↗</span></Link>
               <Link className="studio-btn studio-btn-outline" href="/music">Listen to music <span aria-hidden="true">↗</span></Link>
             </div>
             <div className="studio-hero-meta" aria-label="Studio services">
-              <span>Personal songs</span>
-              <span>Original releases</span>
-              <span>Music for business</span>
+              <span>Original composition</span>
+              <span>Custom songs</span>
+              <span>Music licensing</span>
             </div>
           </div>
 
@@ -158,7 +158,7 @@ export default async function HomePage() {
                 </Link>
                 <div className="studio-feature-bottom">
                   <div>
-                    <p>NOW PLAYING IN THE BOSSIE CATALOGUE</p>
+                    <p>FEATURED FROM THE OFFICIAL CATALOGUE</p>
                     <h2>{current.title}</h2>
                     <span>{current.genres.slice(0, 2).join(" · ") || "Original music"}</span>
                   </div>
@@ -183,9 +183,9 @@ export default async function HomePage() {
         <div className="studio-section-top">
           <div>
             <p className="studio-kicker">YOUR STARTING POINT</p>
-            <h2 id="studio-paths-heading">What brings you here?</h2>
+            <h2 id="studio-paths-heading">A place for every kind of music.</h2>
           </div>
-          <p>Choose what you want to do. No confusing menus or unnecessary steps.</p>
+          <p>Whether you came to listen or collaborate, choose the path that suits your idea.</p>
         </div>
         <div className="studio-path-grid">
           {audiences.map((audience) => (
@@ -203,9 +203,9 @@ export default async function HomePage() {
         <div className="studio-section-top">
           <div>
             <p className="studio-kicker">WHAT BOSSIE DOES</p>
-            <h2 id="studio-services-heading">More than a music catalogue.</h2>
+            <h2 id="studio-services-heading">From first idea to final sound.</h2>
           </div>
-          <p>One creative identity. Different sounds, stories and ways to work together.</p>
+          <p>Personal commissions, original productions and considered licensing enquiries — handled with care.</p>
         </div>
         <div className="studio-service-grid">
           {services.map((service) => (
@@ -217,6 +217,13 @@ export default async function HomePage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="studio-editorial-bridge section-pad" aria-labelledby="studio-editorial-heading">
+        <p className="studio-kicker">A MORE PERSONAL WAY TO MAKE MUSIC</p>
+        <h2 id="studio-editorial-heading">The sound should feel considered.<br /><em>So should the process.</em></h2>
+        <p>From a personal dedication to a licensing enquiry, we discuss the creative direction, deliverables and rights before a project begins.</p>
+        <Link className="studio-inline-link" href="/request">Tell us what you have in mind ↗</Link>
       </section>
 
       {releases.length > 0 && (
@@ -249,13 +256,13 @@ export default async function HomePage() {
 
       <section className="studio-about section-pad" aria-labelledby="studio-about-heading">
         <div className="studio-about-signature" aria-hidden="true">
-          <span className="studio-about-letter">B</span>
-          <span>BOSSIE ON THAT BEAT</span>
-          <small>EVERY TRACK IS A NEW WORLD</small>
+          <BossieLogo variant="primary" href="" />
+          <span>INDEPENDENT MUSIC PRODUCTION</span>
+          <small>ORIGINAL RELEASES · COMMISSIONS · LICENSING</small>
         </div>
         <div className="studio-about-copy">
           <p className="studio-kicker">MEET THE PRODUCER</p>
-          <h2 id="studio-about-heading">Who is Bossie on that beat?</h2>
+          <h2 id="studio-about-heading">One artist. Many sonic worlds.</h2>
           <p>
             Bossie is an independent music producer, composer and artist project.
             The sound crosses cinematic music, electronic, pop, rap, metal, orchestral
@@ -277,9 +284,9 @@ export default async function HomePage() {
         <div className="studio-section-top">
           <div>
             <p className="studio-kicker">SIMPLE &amp; TRANSPARENT</p>
-            <h2 id="studio-process-heading">How a music request works.</h2>
+            <h2 id="studio-process-heading">A clear process. A better outcome.</h2>
           </div>
-          <p>From the first idea to an agreed project, you know what happens next.</p>
+          <p>Your idea stays yours to explain. Scope, expectations and rights are discussed before work begins.</p>
         </div>
         <ol className="studio-process-grid">
           <li><span>STEP 01</span><h3>Tell us your idea.</h3><p>Choose your project and describe the style, story, audience and deadline.</p></li>
@@ -310,7 +317,7 @@ export default async function HomePage() {
 
       <section className="studio-final section-pad" aria-labelledby="studio-final-heading">
         <p className="studio-kicker">YOUR IDEA STARTS HERE</p>
-        <h2 id="studio-final-heading">Ready to make<br /><em>something worth hearing?</em></h2>
+        <h2 id="studio-final-heading">Have an idea?<br /><em>Let’s hear it.</em></h2>
         <p>Personal music, independent artist projects, licensing or a creative collaboration — tell Bossie what you have in mind.</p>
         <div className="studio-hero-actions">
           <Link className="studio-btn studio-btn-primary" href="/request">Request your music ↗</Link>
