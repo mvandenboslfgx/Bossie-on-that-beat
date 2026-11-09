@@ -1,0 +1,95 @@
+.notice {
+  position: fixed;
+  z-index: 110;
+  bottom: clamp(12px,2vw,28px);
+  left: clamp(12px,2vw,28px);
+  right: clamp(12px,2vw,28px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem 2rem;
+  max-width: 980px;
+  padding: clamp(1.2rem,2vw,1.65rem);
+  border: 1px solid rgba(228,194,139,.4);
+  border-radius: 12px;
+  background: rgba(14,16,19,.97);
+  box-shadow: 0 16px 65px rgba(0,0,0,.48);
+  color: #f8f2e8;
+  font-family: var(--font-sans),Arial,sans-serif;
+  backdrop-filter: blur(18px);
+}
+
+.copy {max-width: 590px;}
+.eyebrow {
+  display: block;
+  margin-bottom: .4rem;
+  color: #e5c28b;
+  font-size: .62rem;
+  font-weight: 800;
+  line-height: 1.4;
+  letter-spacing: .14em;
+}
+
+.copy p {
+  margin: 0;
+  color: #ddd6ca;
+  font-size: .84rem;
+  line-height: 1.7;
+}
+
+.copy a {
+  display: inline-block;
+  margin-top: .45rem;
+  border-bottom: 1px solid #e5c28b;
+  color: #e5c28b;
+  font-size: .76rem;
+}
+
+.actions {display: flex;align-items: center;flex-wrap: wrap;gap: .65rem;flex-shrink: 0;}
+.actions button {
+  min-height: 43px;
+  border-radius: 5px;
+  border: 1px solid rgba(228,194,139,.45);
+  font: 750 .72rem/1.2 var(--font-sans),Arial,sans-serif;
+  padding: .75rem .95rem;
+  cursor: pointer;
+}
+.essential {background: transparent;color: #f1eadf;}
+.allow {background: #e5c28b;color: #151716;}
+.actions button:hover {border-color: #f3d6a3;}
+.actions button:focus-visible,.copy a:focus-visible,.footerButton:focus-visible {
+  outline: 2px solid #e5c28b;
+  outline-offset: 3px;
+}
+.actions .close {
+  width:43px;
+  padding:.5rem;
+  border-color:transparent;
+  background:transparent;
+  color: #e5c28b;
+  font-size:1.4rem;
+  line-height:1;
+}
+
+.footerButton {
+  background:transparent;
+  border:0;
+  color:inherit;
+  font:inherit;
+  letter-spacing:inherit;
+  text-transform:inherit;
+  padding:0;
+  cursor:pointer;
+  text-align:left;
+}
+.footerButton:hover {color: #e5c28b;}
+
+@media(max-width:750px) {
+  .notice {max-width:none;flex-direction:column;align-items:stretch;gap:1rem;padding:1.25rem;}
+  .actions {width:100%;}
+  .actions button:not(.close) {flex:1 1 135px;}
+  .actions .close {flex:0 0 auto;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .notice {backdrop-filter:none;}
+}
