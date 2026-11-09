@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCatalog } from "@/lib/repository/catalog";
 import { getPrimaryListenLink } from "@/lib/repository/release-repository";
+import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { ReleaseArtwork } from "@/components/release/ReleaseUI";
 import { BossieLogo } from "@/components/brand/BossieLogo";
 import { SiteFooter, SiteNav } from "@/components/SiteChrome";
@@ -11,6 +12,7 @@ import { isVerifiedListenUrl } from "@/lib/links/url";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
 
 export const dynamic = "force-dynamic";
+const socialArt = getBrandAssetUrl("socialShare", siteSettings.siteUrl);
 
 export const metadata: Metadata = {
   title: { absolute: "Bossie on that beat | Original Music, Custom Songs & Licensing" },
@@ -20,6 +22,7 @@ export const metadata: Metadata = {
     title: "Bossie on that beat — Original Music & Creative Production",
     description: "Every track is a new world. Explore official releases, create your own song or collaborate on a soundtrack.",
     url: siteSettings.siteUrl,
+    ...(socialArt ? { images: [{ url: socialArt, alt: "Bossie on that beat official artwork" }] } : {}),
   },
 };
 
