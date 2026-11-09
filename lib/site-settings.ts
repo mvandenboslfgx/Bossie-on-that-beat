@@ -18,7 +18,7 @@ export const siteSettings = {
   identities: {
     spotifyArtistId: "4mNxC22iSgkO0uLp1dL4Fp",
     appleMusicArtistId: "6784857602",
-    youtubeChannelId: "" as string,
+    youtubeChannelId: "UC4jmInUbAvh7axSxnrFN6Bw",
   },
   /**
    * Single source for all official streaming + social profiles.
@@ -27,11 +27,11 @@ export const siteSettings = {
   socials: {
     spotify: "https://open.spotify.com/artist/4mNxC22iSgkO0uLp1dL4Fp",
     appleMusic: "https://music.apple.com/nl/artist/bossie-on-that-beat/6784857602",
-    youtube: "https://www.youtube.com/@bossie_on_that_beat",
+    youtube: "https://www.youtube.com/channel/UC4jmInUbAvh7axSxnrFN6Bw",
     youtubeMusic: "",
-    tiktok: "",
-    instagram: "",
-    facebook: "",
+    tiktok: "https://www.tiktok.com/@bossieonthatbeat",
+    instagram: "https://www.instagram.com/bossieonthatbeat/",
+    facebook: "https://www.facebook.com/1232870566566822",
     amazonMusic: "",
     deezer: "",
     tidal: "",
@@ -44,7 +44,7 @@ export const siteSettings = {
   } as Record<string, string>,
   /** @deprecated Use socials */
   social: {
-    youtube: "https://www.youtube.com/@bossie_on_that_beat",
+    youtube: "https://www.youtube.com/channel/UC4jmInUbAvh7axSxnrFN6Bw",
   } as Record<string, string>,
   contact: {
     requestPath: "/request",
