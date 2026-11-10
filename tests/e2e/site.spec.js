@@ -60,7 +60,7 @@ test("home makes listening and commissioning discoverable", async ({ page }) => 
   await expect(page.locator("h1")).toContainText("Not just a beat.");
   await expect(page.locator(".atelier-feature")).toBeVisible();
   await expect(page.getByRole("link", { name: /Explore the music/i }).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: /Create your song/i }).first()).toBeVisible();
+  await expect(page.locator(".atelier-actions").getByRole("link", { name: /Request a personal song/i })).toBeVisible();
 });
 
 test("music discovery filters titles and supports restoring all releases", async ({ page }) => {
@@ -355,6 +355,141 @@ test("press kit features distinct covers instead of repeating album tracks", asy
   expect(new Set(titles).size).toBe(titles.length);
   const latest = (await page.locator(".epk-latest-copy h2").textContent())?.trim();
   expect(titles).not.toContain(latest);
+});
+
+test("editorial image cards are contained on the main public pages", async ({ page }) => {
+  const paths = ["/", "/music", "/cinema", "/about", "/industry", "/epk", "/worlds"];
+  const cardSelector = [
+    ".epk-release-card",
+    ".atelier-release",
+    ".cinema-editorial-card",
+    ".studio-music-card",
+    ".epk-brand-asset",
+    ".release-card-v2",
+  ].join(", ");
+
+  for (const width of [390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of paths) {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      const problems = await page.evaluate((selector) => {
+        const epsilon = 2;
+        const failures = [];
+        for (const card of document.querySelectorAll(selector)) {
+          const cardBox = card.getBoundingClientRect();
+          for (const image of card.querySelectorAll("img, video, iframe")) {
+            if (getComputedStyle(image).display === "none") continue;
+            const box = image.getBoundingClientRect();
+            if (box.width === 0 || box.height === 0) continue;
+            if (box.left < cardBox.left - epsilon || box.right > cardBox.right + epsilon ||
+                box.top < cardBox.top - epsilon || box.bottom > cardBox.bottom + epsilon) {
+              failures.push({
+                card: String(card.className),
+                media: String(image.className),
+                cardWidth: Math.round(cardBox.width),
+                mediaWidth: Math.round(box.width),
+              });
+            }
+          }
+        }
+        return failures;
+      }, cardSelector);
+      expect(problems, `Image containment on ${path} at ${width}px`).toEqual([]);
+    }
+  }
+});
+
+test("EPK Cinema thumbnails stay inside cards and never overlap at real viewports", async ({ page }) => {
+  const widths = [390, 768, 1440];
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/epk", { waitUntil: "networkidle" });
+    // Ensure Next.js has hydrated before injecting the test-only fixtures.
+    // Otherwise React can replace the injected media while reconciling SSR.
+    const menu = page.locator(".nav-menu-toggle");
+    await menu.click();
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
+
+    const grid = page.locator(".epk-cinema-grid");
+    await expect(grid).toHaveCount(1);
+    // Production D1 Cinema records are not available in local seed data.
+    // Reproduce the same HTML/CSS contract using true 1920x1080 image
+    // dimensions, so the original intrinsic-size overflow cannot regress.
+    if ((await grid.locator(".epk-cinema-card").count()) === 0) {
+      await grid.evaluate((node) => {
+        for (let index = 0; index < 3; index++) {
+          const card = document.createElement("article");
+          card.className = "epk-release-card epk-cinema-card";
+          const frame = document.createElement("a");
+          frame.className = "epk-cinema-thumb-link";
+          frame.href = "/cinema";
+          const image = document.createElement("img");
+          image.className = "epk-cinema-thumb";
+          image.width = 1920;
+          image.height = 1080;
+          image.alt = "Cinema image for responsive test";
+          image.src = "data:image/svg+xml," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080"><rect width="1920" height="1080" fill="#222"/></svg>',
+          );
+          const title = document.createElement("h3");
+          title.textContent = "Test film " + (index + 1);
+          frame.append(image);
+          card.append(frame, title);
+          node.append(card);
+        }
+      });
+    }
+
+    await expect(grid).toBeVisible();
+
+    const metrics = await grid.evaluate((node) => {
+      const tolerance = 2;
+      const cards = [...node.querySelectorAll(".epk-cinema-card")];
+      const overflow = [];
+      const rects = cards.map((card, index) => {
+        const frame = card.querySelector(".epk-cinema-thumb-link");
+        const image = card.querySelector(".epk-cinema-thumb");
+        const cardBox = card.getBoundingClientRect();
+        const frameBox = frame.getBoundingClientRect();
+        if (frameBox.left < cardBox.left - tolerance || frameBox.right > cardBox.right + tolerance) {
+          overflow.push(`frame ${index} extends outside its card`);
+        }
+        if (image) {
+          const imgBox = image.getBoundingClientRect();
+          if (imgBox.left < frameBox.left - tolerance || imgBox.right > frameBox.right + tolerance ||
+              imgBox.top < frameBox.top - tolerance || imgBox.bottom > frameBox.bottom + tolerance) {
+            overflow.push(`image ${index} extends outside its frame`);
+          }
+          if (Math.abs(frameBox.width / frameBox.height - 16 / 9) > 0.03) {
+            overflow.push(`frame ${index} has incorrect aspect ratio`);
+          }
+        }
+        return cardBox;
+      });
+      for (let i = 0; i < rects.length; i++) {
+        for (let j = i + 1; j < rects.length; j++) {
+          const a = rects[i];
+          const b = rects[j];
+          const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+          const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+          if (overlapX > tolerance && overlapY > tolerance) {
+            overflow.push(`cards ${i} and ${j} overlap`);
+          }
+        }
+      }
+      return { cardCount: cards.length, overflow };
+    });
+
+    expect(metrics.cardCount, `EPK cinema cards at ${width}px`).toBeGreaterThan(0);
+    expect(metrics.overflow, `EPK media containment at ${width}px`).toEqual([]);
+    await page.screenshot({
+      path: test.info().outputPath(`epk-cinema-${width}px.png`),
+      fullPage: true,
+      animations: "disabled",
+    });
+  }
 });
 
 test("Cinema index preserves its featured film and keeps every published category accessible", async ({ page }) => {

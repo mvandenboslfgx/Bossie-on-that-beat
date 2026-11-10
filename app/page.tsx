@@ -65,12 +65,12 @@ export default async function HomePage() {
               </div>
               <h1 id="atelier-hero-title">Not just a beat.<br /><em>A whole world.</em></h1>
               <p className="atelier-intro">
-                Original releases, personal songs and music built for a story.
-                From the first idea to the final note, <strong>Bossie on that beat</strong> makes sound with its own identity.
+                Discover original music, commission a personal song or find the right sound for your film, campaign or creative project.
+                <strong> Bossie on that beat</strong> brings each idea to life through music.
               </p>
               <div className="atelier-actions">
                 <Link className="atelier-action atelier-action-primary" href="/music">Explore the music <span aria-hidden="true">↗</span></Link>
-                <Link className="atelier-action atelier-action-secondary" href="/request?type=personal">Create your song <span aria-hidden="true">↗</span></Link>
+                <Link className="atelier-action atelier-action-secondary" href="/request?type=personal">Request a personal song <span aria-hidden="true">↗</span></Link>
               </div>
               <div className="atelier-hero-signature">
                 <span>COMPOSED TO CONNECT</span>
@@ -116,7 +116,7 @@ export default async function HomePage() {
           <div className="atelier-introduction-body">
             <h2 id="atelier-introduction-title">Every track has<br /><em>something to say.</em></h2>
             <div className="atelier-introduction-aside">
-              <p>Music is more than background. It can hold a memory, build tension, move a crowd or give a brand its own pulse.</p>
+              <p>Music can preserve a memory, build tension on screen or give a creative project its own identity.</p>
               <p>Bossie crosses cinematic, electronic, metal, pop and global influences to find the sound that fits.</p>
               <Link className="atelier-text-link" href="/about">Meet the artist <span aria-hidden="true">↗</span></Link>
             </div>
@@ -153,7 +153,7 @@ export default async function HomePage() {
             <p className="atelier-empty">Official releases appear here as they become available.</p>
           )}
           <div className="atelier-music-bottom">
-            <p>{trackCount} verified tracks in the official catalogue. Releases and individual album tracks are grouped clearly in the archive.</p>
+            <p>{trackCount} verified tracks. Browse releases and individual album tracks in the official catalogue.</p>
             <Link className="atelier-action atelier-action-outline" href="/music">Discover all releases <span aria-hidden="true">↗</span></Link>
           </div>
         </section>
@@ -200,13 +200,13 @@ export default async function HomePage() {
             <article className="atelier-commission-personal">
               <div className="atelier-commission-count">01 / PERSONAL</div>
               <h3>A song that means something.</h3>
-              <p>A birthday, a wedding, a tribute or a moment that deserves its own sound. Tell us the story and the atmosphere you imagine.</p>
+              <p>A birthday, wedding, tribute or personal milestone deserves a song with meaning. Share the story, mood and occasion to discuss a custom production.</p>
               <Link className="atelier-action atelier-action-primary" href="/request?type=personal">Start a personal song <span aria-hidden="true">↗</span></Link>
             </article>
             <article className="atelier-commission-business">
               <div className="atelier-commission-count">02 / CREATIVE PROJECTS</div>
               <h3>Music that serves the picture.</h3>
-              <p>Original composition, an existing-track licence or an artist collaboration for film, campaigns, creators and brands. Rights and scope are agreed first.</p>
+              <p>Commission original music or discuss licensing an existing track for film, campaigns, creators and brands. We agree on scope, deliverables and usage rights before production.</p>
               <Link className="atelier-action atelier-action-secondary" href="/industry">Explore studio services <span aria-hidden="true">↗</span></Link>
             </article>
           </div>
@@ -247,7 +247,7 @@ export default async function HomePage() {
               <Link className="atelier-action atelier-action-primary" href="/request">Tell us your idea <span aria-hidden="true">↗</span></Link>
               <Link className="atelier-text-link" href="/epk">Press &amp; artist information <span aria-hidden="true">↗</span></Link>
             </div>
-            <p className="atelier-outro-note">An enquiry is free. Production, delivery, revisions and usage rights are discussed before any commitment.</p>
+            <p className="atelier-outro-note">Submitting an enquiry is free. We confirm pricing, delivery, revisions and usage rights in writing before you commit.</p>
           </div>
         </section>
       </main>

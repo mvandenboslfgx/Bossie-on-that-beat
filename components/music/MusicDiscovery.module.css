@@ -269,11 +269,20 @@
   .search {width:100%;}
   .genreFilters {gap: .45rem; margin-top: 1.8rem;}
   .genreFilters button {font-size: .7rem; padding:.65rem .82rem;}
-  .grid {grid-template-columns:1fr;gap:2.6rem;}
-  .release h3 {font-size:clamp(2.2rem,8vw,3.1rem);}
-  .artworkArrow {width:46px;height:46px;}
-  .releaseActions {gap: 1rem;}
+  .grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:2.4rem .9rem;}
+  .release h3 {font-size:clamp(1.35rem,5.7vw,1.8rem);line-height:1.12;overflow-wrap:anywhere;}
+  .releaseMeta {gap:.4rem;font-size:.56rem;letter-spacing:.06em;}
+  .genres {font-size:.74rem;}
+  .artworkArrow {width:42px;height:42px;}
+  .releaseActions {display:grid;gap:.5rem;}
+  .releaseActions a {font-size:.68rem;}
   .more {width:100%;}
+}
+
+@media(max-width:359px) {
+  .grid {grid-template-columns:1fr;gap:2.6rem;}
+  .release h3 {font-size:clamp(2rem,8vw,2.7rem);}
+  .releaseActions {display:flex;gap:1rem;}
 }
 
 @media(prefers-reduced-motion:reduce) {

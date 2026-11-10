@@ -110,7 +110,7 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
                     fill
                     unoptimized
                     alt={`${release.title} — original cover artwork`}
-                    sizes="(max-width: 600px) 90vw, (max-width: 960px) 46vw, 30vw"
+                    sizes="(max-width: 359px) 90vw, (max-width: 600px) 45vw, (max-width: 960px) 46vw, 30vw"
                     loading={index < 3 ? "eager" : "lazy"}
                     decoding="async"
                     className={styles.artworkImage}

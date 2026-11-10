@@ -348,8 +348,9 @@
 @media(max-width:440px) {
   .atelier-hero h1 {font-size:clamp(3.55rem,12vw,4.7rem);}
   .atelier-hero-inner {gap:3rem;}
-  .atelier-release-grid {grid-template-columns:1fr;gap:2.2rem;}
-  .atelier-release h3 {font-size:2.4rem;}
+  .atelier-release-grid {grid-template-columns:repeat(2,minmax(0,1fr));gap:2rem .85rem;}
+  .atelier-release h3 {font-size:clamp(1.4rem,5.7vw,1.85rem);line-height:1.13;overflow-wrap:anywhere;}
+  .atelier-release-meta {font-size:.5rem;letter-spacing:.05em;}
   .atelier-hero-footer {flex-wrap:wrap;}
   .atelier-feature-top {letter-spacing:.05em;}
   .atelier-feature-bottom {align-items:start;}
@@ -555,7 +556,12 @@
   .studio-request-body .wizard-panel {padding:clamp(1.15rem,4.5vw,1.8rem);}
 }
 @media (max-width:600px) {
-  /* Three strong pieces are enough on a mobile landing page. The complete
-     catalogue remains one tap away through the permanent CTA beneath them. */
-  .atelier-release-grid .atelier-release:nth-child(n+4) {display:none;}
+  /* Four covers form an intentional two-by-two gallery on mobile. The full
+     catalogue remains available through the permanent CTA below it. */
+  .atelier-release-grid .atelier-release:nth-child(n+5) {display:none;}
+}
+
+@media (max-width:359px) {
+  .atelier-release-grid {grid-template-columns:1fr;gap:2.2rem;}
+  .atelier-release h3 {font-size:2.25rem;}
 }
