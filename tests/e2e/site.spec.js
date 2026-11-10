@@ -406,7 +406,7 @@ test("EPK Cinema thumbnails stay inside cards and never overlap at real viewport
     await page.goto("/epk", { waitUntil: "domcontentloaded" });
 
     const grid = page.locator(".epk-cinema-grid");
-    await expect(grid).toBeVisible();
+    await expect(grid).toHaveCount(1);
     // Production D1 Cinema records are not available in local seed data.
     // Reproduce the same HTML/CSS contract using true 1920x1080 image
     // dimensions, so the original intrinsic-size overflow cannot regress.
@@ -434,6 +434,8 @@ test("EPK Cinema thumbnails stay inside cards and never overlap at real viewport
         }
       });
     }
+
+    await expect(grid).toBeVisible();
 
     const metrics = await grid.evaluate((node) => {
       const tolerance = 2;
