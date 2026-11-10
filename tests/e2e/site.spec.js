@@ -182,7 +182,10 @@ test("indexable pages have distinct canonical URLs, descriptions and sensible ti
     const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
     expect(title.length, path).toBeGreaterThan(12);
     expect(description?.length ?? 0, path).toBeGreaterThan(45);
-    expect(canonical, path).toBe(`https://bossieonthatbeat.com${path === "/" ? "/" : path}`);
+    expect(canonical, path).not.toBeNull();
+    const normalized = new URL(canonical);
+    expect(normalized.origin, path).toBe("https://bossieonthatbeat.com");
+    expect(normalized.pathname, path).toBe(path);
     expect(seen.has(title), `Duplicate title ${title}`).toBe(false);
     seen.add(title);
   }
