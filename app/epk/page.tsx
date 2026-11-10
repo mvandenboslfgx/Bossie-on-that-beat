@@ -24,11 +24,22 @@ export const metadata: Metadata = {
 };
 
 export default async function EpkPage() {
-  const { live, latest, refreshedAt } = await getCatalog();
+  const { live, latest, refreshedAt, collections } = await getCatalog();
   const cinema = await getAllCinema();
   const brandDownloads = getDownloadableBrandAssets();
 
-  const picks = live.slice(0, 6);
+  // Press selections should feature distinct recordings and covers.
+  // Do not repeat the newest hero or fill the grid with tracks from one EP.
+  const selectedArtwork = new Set<string>();
+  const picks = [...collections, ...live.filter((release) => release.type === "track")]
+    .filter((release) => {
+      if (release.id === latest?.id) return false;
+      const identity = release.artworkUrl?.trim() || release.id;
+      if (selectedArtwork.has(identity)) return false;
+      selectedArtwork.add(identity);
+      return true;
+    })
+    .slice(0, 6);
   const selectedCinema = cinema.slice(0, 3);
   const facts: Array<[string, string]> = [
     ["Artist / producer", siteSettings.artistName],
@@ -85,16 +96,19 @@ export default async function EpkPage() {
         </section>
       )}
 
-      <section className="section-pad">
-        <p className="eyebrow">Short bio</p>
+      <section className="section-pad epk-editorial-section" aria-labelledby="epk-bio-heading">
+        <p className="eyebrow">PRESS BIOGRAPHY</p>
+        <h2 id="epk-bio-heading" className="epk-editorial-title">An independent voice across genres.</h2>
         <p>
-          An independent producer/composer/artist creating cinematic, orchestral, metal, electronic, rap and global music —
-          organized as Worlds rather than a single genre lane.
+          Bossie on that beat is a Netherlands-based independent producer and composer creating original music
+          across cinematic, electronic, metal and global influences. Alongside artist releases, Bossie considers
+          custom compositions, collaborations and licensing enquiries for film, brands and creative projects.
         </p>
       </section>
 
-      <section className="section-pad">
-        <p className="eyebrow">Selected work</p>
+      <section className="section-pad epk-editorial-section" aria-labelledby="epk-selected-heading">
+        <p className="eyebrow">SELECTED DISCOGRAPHY</p>
+        <h2 id="epk-selected-heading" className="epk-editorial-title">Music from different worlds.</h2>
         <div className="epk-release-grid">
           {picks.map((r) => {
             const listen = r.links.find((l) => isVerifiedListenUrl(l.url));
@@ -102,7 +116,7 @@ export default async function EpkPage() {
               <article key={r.id} className="epk-release-card">
                 <ReleaseArtwork release={r} />
                 <h3>{r.title}</h3>
-                <p>{r.tagline ?? r.description}</p>
+                <p>{r.tagline?.trim() || r.description?.trim() || [r.type.toUpperCase(), ...r.genres.slice(0, 2), r.releaseDate?.slice(0, 4)].filter(Boolean).join(" · ")}</p>
                 <div className="epk-card-links">
                   <Link href={`/music/${r.slug}`}>Release page ↗</Link>
                   {listen && (
@@ -123,8 +137,9 @@ export default async function EpkPage() {
         </div>
       </section>
 
-      <section className="section-pad">
-        <p className="eyebrow">Selected cinema</p>
+      <section className="section-pad epk-editorial-section" aria-labelledby="epk-cinema-heading">
+        <p className="eyebrow">SELECTED CINEMA</p>
+        <h2 id="epk-cinema-heading" className="epk-editorial-title">The sound in motion.</h2>
         <div className="epk-release-grid">
           {selectedCinema.map((item) => (
             <article key={item.id} className="epk-release-card">
