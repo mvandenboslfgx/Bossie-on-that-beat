@@ -357,6 +357,48 @@ test("press kit features distinct covers instead of repeating album tracks", asy
   expect(titles).not.toContain(latest);
 });
 
+test("editorial image cards are contained on the main public pages", async ({ page }) => {
+  const paths = ["/", "/music", "/cinema", "/about", "/industry", "/epk", "/worlds"];
+  const cardSelector = [
+    ".epk-release-card",
+    ".atelier-release",
+    ".cinema-editorial-card",
+    ".studio-music-card",
+    ".epk-brand-asset",
+    ".release-card-v2",
+  ].join(", ");
+
+  for (const width of [390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of paths) {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      const problems = await page.evaluate((selector) => {
+        const epsilon = 2;
+        const failures = [];
+        for (const card of document.querySelectorAll(selector)) {
+          const cardBox = card.getBoundingClientRect();
+          for (const image of card.querySelectorAll("img, video, iframe")) {
+            if (getComputedStyle(image).display === "none") continue;
+            const box = image.getBoundingClientRect();
+            if (box.width === 0 || box.height === 0) continue;
+            if (box.left < cardBox.left - epsilon || box.right > cardBox.right + epsilon ||
+                box.top < cardBox.top - epsilon || box.bottom > cardBox.bottom + epsilon) {
+              failures.push({
+                card: String(card.className),
+                media: String(image.className),
+                cardWidth: Math.round(cardBox.width),
+                mediaWidth: Math.round(box.width),
+              });
+            }
+          }
+        }
+        return failures;
+      }, cardSelector);
+      expect(problems, `Image containment on ${path} at ${width}px`).toEqual([]);
+    }
+  }
+});
+
 test("EPK Cinema thumbnails stay inside cards and never overlap at real viewports", async ({ page }) => {
   const widths = [390, 768, 1440];
   for (const width of widths) {
