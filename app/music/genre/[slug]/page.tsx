@@ -29,11 +29,11 @@ export default async function GenrePage({ params }: { params: Promise<{ slug: st
 
   return (
     <PageShell>
-      <section className="page-hero">
-        <p className="eyebrow">GENRE</p>
-        <h1>{genre.toUpperCase()}</h1>
-        <p>Bossie releases in the {genre} universe.</p>
-      </section>
+      <header className="page-hero brand-standard-hero">
+        <p className="eyebrow">EXPLORE BY GENRE</p>
+        <h1>{genre}<br /><em>music.</em></h1>
+        <p>Discover original Bossie tracks and releases in the {genre} catalogue.</p>
+      </header>
       <section className="section-pad">
         <div className="release-grid-v2">
           {releases.length ? (
