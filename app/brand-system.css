@@ -136,7 +136,7 @@ main.brand-unified {
 /* Equal action hierarchy regardless of which original page authored it. */
 .brand-unified :is(
   a.studio-btn-primary,
-  a.button-gold,
+  .button.button-gold,
   a.brand-action-primary
 ) {
   display: inline-flex;
@@ -156,7 +156,7 @@ main.brand-unified {
 }
 .brand-unified :is(
   a.studio-btn-outline,
-  a.button-ghost,
+  .button.button-ghost,
   a.brand-action-secondary
 ) {
   display: inline-flex;
@@ -174,12 +174,12 @@ main.brand-unified {
   text-transform: none;
   transition: background-color .2s ease,border-color .2s ease,transform .2s ease;
 }
-.brand-unified :is(a.studio-btn-primary,a.button-gold,a.brand-action-primary):hover {
+.brand-unified :is(a.studio-btn-primary,.button.button-gold,a.brand-action-primary):hover {
   background: #f0d3a4;
   border-color: #f0d3a4;
   transform: translateY(-2px);
 }
-.brand-unified :is(a.studio-btn-outline,a.button-ghost,a.brand-action-secondary):hover {
+.brand-unified :is(a.studio-btn-outline,.button.button-ghost,a.brand-action-secondary):hover {
   background: rgba(228,194,139,.09);
   border-color: var(--brand-gold);
   transform: translateY(-2px);
@@ -199,6 +199,13 @@ main.brand-unified {
 .brand-unified :is(.brand-standard-hero,.page-hero,.studio-about-header,.studio-music-header,.studio-request-header)
   :where(p,h1,h2) {
   overflow-wrap: anywhere;
+}
+
+/* The request wizard's real buttons receive the same design as links. */
+.brand-unified :is(button.button-gold,button.button-ghost):disabled {
+  opacity: .65;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 760px) {
@@ -221,18 +228,18 @@ main.brand-unified {
 @media (prefers-reduced-motion: reduce) {
   .brand-unified :is(
     a.studio-btn-primary,
-    a.button-gold,
+    .button.button-gold,
     a.brand-action-primary,
     a.studio-btn-outline,
-    a.button-ghost,
+    .button.button-ghost,
     a.brand-action-secondary
   ) { transition: none; }
   .brand-unified :is(
     a.studio-btn-primary,
-    a.button-gold,
+    .button.button-gold,
     a.brand-action-primary,
     a.studio-btn-outline,
-    a.button-ghost,
+    .button.button-ghost,
     a.brand-action-secondary
   ):hover { transform: none; }
 }
