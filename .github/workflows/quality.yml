@@ -42,9 +42,40 @@ jobs:
       - name: Cloudflare Worker adapter build
         run: npm run cf:build
 
+  browser-quality:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install application dependencies
+        run: npm ci --no-fund
+      - name: Install pinned browser runner without altering the lockfile
+        run: npm install --no-save --package-lock=false --ignore-scripts --no-fund @playwright/test@1.65.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify public pages, menu, search and request flow on real viewports
+        run: npx playwright test
+      - name: Preserve screenshots, browser video and traces
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bossie-browser-screenshots
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 14
+
   deploy-cloudflare:
     if: github.event_name == 'push'
-    needs: validate
+    needs: [validate, browser-quality]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
