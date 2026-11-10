@@ -13,17 +13,24 @@ export const metadata: Metadata = {
 };
 
 const SECTION_GROUPS: Array<{ key: string; label: string; types: CinemaCategory[] }> = [
-  { key: "features", label: "Feature Films", types: ["short-film", "film"] },
+  { key: "features", label: "Films & Stories", types: ["short-film", "film"] },
   { key: "music-videos", label: "Music Videos", types: ["music-video"] },
   { key: "official-audio", label: "Official Audio", types: ["official-audio"] },
   { key: "lyric-films", label: "Lyric Films", types: ["lyric-video"] },
   { key: "visualizers", label: "Visualizers", types: ["visualizer"] },
   { key: "shorts", label: "Shorts", types: ["short"] },
+  { key: "previews", label: "Teasers & Trailers", types: ["teaser", "trailer"] },
+  { key: "behind-the-scenes", label: "Behind the Scenes", types: ["behind-the-scenes"] },
 ];
 
 export default async function CinemaPage() {
   const items = await getAllCinema();
-  const featured = items[0];
+  // Editorial selections take precedence; otherwise lead with a proper film
+  // or music video rather than automatically promoting the newest Short.
+  const featured =
+    items.find((item) => item.featured) ??
+    items.find((item) => ["film", "short-film", "music-video"].includes(item.type)) ??
+    items[0];
 
   return (
     <PageShell>
@@ -35,8 +42,9 @@ export default async function CinemaPage() {
       </section>
 
       {featured && (
-        <section className="section-pad">
-          <p className="eyebrow">FEATURED</p>
+        <section className="section-pad cinema-index-section" aria-labelledby="cinema-featured-heading">
+          <p className="eyebrow">CURATED SELECTION</p>
+          <h2 id="cinema-featured-heading" className="cinema-section-title">Featured <em>story.</em></h2>
           <CinemaEditorialCard item={featured} featured />
         </section>
       )}
@@ -45,10 +53,13 @@ export default async function CinemaPage() {
         const filtered = items.filter((item) => item.id !== featured?.id && group.types.includes(item.type));
         if (!filtered.length) return null;
         return (
-          <section key={group.key} className="section-pad">
+          <section key={group.key} className="section-pad cinema-index-section" aria-labelledby={`cinema-${group.key}-heading`}>
             <div className="cinema-section-heading">
               <BossieMark size="sm" />
-              <p className="eyebrow">{group.label.toUpperCase()}</p>
+              <div>
+                <p className="eyebrow">BOSSIE CINEMA COLLECTION</p>
+                <h2 id={`cinema-${group.key}-heading`} className="cinema-section-title">{group.label}</h2>
+              </div>
             </div>
             <div className="cinema-editorial-stack">
               {filtered.map((item) => (
