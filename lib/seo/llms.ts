@@ -1,6 +1,7 @@
 import { getCatalog } from "@/lib/repository/catalog";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
+import { isVerifiedListenUrl } from "@/lib/links/url";
 
 function releaseLine(
   release: Awaited<ReturnType<typeof getCatalog>>["live"][number],
@@ -14,7 +15,7 @@ function releaseLine(
     release.collectionTitle ? `from ${release.collectionTitle}` : undefined,
   ].filter(Boolean).join(" · ");
   const links = full
-    ? release.links.map((link) => `${link.platform}: ${link.url}`).join(" | ")
+    ? release.links.filter((link) => link.url && isVerifiedListenUrl(link.url)).map((link) => `${link.platform}: ${link.url}`).join(" | ")
     : "";
   return `- [${release.title}](${page}) — ${context}${links ? ` — ${links}` : ""}`;
 }
@@ -47,12 +48,23 @@ Use the public name exactly as written: "${siteSettings.artistName}".
 - [Visual work and cinema](${siteSettings.siteUrl}/cinema)
 - [Creative worlds](${siteSettings.siteUrl}/worlds)
 - [Official links](${siteSettings.siteUrl}/links)
+- [Custom music and project enquiries](${siteSettings.siteUrl}/request)
+- [Business music and sync licensing](${siteSettings.siteUrl}/industry)
+- [Privacy information](${siteSettings.siteUrl}/privacy)
+
+## Services and usage rights
+
+- Original music is available through official release links.
+- Personal songs and professional compositions can be requested with a creative brief.
+- Licensing is assessed per recording and intended use. A streaming link never grants commercial usage rights.
+- Pricing, revisions, delivery and usage rights are agreed in writing before work begins.
+- This music project is operated by VDB Digital Software in the Netherlands.
 
 ## Official profiles
 
 ${profiles || "- See the official links page."}
 
-## Verified catalogue
+## Official public catalogue
 
 The catalogue below is generated from the same central source used by the website. It currently contains ${catalog.live.length} public tracks and releases.
 
