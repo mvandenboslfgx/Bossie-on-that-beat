@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Cinema",
-  description: "Bossie Cinema — music videos, official audio, lyric films and visual worlds.",
+  description: "Watch the official Bossie on that beat visual archive: music videos, short films and creative releases connected to original music.",
   alternates: { canonical: "/cinema" },
 };
 
