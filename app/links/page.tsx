@@ -29,7 +29,7 @@ export default async function LinksPage() {
         <header className="links-hub-intro">
           <p className="studio-kicker">OFFICIAL ARTIST LINKS</p>
           <h1 id="links-page-heading">Listen. Follow.<br /><em>Stay connected.</em></h1>
-          <p>Official streaming profiles, social channels and the newest music from Bossie on that beat. All destinations on this page come from our verified profiles.</p>
+          <p>Official streaming profiles, social channels and the newest music from Bossie on that beat. The streaming and social links below lead to Bossie’s official artist profiles.</p>
         </header>
 
         {latest && (
