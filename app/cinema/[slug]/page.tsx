@@ -7,6 +7,7 @@ import { PageShell } from "@/components/SiteChrome";
 import { getCinemaCategoryLabel, getPublicCinemaSummary, getPublicCinemaTitle } from "@/lib/cinema/editorial";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
+import { getYouTubeEmbedUrl } from "@/lib/seo/youtube";
 
 export const dynamic = "force-dynamic";
 
@@ -43,17 +44,22 @@ export default async function CinemaDetailPage({ params }: { params: Promise<{ s
   const title = getPublicCinemaTitle(item);
   const categoryLabel = getCinemaCategoryLabel(item.type);
 
+  const playerUrl = getYouTubeEmbedUrl(item.youtubeUrl);
+  // Publish a VideoObject only with a real thumbnail, publication date and
+  // provider player. The watch page is not a direct video file.
   const videoSchema =
-    canWatch && item.youtubeUrl
+    canWatch && playerUrl && item.thumbnailUrl && item.publishedAt
       ? {
           "@context": "https://schema.org",
           "@type": "VideoObject",
+          "@id": `https://bossieonthatbeat.com/cinema/${item.slug}#video`,
           name: title,
           description: summary,
+          url: `https://bossieonthatbeat.com/cinema/${item.slug}`,
           thumbnailUrl: item.thumbnailUrl,
           uploadDate: item.publishedAt,
           duration: item.durationSeconds ? `PT${item.durationSeconds}S` : undefined,
-          contentUrl: item.youtubeUrl,
+          embedUrl: playerUrl,
         }
       : null;
 
