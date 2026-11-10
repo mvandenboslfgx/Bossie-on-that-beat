@@ -356,3 +356,53 @@ test("press kit features distinct covers instead of repeating album tracks", asy
   const latest = (await page.locator(".epk-latest-copy h2").textContent())?.trim();
   expect(titles).not.toContain(latest);
 });
+
+test("Cinema index preserves its featured film and keeps every published category accessible", async ({ page }) => {
+  const response = await page.goto("/cinema", { waitUntil: "domcontentloaded" });
+  expect(response?.status()).toBe(200);
+  await expect(page.locator("main h1")).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "Featured story." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Official Audio" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Shorts" })).toBeVisible();
+
+  const featuredHref = await page.locator(".cinema-editorial-featured .cinema-editorial-thumb-link").getAttribute("href");
+  expect(featuredHref).toMatch(/^\/cinema\/[^/]+$/);
+
+  // Once a piece is the featured item it must not be duplicated again inside
+  // the category stack, even when the selected feature is an official Short.
+  const categoryHrefs = await page.locator(".cinema-editorial-stack .cinema-editorial-thumb-link")
+    .evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute("href")));
+  expect(categoryHrefs).not.toContain(featuredHref);
+  expect(new Set(categoryHrefs).size).toBe(categoryHrefs.length);
+});
+
+test("Cinema detail is readable and provides consistent breadcrumb, related work and return navigation", async ({ page }) => {
+  await page.goto("/cinema", { waitUntil: "domcontentloaded" });
+  const url = await page.locator(".cinema-editorial-featured .cinema-editorial-thumb-link").getAttribute("href");
+  expect(url).toMatch(/^\/cinema\/[^/]+$/);
+
+  for (const viewport of [
+    { width: 390, height: 844 },
+    { width: 768, height: 1024 },
+    { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    const response = await page.goto(url, { waitUntil: "domcontentloaded" });
+    expect(response?.status()).toBe(200);
+    await expect(page.locator("main.brand-unified")).toBeVisible();
+    await expect(page.locator("main h1")).toHaveCount(1);
+    await expect(page.getByRole("navigation", { name: "Breadcrumb" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Back to Cinema" })).toHaveAttribute("href", "/cinema");
+    await expect(page.getByRole("link", { name: "Cinema", exact: true }).first()).toHaveAttribute("href", "/cinema");
+
+    const relatedLinks = await page.locator(".cinema-detail-related-grid .cinema-editorial-thumb-link")
+      .evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute("href")));
+    expect(relatedLinks).not.toContain(url);
+    expect(new Set(relatedLinks).size).toBe(relatedLinks.length);
+    const sizes = await page.evaluate(() => ({
+      innerWidth: window.innerWidth,
+      documentWidth: document.documentElement.scrollWidth,
+    }));
+    expect(sizes.documentWidth, `Cinema detail overflow at ${viewport.width}px`).toBeLessThanOrEqual(viewport.width + 2);
+  }
+});
