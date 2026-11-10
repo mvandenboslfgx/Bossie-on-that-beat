@@ -114,7 +114,7 @@ jobs:
       - name: Verify newly deployed studio homepage and production routes
         run: |
           set -euo pipefail
-          routes=("/" "/music" "/worlds" "/cinema" "/about" "/industry" "/request")
+          routes=("/" "/music" "/worlds" "/cinema" "/about" "/industry" "/request" "/epk" "/links")
           for attempt in $(seq 1 36); do
             all_ok=1
             for route in "${routes[@]}"; do
@@ -147,6 +147,20 @@ jobs:
             request_html=$(curl -L -sS --max-time 20 "https://bossieonthatbeat.com/request" || true)
             if [[ "$request_html" != *"Start your request."* ]]; then
               echo "Attempt ${attempt}/36: redesigned request form has not been deployed."
+              all_ok=0
+            fi
+
+            # Validate the newly published *content*, not only 200 status.
+            # Older edge responses or a stale Worker must not pass a release.
+            links_html=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' "https://bossieonthatbeat.com/links" || true)
+            if [[ "$links_html" != *"Listen. Follow."* ]] || [[ "$links_html" != *"Stay connected."* ]]; then
+              echo "Attempt ${attempt}/36: official Links page is still serving older content."
+              all_ok=0
+            fi
+
+            epk_html=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' "https://bossieonthatbeat.com/epk" || true)
+            if [[ "$epk_html" != *"An independent voice across genres."* ]] || [[ "$epk_html" != *"Music from different worlds."* ]]; then
+              echo "Attempt ${attempt}/36: press kit has not received the curated release update."
               all_ok=0
             fi
 
