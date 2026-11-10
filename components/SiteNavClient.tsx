@@ -145,6 +145,7 @@ export function SiteNav() {
               <span className="nav-menu-bars" aria-hidden="true">
                 <span />
                 <span />
+                <span />
               </span>
             </button>
           </div>
