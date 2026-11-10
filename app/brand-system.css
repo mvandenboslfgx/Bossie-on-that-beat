@@ -1,0 +1,285 @@
+/*
+ * Bossie / Unified brand system
+ * One final, intentionally narrow layer for the site-wide identity.
+ * Album art, cinema imagery and unique World treatments remain individual.
+ *
+ * All standard public pages render inside .brand-unified (PageShell).
+ * Brand variables are shared with the artwork-led Atelier homepage.
+ */
+:root {
+  --brand-bg: #0b0c0e;
+  --brand-surface: #131518;
+  --brand-surface-raised: #1a1c1e;
+  --brand-paper: #f7f2e8;
+  --brand-gold: #e4c28b;
+  --brand-gold-dark: #9b7542;
+  --brand-muted: #c0baaf;
+  --brand-hairline: rgba(228,194,139,.22);
+  --brand-max: 1420px;
+  --brand-radius: 8px;
+  --brand-gutter: clamp(22px,5.2vw,88px);
+  --brand-section-space: clamp(4.25rem,7vw,8rem);
+  --bg: var(--brand-bg);
+  --bg-soft: var(--brand-surface);
+  --ink: var(--brand-paper);
+  --muted: var(--brand-muted);
+  --gold: var(--brand-gold);
+  --gold-soft: #ebd1a6;
+  --line: var(--brand-hairline);
+  --line-strong: rgba(228,194,139,.42);
+  --studio-bg: var(--brand-bg);
+  --studio-paper: var(--brand-paper);
+  --studio-gold: var(--brand-gold);
+  --studio-line: var(--brand-hairline);
+  --studio-muted: var(--brand-muted);
+}
+
+/* The SiteChrome wrapper is the public-page contract. Avoid broad changes to
+ * special full-bleed landing sections or the light-coloured request FAQ. */
+main.brand-unified {
+  background: var(--brand-bg);
+  color: var(--brand-paper);
+}
+.brand-unified :where(h1,h2,h3) {
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.brand-unified :where(a,button,input,select,textarea,summary):focus-visible {
+  outline: 2px solid var(--brand-gold);
+  outline-offset: 4px;
+}
+.brand-unified :is(.eyebrow,.studio-kicker,.studio-section-label) {
+  color: var(--brand-gold);
+  font-family: var(--font-sans),Arial,sans-serif;
+  font-weight: 800;
+  font-size: .68rem;
+  line-height: 1.5;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+/* Cohesive editorial opening across ordinary pages. Special album/world
+ * hero compositions are intentionally excluded from this rule. */
+.brand-unified :is(
+  .studio-secondary-hero,
+  .studio-about-header,
+  .studio-music-header,
+  .studio-request-header,
+  .business-hero,
+  .brand-standard-hero
+) {
+  border-bottom: 1px solid var(--brand-hairline);
+}
+.brand-unified :is(
+  .studio-secondary-hero h1,
+  .studio-about-header h1,
+  .studio-music-header h1,
+  .studio-request-heading h1,
+  .business-hero h1,
+  .brand-standard-hero h1
+) {
+  color: var(--brand-paper);
+  font-family: var(--font-display),Georgia,serif;
+  font-weight: 600;
+  line-height: .98;
+  letter-spacing: -.045em;
+  text-transform: none;
+}
+.brand-unified :is(
+  .studio-secondary-hero h1,
+  .studio-about-header h1,
+  .studio-music-header h1,
+  .studio-request-heading h1,
+  .business-hero h1,
+  .brand-standard-hero h1
+) em {
+  color: var(--brand-gold);
+  font-weight: 500;
+}
+.brand-unified :is(
+  .studio-secondary-hero > p:last-child,
+  .studio-about-header > p:not(.studio-kicker),
+  .studio-music-header > div > p:not(.studio-kicker),
+  .studio-request-heading > p:not(.studio-kicker):not(.studio-request-mobile-note),
+  .business-hero-inner > p:not(.eyebrow),
+  .brand-standard-hero > p:not(.eyebrow)
+) {
+  color: var(--brand-muted);
+  max-width: 67ch;
+  line-height: 1.8;
+  font-size: clamp(1rem,1.35vw,1.16rem);
+}
+.brand-unified .brand-standard-hero {
+  padding: clamp(118px,12vw,175px) var(--brand-gutter) clamp(55px,6vw,94px);
+  min-height: 0;
+  width: 100%;
+  max-width: var(--brand-max);
+  margin-inline: auto;
+  background: radial-gradient(ellipse at 83% 23%,rgba(202,153,79,.095),transparent 43%);
+}
+.brand-unified .brand-standard-hero h1 {
+  margin: 1rem 0 1.35rem;
+  font-size: clamp(4.15rem,7.5vw,8rem);
+  line-height: .97;
+}
+.brand-unified .brand-standard-hero > p:last-child {
+  margin: 0;
+}
+.brand-unified .brand-standard-hero .brand-hero-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .8rem;
+  margin-top: 2.1rem;
+}
+
+/* Equal action hierarchy regardless of which original page authored it. */
+.brand-unified :is(
+  a.studio-btn-primary,
+  a.button-gold,
+  a.brand-action-primary
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 52px;
+  padding: .85rem 1.45rem;
+  border: 1px solid var(--brand-gold);
+  border-radius: var(--brand-radius);
+  background: var(--brand-gold);
+  color: #141619;
+  font: 800 .75rem/1.4 var(--font-sans),Arial,sans-serif;
+  letter-spacing: .04em;
+  text-transform: none;
+  transition: background-color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.brand-unified :is(
+  a.studio-btn-outline,
+  a.button-ghost,
+  a.brand-action-secondary
+) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 52px;
+  padding: .85rem 1.45rem;
+  border: 1px solid rgba(228,194,139,.46);
+  border-radius: var(--brand-radius);
+  background: transparent;
+  color: var(--brand-paper);
+  font: 800 .75rem/1.4 var(--font-sans),Arial,sans-serif;
+  letter-spacing: .04em;
+  text-transform: none;
+  transition: background-color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.brand-unified :is(a.studio-btn-primary,a.button-gold,a.brand-action-primary):hover {
+  background: #f0d3a4;
+  border-color: #f0d3a4;
+  transform: translateY(-2px);
+}
+.brand-unified :is(a.studio-btn-outline,a.button-ghost,a.brand-action-secondary):hover {
+  background: rgba(228,194,139,.09);
+  border-color: var(--brand-gold);
+  transform: translateY(-2px);
+}
+.brand-unified :is(a.studio-inline-link,a.text-link,a.gold-link) {
+  text-underline-offset: 5px;
+}
+.brand-unified :is(a.studio-inline-link,a.text-link,a.gold-link):hover {
+  text-decoration: underline;
+}
+.brand-unified :is(.epk-release-card,.epk-brand-asset,.studio-about-business,.business-detail-card) {
+  border-color: var(--brand-hairline);
+}
+.brand-unified :is(.epk-release-grid,.cinema-editorial-stack,.release-grid-v2) {
+  max-width: var(--brand-max);
+}
+.brand-unified :is(.brand-standard-hero,.page-hero,.studio-about-header,.studio-music-header,.studio-request-header)
+  :where(p,h1,h2) {
+  overflow-wrap: anywhere;
+}
+
+/* Standard supporting CTA used only for pages without an existing final
+ * commission section: no duplicative sales blocks. */
+.brand-unified .brand-next-step {
+  margin: var(--brand-section-space) auto 0;
+  padding: clamp(3.3rem,6vw,6.5rem) var(--brand-gutter);
+  border-top: 1px solid var(--brand-hairline);
+  background: radial-gradient(ellipse at 78% 15%,rgba(213,161,81,.11),transparent 50%),var(--brand-surface);
+}
+.brand-unified .brand-next-step-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 2rem;
+  max-width: var(--brand-max);
+  margin-inline: auto;
+}
+.brand-unified .brand-next-step h2 {
+  margin: .85rem 0 0;
+  font: 600 clamp(3rem,5.2vw,6rem)/1 var(--font-display),Georgia,serif;
+  letter-spacing: -.045em;
+  max-width: 13ch;
+}
+.brand-unified .brand-next-step h2 em {
+  color: var(--brand-gold);
+}
+.brand-unified .brand-next-step p:not(.eyebrow) {
+  margin: .85rem 0 0;
+  color: var(--brand-muted);
+  max-width: 46ch;
+  line-height: 1.75;
+}
+.brand-unified .brand-next-step-links {
+  display: flex;
+  gap: .8rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .brand-unified .brand-standard-hero {
+    padding: 100px 22px 58px;
+  }
+  .brand-unified .brand-standard-hero h1 {
+    font-size: clamp(3.5rem,12vw,5.4rem);
+  }
+  .brand-unified :is(
+    .studio-secondary-hero h1,
+    .studio-about-header h1,
+    .studio-music-header h1,
+    .studio-request-heading h1,
+    .business-hero h1
+  ) {
+    line-height: 1;
+  }
+  .brand-unified .brand-next-step-inner {
+    align-items: stretch;
+  }
+  .brand-unified .brand-next-step-links {
+    width: 100%;
+  }
+  .brand-unified .brand-next-step-links > a {
+    flex: 1 1 175px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-unified :is(
+    a.studio-btn-primary,
+    a.button-gold,
+    a.brand-action-primary,
+    a.studio-btn-outline,
+    a.button-ghost,
+    a.brand-action-secondary
+  ) { transition: none; }
+  .brand-unified :is(
+    a.studio-btn-primary,
+    a.button-gold,
+    a.brand-action-primary,
+    a.studio-btn-outline,
+    a.button-ghost,
+    a.brand-action-secondary
+  ):hover { transform: none; }
+}
