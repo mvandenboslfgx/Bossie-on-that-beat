@@ -83,10 +83,14 @@ test("mobile navigation is keyboard accessible and dismissible", async ({ page }
   // Wait for Next.js hydration; a click on prerendered but unhydrated
   // controls would not represent a genuine interactive navigation test.
   await page.goto("/", { waitUntil: "networkidle" });
-  const toggle = page.getByRole("button", { name: "Open menu" });
+  // The accessible button name correctly changes to "Close menu" when
+  // expanded, so keep a stable locator instead of re-querying "Open menu".
+  const toggle = page.locator(".nav-menu-toggle");
+  await expect(toggle).toHaveAttribute("aria-label", "Open menu");
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await toggle.click();
   await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  await expect(toggle).toHaveAttribute("aria-label", "Close menu");
   const dialog = page.getByRole("dialog", { name: "Site menu" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("link", { name: "Cinema" })).toBeVisible();
