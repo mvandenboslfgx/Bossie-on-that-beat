@@ -325,3 +325,34 @@ test("primary and secondary CTA treatments share the same dimensions on all stan
   expect(geometry.radiusA).toBe(geometry.radiusB);
   expect(geometry.primaryBg).not.toBe(geometry.secondaryBg);
 });
+
+test("official links page has one readable identity and real artist destinations", async ({ page }) => {
+  const response = await page.goto("/links", { waitUntil: "domcontentloaded" });
+  expect(response?.status()).toBe(200);
+  await expect(page.locator("main h1")).toHaveCount(1);
+  await expect(page.locator(".links-hub-intro")).toBeVisible();
+  await expect(page.locator(".links-hub .social-block")).toHaveCount(3);
+  await expect(page.locator('main a[href="https://open.spotify.com/artist/4mNxC22iSgkO0uLp1dL4Fp"]')).toBeVisible();
+  await expect(page.locator('main a[href="https://www.instagram.com/bossieonthatbeat/"]')).toBeVisible();
+  await expect(page.locator('main a[href="/music"]').first()).toBeVisible();
+  await expect(page.locator('main a[href="/request"]').first()).toBeVisible();
+});
+
+test("press kit features distinct covers instead of repeating album tracks", async ({ page }) => {
+  const response = await page.goto("/epk", { waitUntil: "domcontentloaded" });
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { name: "Music from different worlds." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "An independent voice across genres." })).toBeVisible();
+
+  const cards = page.locator(".epk-editorial-section")
+    .filter({ has: page.locator("#epk-selected-heading") })
+    .locator(".epk-release-card");
+  expect(await cards.count()).toBeGreaterThan(2);
+  const covers = await cards.locator(".release-artwork-image")
+    .evaluateAll((images) => images.map((image) => image.getAttribute("src")).filter(Boolean));
+  expect(new Set(covers).size).toBe(covers.length);
+  const titles = await cards.locator("h3").allTextContents();
+  expect(new Set(titles).size).toBe(titles.length);
+  const latest = (await page.locator(".epk-latest-copy h2").textContent())?.trim();
+  expect(titles).not.toContain(latest);
+});
