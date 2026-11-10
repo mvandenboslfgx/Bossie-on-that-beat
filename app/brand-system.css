@@ -309,6 +309,75 @@ main.brand-unified {
 .brand-unified .epk-release-card > p {
   overflow-wrap: anywhere;
 }
+
+/* EPK media contract: external Cinema thumbnails must never render at their
+   intrinsic pixel width over adjacent press cards. Constrain the visual frame
+   as well as the image, independently of the source's native aspect ratio. */
+.brand-unified .epk-release-grid {
+  min-width: 0;
+  width: 100%;
+}
+.brand-unified .epk-release-card {
+  min-width: 0;
+  overflow: hidden;
+}
+.brand-unified .epk-release-card h3 {
+  overflow-wrap: anywhere;
+  line-height: 1.12;
+}
+.brand-unified .epk-cinema-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.brand-unified .epk-cinema-thumb-link {
+  display: block;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #1b1d20;
+}
+.brand-unified .epk-cinema-thumb {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 220ms ease;
+}
+.brand-unified .epk-cinema-thumb-link:hover .epk-cinema-thumb {
+  transform: scale(1.025);
+}
+.brand-unified .epk-cinema-thumb-link:focus-visible {
+  outline: 2px solid var(--brand-gold);
+  outline-offset: 4px;
+}
+.brand-unified .epk-cinema-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--brand-gold);
+  font: 600 clamp(3rem,6vw,6rem)/1 var(--font-display), Georgia, serif;
+}
+.brand-unified .epk-cinema-card h3 {
+  margin-block: 1.1rem .7rem;
+}
+.brand-unified .epk-cinema-card > .text-link {
+  width: fit-content;
+  margin-top: auto;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-unified .epk-cinema-thumb { transition: none; }
+  .brand-unified .epk-cinema-thumb-link:hover .epk-cinema-thumb { transform: none; }
+}
 @media (max-width: 760px) {
   .brand-unified .links-hub-intro h1 {
     font-size: clamp(3.2rem, 12vw, 5.3rem);
