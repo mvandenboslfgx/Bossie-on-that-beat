@@ -30,15 +30,21 @@ for (const viewport of viewports) {
         // Full-page screenshots do not automatically intersect lazy images.
         // Scroll the real viewport so album artwork has a chance to load,
         // then return to the first fold for repeatable evidence.
+        // Some marketing styles set scroll-behavior:smooth. If the screenshot
+        // starts while the browser is still animating back to the top, fixed
+        // navigation and the skip-link are captured mid-document. Force
+        // instantaneous movement and verify scroll position before capture.
+        await page.addStyleTag({ content: "html, body { scroll-behavior: auto !important; }" });
         await page.evaluate(async () => {
           await document.fonts.ready;
           const step = Math.max(300, Math.floor(window.innerHeight * 0.85));
           for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
-            window.scrollTo(0, y);
+            window.scrollTo({ top: y, left: 0, behavior: "instant" });
             await new Promise((resolve) => setTimeout(resolve, 70));
           }
-          window.scrollTo(0, 0);
+          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
         });
+        await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
         await page.screenshot({
           path: testInfo.outputPath(`${viewport.name}-${name}.png`),
           fullPage: true,
