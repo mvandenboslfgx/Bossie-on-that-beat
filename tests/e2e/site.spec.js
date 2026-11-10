@@ -292,7 +292,7 @@ test("shared identity, editorial type and actions remain consistent on public su
     });
     expect(style.gold, route).toBe("#e4c28b");
     expect(style.paper, route).toBe("#f7f2e8");
-    expect(style.border, route).toContain("rgba(");
+    expect(style.border, route).toBe("#e4c28b38");
     expect(style.font, route).not.toBe("");
     if (!fontFamily) fontFamily = style.font;
     expect(style.font, `Heading typeface drift on ${route}`).toBe(fontFamily);
