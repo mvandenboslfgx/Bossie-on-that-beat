@@ -40,7 +40,26 @@ export default async function EpkPage() {
       return true;
     })
     .slice(0, 6);
-  const selectedCinema = cinema.slice(0, 3);
+  // An EPK should lead with representative published work, not merely the
+  // newest three uploads (which can all be short-form social previews).
+  const cinemaRank: Record<string, number> = {
+    film: 0,
+    "short-film": 0,
+    "music-video": 1,
+    "lyric-video": 2,
+    visualizer: 3,
+    "official-audio": 4,
+    trailer: 5,
+    teaser: 5,
+    "behind-the-scenes": 6,
+    short: 7,
+  };
+  const selectedCinema = [...cinema]
+    .sort((a, b) =>
+      Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
+      (cinemaRank[a.type] ?? 9) - (cinemaRank[b.type] ?? 9),
+    )
+    .slice(0, 3);
   const facts: Array<[string, string]> = [
     ["Artist / producer", siteSettings.artistName],
     ["Positioning", "Producer · Composer · Artist · World Builder"],
