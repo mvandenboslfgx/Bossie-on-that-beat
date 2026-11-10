@@ -11,6 +11,7 @@ import { PageShell } from "@/components/SiteChrome";
 import { siteSettings } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { serializeJsonLd } from "@/lib/seo/json-ld";
+import { getReleaseSearchDescription } from "@/lib/seo/release-description";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
@@ -21,15 +22,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const r = await getReleaseBySlug(slug);
   if (!r || r.status === "pending_review" || r.status === "project") return {};
-  const description =
-    r.seo?.description ??
-    `${r.title} by ${r.artist} — ${r.tagline ?? r.description ?? ""}. Listen, watch and explore the official release page.`;
+  const description = getReleaseSearchDescription(r);
+  const collection = r.type === "ep" || r.type === "album";
   return {
     title: r.seo?.title ?? `${r.title} — Official Release`,
     description,
     alternates: { canonical: `/music/${r.slug}` },
     openGraph: {
-      type: "music.song",
+      // EPs and albums are collections, not individual MusicRecordings.
+      type: collection ? "music.album" : "music.song",
       url: `${base}/music/${r.slug}`,
       title: `${r.title} | ${siteSettings.artistName}`,
       description,
@@ -52,23 +53,25 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
 
   const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));
   const canonicalArtist = r.artist.toLowerCase() === siteSettings.artistName.toLowerCase();
+  const isCollection = r.type === "ep" || r.type === "album";
   const recordingSchema = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "MusicRecording",
-        "@id": `${base}/music/${r.slug}#recording`,
+        "@type": isCollection ? "MusicAlbum" : "MusicRecording",
+        "@id": `${base}/music/${r.slug}#${isCollection ? "album" : "recording"}`,
         name: r.title,
         url: `${base}/music/${r.slug}`,
         datePublished: r.releaseDate,
         genre: r.genres,
-        description: r.description ?? r.tagline,
+        description: r.description ?? r.tagline ?? getReleaseSearchDescription(r),
+        ...(r.isrc && !isCollection ? { isrcCode: r.isrc } : {}),
         byArtist: canonicalArtist
           ? { "@id": `${base}/#artist` }
           : { "@type": "MusicGroup", name: r.artist },
         contributor: canonicalArtist ? undefined : { "@id": `${base}/#artist` },
         image: r.artworkUrl || undefined,
-        ...(r.collectionTitle
+        ...(!isCollection && r.collectionTitle
           ? { inAlbum: { "@type": "MusicAlbum", name: r.collectionTitle } }
           : {}),
         ...(sameAs.length ? { sameAs } : {}),

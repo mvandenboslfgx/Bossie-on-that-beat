@@ -3,8 +3,8 @@ import type { NextRequest } from "next/server";
 import { CATALOG_HTML_HEADERS, isCatalogHtmlPath } from "@/lib/cache/catalog-headers";
 
 const scriptPolicy = process.env.NODE_ENV === "development"
-  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-  : "script-src 'self' 'unsafe-inline'";
+  ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://tracker.metricool.com"
+  : "script-src 'self' 'unsafe-inline' https://tracker.metricool.com";
 
 const SECURITY_HEADERS: Record<string, string> = {
   "Content-Security-Policy": [
@@ -18,7 +18,9 @@ const SECURITY_HEADERS: Record<string, string> = {
     scriptPolicy,
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    // The optional tracker may make requests only after the visitor opts in.
+    // Allow precisely its origin, not a wildcard domain.
+    "connect-src 'self' https://tracker.metricool.com",
     "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com",
     "upgrade-insecure-requests",
   ].join("; "),
