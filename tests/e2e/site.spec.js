@@ -170,3 +170,51 @@ test("request API rejects oversized and unsupported payloads before database wri
   });
   expect(unsupportedType.status()).toBe(415);
 });
+
+test("indexable pages have distinct canonical URLs, descriptions and sensible titles", async ({ page }) => {
+  const publicPaths = ["/", "/music", "/about", "/industry", "/worlds", "/cinema", "/request", "/epk", "/links", "/privacy", "/music/upcoming"];
+  const seen = new Set();
+  for (const path of publicPaths) {
+    const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+    expect(response?.status(), path).toBe(200);
+    const title = await page.title();
+    const description = await page.locator('meta[name="description"]').getAttribute("content");
+    const canonical = await page.locator('link[rel="canonical"]').getAttribute("href");
+    expect(title.length, path).toBeGreaterThan(12);
+    expect(description?.length ?? 0, path).toBeGreaterThan(45);
+    expect(canonical, path).not.toBeNull();
+    const normalized = new URL(canonical);
+    expect(normalized.origin, path).toBe("https://bossieonthatbeat.com");
+    expect(normalized.pathname, path).toBe(path);
+    expect(seen.has(title), `Duplicate title ${title}`).toBe(false);
+    seen.add(title);
+  }
+});
+
+test("robots, sitemap and AI-facing identity do not contradict canonical content", async ({ request }) => {
+  const robots = await request.get("/robots.txt");
+  expect(robots.status()).toBe(200);
+  const robotText = await robots.text();
+  expect(robotText).toContain("Disallow: /admin");
+  expect(robotText).toContain("/sitemap.xml");
+
+  const sitemap = await request.get("/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("<loc>https://bossieonthatbeat.com/music</loc>");
+  expect(sitemapText).toContain("<loc>https://bossieonthatbeat.com/industry</loc>");
+  expect(sitemapText).not.toContain("<loc>https://bossieonthatbeat.com/music/latest</loc>");
+
+  const llms = await request.get("/llms.txt");
+  expect(llms.status()).toBe(200);
+  const aiText = await llms.text();
+  expect(aiText).toContain("Bossie on that beat");
+  expect(aiText).toContain("Services and usage rights");
+  expect(aiText).toContain("/industry");
+  expect(aiText).toContain("/request");
+});
+
+test("admin route must discourage indexing", async ({ page }) => {
+  await page.goto("/admin");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+});

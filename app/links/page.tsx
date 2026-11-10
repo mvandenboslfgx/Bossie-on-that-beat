@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Links",
-  description: "Official Bossie on that beat link hub — the newest release, verified platforms and official profiles.",
+  description: "Find verified Bossie on that beat artist profiles, streaming links and the newest original music release in one official place.",
   alternates: { canonical: "/links" },
 };
 

@@ -6,6 +6,13 @@ export const dynamic = "force-dynamic";
 
 const base = siteSettings.siteUrl;
 
+// Provider timestamps may be absent or malformed. Do not let them break the XML sitemap.
+function safeDate(value: string | undefined | null): Date | undefined {
+  if (!value) return undefined;
+  const date = new Date(value);
+  return Number.isFinite(date.getTime()) ? date : undefined;
+}
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [releases, worlds, cinema] = await Promise.all([
     getAllReleases(),
@@ -31,7 +38,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes = [
     "",
     "/music",
-    "/music/latest",
     "/music/upcoming",
     "/worlds",
     "/cinema",
@@ -51,8 +57,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...publicReleases.map((release) => ({
       url: `${base}/music/${release.slug}`,
-      ...(release.lastSyncedAt || release.releaseDate
-        ? { lastModified: new Date(release.lastSyncedAt ?? release.releaseDate!) }
+      ...(safeDate(release.lastSyncedAt) || safeDate(release.releaseDate)
+        ? { lastModified: safeDate(release.lastSyncedAt) ?? safeDate(release.releaseDate) }
         : {}),
       changeFrequency: "weekly" as const,
       priority: release.status === "live" ? 0.9 : 0.65,
@@ -64,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
     ...cinema.map((item) => ({
       url: `${base}/cinema/${item.slug}`,
-      ...(item.publishedAt ? { lastModified: new Date(item.publishedAt) } : {}),
+      ...(safeDate(item.publishedAt) ? { lastModified: safeDate(item.publishedAt) } : {}),
       changeFrequency: "weekly" as const,
       priority: 0.7,
     })),
