@@ -193,3 +193,38 @@ jobs:
           done
           echo "BOSSIE_PRODUCTION_HEALTH=FAIL"
           exit 1
+
+  live-visual:
+    if: github.event_name == 'push'
+    needs: live-health
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install application dependencies
+        run: npm ci --no-fund
+      - name: Install pinned browser runner
+        run: npm install --no-save --package-lock=false --ignore-scripts --no-fund @playwright/test@1.65.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Verify deployed EPK images, live Cinema and public page layouts
+        env:
+          BOSSIE_TEST_BASE_URL: https://bossieonthatbeat.com
+          BOSSIE_PRODUCTION_VISUAL: "1"
+        run: npx playwright test tests/e2e/live-production.spec.js
+      - name: Save live desktop, tablet and mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bossie-live-visual-screenshots
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: warn
+          retention-days: 14
