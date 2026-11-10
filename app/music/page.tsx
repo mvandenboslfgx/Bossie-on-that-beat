@@ -21,8 +21,10 @@ export const metadata: Metadata = {
 
 export default async function MusicPage() {
   const catalog = await getCatalog();
-  const { live, trackCount, collections, upcoming, refreshedAt, latest } = catalog;
-  const published = collections.length ? collections : live;
+  const { live, trackCount, upcoming, refreshedAt, latest } = catalog;
+  // Every published track should be discoverable in the same catalogue;
+  // do not silently hide individual recordings when an album or EP exists.
+  const published = live;
   const discoveryItems: MusicDiscoveryItem[] = published.map((release) => ({
     id: release.id,
     slug: release.slug,
