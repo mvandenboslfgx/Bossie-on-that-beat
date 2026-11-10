@@ -27,6 +27,18 @@ for (const viewport of viewports) {
       if (["/", "/music", "/request"].includes(route)) {
         // Keep real viewport evidence for design review on every change.
         const name = route === "/" ? "home" : route.slice(1).replaceAll("/", "-");
+        // Full-page screenshots do not automatically intersect lazy images.
+        // Scroll the real viewport so album artwork has a chance to load,
+        // then return to the first fold for repeatable evidence.
+        await page.evaluate(async () => {
+          await document.fonts.ready;
+          const step = Math.max(300, Math.floor(window.innerHeight * 0.85));
+          for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+            window.scrollTo(0, y);
+            await new Promise((resolve) => setTimeout(resolve, 70));
+          }
+          window.scrollTo(0, 0);
+        });
         await page.screenshot({
           path: testInfo.outputPath(`${viewport.name}-${name}.png`),
           fullPage: true,
@@ -68,8 +80,13 @@ test("music discovery filters titles and supports restoring all releases", async
 
 test("mobile navigation is keyboard accessible and dismissible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  await page.getByRole("button", { name: "Open menu" }).click();
+  // Wait for Next.js hydration; a click on prerendered but unhydrated
+  // controls would not represent a genuine interactive navigation test.
+  await page.goto("/", { waitUntil: "networkidle" });
+  const toggle = page.getByRole("button", { name: "Open menu" });
+  await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  await toggle.click();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
   const dialog = page.getByRole("dialog", { name: "Site menu" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("link", { name: "Cinema" })).toBeVisible();
