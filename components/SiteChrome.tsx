@@ -75,7 +75,7 @@ export function PageShell({
   return (
     <>
       <SiteNav />
-      <main id="main-content" className={`subpage ${skin}${light}`} data-world={worldSlug || undefined}>
+      <main id="main-content" className={`subpage brand-unified ${skin}${light}`} data-world={worldSlug || undefined}>
         {children}
       </main>
       <SiteFooter />
