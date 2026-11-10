@@ -16,11 +16,11 @@ export default async function MusicUpcomingPage() {
 
   return (
     <PageShell>
-      <section className="page-hero">
+      <header className="page-hero brand-standard-hero">
         <p className="eyebrow">COMING NEXT</p>
-        <h1>UPCOMING</h1>
-        <p>Announced and upcoming Bossie releases.</p>
-      </section>
+        <h1>What's coming<br /><em>next.</em></h1>
+        <p>Explore announced music from Bossie on that beat. New tracks appear here when a release is confirmed.</p>
+      </header>
       <section className="section-pad">
         <div className="release-grid-v2">
           {upcoming.length ? (

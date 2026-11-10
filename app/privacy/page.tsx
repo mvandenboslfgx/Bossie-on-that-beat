@@ -11,13 +11,11 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <PageShell>
-      <section className="page-hero">
-        <div className="page-shell">
-          <p className="eyebrow">PRIVACY / DATA PROTECTION</p>
-          <h1>YOUR BRIEF.<br />YOUR DATA.</h1>
-          <p>What happens to information you share when you visit Bossie on that beat or request a music project.</p>
-        </div>
-      </section>
+      <header className="page-hero brand-standard-hero">
+        <p className="eyebrow">PRIVACY / DATA PROTECTION</p>
+        <h1>Your brief.<br /><em>Your data.</em></h1>
+        <p>How we handle the information you share when you explore Bossie on that beat or request a music project.</p>
+      </header>
       <section className="page-section">
         <div className="page-shell legal-copy">
           <p>Last updated: 9 November 2026.</p>

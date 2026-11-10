@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const routes = ["/", "/music", "/worlds", "/cinema", "/about", "/industry", "/request", "/epk"];
+const routes = ["/", "/music", "/worlds", "/cinema", "/about", "/industry", "/request", "/epk", "/privacy", "/links", "/music/upcoming", "/music/genre/metal"];
 const viewports = [
   { name: "mobile", width: 390, height: 844 },
   { name: "tablet", width: 768, height: 1024 },
@@ -268,4 +268,60 @@ test("security headers permit optional analytics only after active consent", asy
   await expect(page.locator('script[src*="tracker.metricool.com"]')).toHaveCount(0);
   await page.getByRole("button", { name: "Allow analytics" }).click();
   await expect.poll(() => page.evaluate(() => Boolean(window.__bossieMetricoolLoaded))).toBe(true);
+});
+
+test("shared identity, editorial type and actions remain consistent on public subpages", async ({ page }) => {
+  const pages = ["/music", "/about", "/industry", "/worlds", "/cinema", "/epk", "/request", "/privacy", "/music/upcoming", "/music/genre/metal"];
+  let fontFamily = "";
+  for (const route of pages) {
+    const response = await page.goto(route, { waitUntil: "domcontentloaded" });
+    expect(response?.status(), route).toBe(200);
+    await expect(page.locator("main.brand-unified")).toBeVisible();
+    await expect(page.locator(".site-nav")).toBeVisible();
+    await expect(page.locator("footer.site-footer")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Privacy preferences" })).toHaveCount(1);
+    const style = await page.evaluate(() => {
+      const root = getComputedStyle(document.documentElement);
+      const heading = document.querySelector("main h1");
+      return {
+        gold: root.getPropertyValue("--brand-gold").trim(),
+        paper: root.getPropertyValue("--brand-paper").trim(),
+        border: root.getPropertyValue("--brand-hairline").trim(),
+        font: heading ? getComputedStyle(heading).fontFamily : "",
+      };
+    });
+    expect(style.gold, route).toBe("#e4c28b");
+    expect(style.paper, route).toBe("#f7f2e8");
+    expect(style.border, route).toBe("#e4c28b38");
+    expect(style.font, route).not.toBe("");
+    if (!fontFamily) fontFamily = style.font;
+    expect(style.font, `Heading typeface drift on ${route}`).toBe(fontFamily);
+  }
+});
+
+test("primary and secondary CTA treatments share the same dimensions on all standard pages", async ({ page }) => {
+  await page.goto("/about");
+  const primary = page.locator("a.studio-btn-primary").first();
+  const secondary = page.locator("a.studio-btn-outline").first();
+  await expect(primary).toBeVisible();
+  await expect(secondary).toBeVisible();
+  const geometry = await page.evaluate(() => {
+    const first = document.querySelector("a.studio-btn-primary");
+    const second = document.querySelector("a.studio-btn-outline");
+    if (!first || !second) return null;
+    const a = getComputedStyle(first);
+    const b = getComputedStyle(second);
+    return {
+      minHeightA: a.minHeight,
+      minHeightB: b.minHeight,
+      radiusA: a.borderRadius,
+      radiusB: b.borderRadius,
+      primaryBg: a.backgroundColor,
+      secondaryBg: b.backgroundColor,
+    };
+  });
+  expect(geometry).not.toBeNull();
+  expect(geometry.minHeightA).toBe(geometry.minHeightB);
+  expect(geometry.radiusA).toBe(geometry.radiusB);
+  expect(geometry.primaryBg).not.toBe(geometry.secondaryBg);
 });
