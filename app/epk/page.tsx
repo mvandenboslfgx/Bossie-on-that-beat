@@ -140,16 +140,32 @@ export default async function EpkPage() {
       <section className="section-pad epk-editorial-section" aria-labelledby="epk-cinema-heading">
         <p className="eyebrow">SELECTED CINEMA</p>
         <h2 id="epk-cinema-heading" className="epk-editorial-title">The sound in motion.</h2>
-        <div className="epk-release-grid">
+        <div className="epk-release-grid epk-cinema-grid">
           {selectedCinema.map((item) => (
-            <article key={item.id} className="epk-release-card">
-              {item.thumbnailUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.thumbnailUrl} alt="" className="epk-cinema-thumb" />
-              ) : null}
+            <article key={item.id} className="epk-release-card epk-cinema-card">
+              <Link
+                className="epk-cinema-thumb-link"
+                href={`/cinema/${item.slug}`}
+                aria-label={`Watch ${getPublicCinemaTitle(item)}`}
+              >
+                {item.thumbnailUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={item.thumbnailUrl}
+                    alt={`Still from ${getPublicCinemaTitle(item)}`}
+                    className="epk-cinema-thumb"
+                    width={1280}
+                    height={720}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <span className="epk-cinema-placeholder" aria-hidden="true">B</span>
+                )}
+              </Link>
               <h3>{getPublicCinemaTitle(item)}</h3>
               <Link className="text-link" href={`/cinema/${item.slug}`}>
-                View ↗
+                Watch film ↗
               </Link>
             </article>
           ))}
