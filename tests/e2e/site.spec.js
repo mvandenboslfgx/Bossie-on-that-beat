@@ -357,6 +357,90 @@ test("press kit features distinct covers instead of repeating album tracks", asy
   expect(titles).not.toContain(latest);
 });
 
+test("EPK Cinema thumbnails stay inside cards and never overlap at real viewports", async ({ page }) => {
+  const widths = [390, 768, 1440];
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/epk", { waitUntil: "domcontentloaded" });
+
+    const grid = page.locator(".epk-cinema-grid");
+    await expect(grid).toBeVisible();
+    // Production D1 Cinema records are not available in local seed data.
+    // Reproduce the same HTML/CSS contract using true 1920x1080 image
+    // dimensions, so the original intrinsic-size overflow cannot regress.
+    if ((await grid.locator(".epk-cinema-card").count()) === 0) {
+      await grid.evaluate((node) => {
+        for (let index = 0; index < 3; index++) {
+          const card = document.createElement("article");
+          card.className = "epk-release-card epk-cinema-card";
+          const frame = document.createElement("a");
+          frame.className = "epk-cinema-thumb-link";
+          frame.href = "/cinema";
+          const image = document.createElement("img");
+          image.className = "epk-cinema-thumb";
+          image.width = 1920;
+          image.height = 1080;
+          image.alt = "Cinema image for responsive test";
+          image.src = "data:image/svg+xml," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080"><rect width="1920" height="1080" fill="#222"/></svg>',
+          );
+          const title = document.createElement("h3");
+          title.textContent = "Test film " + (index + 1);
+          frame.append(image);
+          card.append(frame, title);
+          node.append(card);
+        }
+      });
+    }
+
+    const metrics = await grid.evaluate((node) => {
+      const tolerance = 2;
+      const cards = [...node.querySelectorAll(".epk-cinema-card")];
+      const overflow = [];
+      const rects = cards.map((card, index) => {
+        const frame = card.querySelector(".epk-cinema-thumb-link");
+        const image = card.querySelector(".epk-cinema-thumb");
+        const cardBox = card.getBoundingClientRect();
+        const frameBox = frame.getBoundingClientRect();
+        if (frameBox.left < cardBox.left - tolerance || frameBox.right > cardBox.right + tolerance) {
+          overflow.push(`frame ${index} extends outside its card`);
+        }
+        if (image) {
+          const imgBox = image.getBoundingClientRect();
+          if (imgBox.left < frameBox.left - tolerance || imgBox.right > frameBox.right + tolerance ||
+              imgBox.top < frameBox.top - tolerance || imgBox.bottom > frameBox.bottom + tolerance) {
+            overflow.push(`image ${index} extends outside its frame`);
+          }
+          if (Math.abs(frameBox.width / frameBox.height - 16 / 9) > 0.03) {
+            overflow.push(`frame ${index} has incorrect aspect ratio`);
+          }
+        }
+        return cardBox;
+      });
+      for (let i = 0; i < rects.length; i++) {
+        for (let j = i + 1; j < rects.length; j++) {
+          const a = rects[i];
+          const b = rects[j];
+          const overlapX = Math.min(a.right, b.right) - Math.max(a.left, b.left);
+          const overlapY = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+          if (overlapX > tolerance && overlapY > tolerance) {
+            overflow.push(`cards ${i} and ${j} overlap`);
+          }
+        }
+      }
+      return { cardCount: cards.length, overflow };
+    });
+
+    expect(metrics.cardCount, `EPK cinema cards at ${width}px`).toBeGreaterThan(0);
+    expect(metrics.overflow, `EPK media containment at ${width}px`).toEqual([]);
+    await page.screenshot({
+      path: test.info().outputPath(`epk-cinema-${width}px.png`),
+      fullPage: true,
+      animations: "disabled",
+    });
+  }
+});
+
 test("Cinema index preserves its featured film and keeps every published category accessible", async ({ page }) => {
   const response = await page.goto("/cinema", { waitUntil: "domcontentloaded" });
   expect(response?.status()).toBe(200);
