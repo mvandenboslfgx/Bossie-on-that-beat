@@ -24,13 +24,18 @@ export default async function LinksPage() {
   return (
     <PageShell>
       <CatalogProof refreshedAt={refreshedAt} liveCount={live.length} latestSlug={latest?.slug} />
-      <section className="links-hub links-hub-v3 section-pad">
+      <section className="links-hub links-hub-v3 section-pad" aria-labelledby="links-page-heading">
         <BossieLogo variant="primary" href="/" className="links-hub-logo" priority />
+        <header className="links-hub-intro">
+          <p className="studio-kicker">OFFICIAL ARTIST LINKS</p>
+          <h1 id="links-page-heading">Listen. Follow.<br /><em>Stay connected.</em></h1>
+          <p>Official streaming profiles, social channels and the newest music from Bossie on that beat. The streaming and social links below lead to Bossie’s official artist profiles.</p>
+        </header>
 
         {latest && (
           <>
             <p className="links-signal-label">NEWEST RELEASE / {tx}</p>
-            <h1 className="links-signal-title">{latest.title}</h1>
+            <h2 className="links-signal-title">{latest.title}</h2>
             <p className="links-signal-artist">Bossie on that beat</p>
             <ReleaseArtwork release={latest} large priority />
             <ReleaseActions release={latest} />

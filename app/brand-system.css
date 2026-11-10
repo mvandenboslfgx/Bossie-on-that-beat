@@ -243,3 +243,80 @@ main.brand-unified {
     a.brand-action-secondary
   ):hover { transform: none; }
 }
+
+/* Press and official links: consistent editorial finishing. Do not flatten
+   independent album art or world-specific atmospheres. */
+.brand-unified .links-hub-v3 {
+  max-width: 920px;
+  gap: clamp(1.25rem, 2.4vw, 2rem);
+}
+.brand-unified .links-hub-intro {
+  width: min(100%, 760px);
+  margin-inline: auto;
+  padding: 0 0 clamp(1.6rem, 3vw, 3rem);
+  border-bottom: 1px solid var(--brand-hairline);
+}
+.brand-unified .links-hub-intro .studio-kicker {
+  justify-content: center;
+}
+.brand-unified .links-hub-intro h1 {
+  max-width: 14ch;
+  margin: 1.1rem auto 1.25rem;
+  font: 600 clamp(3.5rem, 6.8vw, 7.5rem)/.99 var(--font-display), Georgia, serif;
+  letter-spacing: -.045em;
+  text-transform: none;
+  text-wrap: balance;
+}
+.brand-unified .links-hub-intro h1 em {
+  color: var(--brand-gold);
+  font-weight: 500;
+}
+.brand-unified .links-hub-intro > p:last-child {
+  max-width: 58ch;
+  margin-inline: auto;
+  color: var(--brand-muted);
+  font: 400 clamp(.95rem, 1.3vw, 1.09rem)/1.8 var(--font-sans), Arial, sans-serif;
+}
+.brand-unified .links-hub-v3 .links-signal-title {
+  font: 600 clamp(2.6rem, 5vw, 5rem)/1 var(--font-display), Georgia, serif;
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+.brand-unified .links-hub-v3 .social-block {
+  width: 100%;
+  padding: clamp(1.5rem, 2.8vw, 2.5rem) 0;
+  border-top: 1px solid var(--brand-hairline);
+}
+.brand-unified .links-hub-v3 .social-block .social-links {
+  justify-content: center;
+}
+.brand-unified .epk-editorial-section {
+  padding-top: clamp(3.7rem, 6vw, 6.5rem);
+  padding-bottom: clamp(3.7rem, 6vw, 6.5rem);
+}
+.brand-unified .epk-editorial-title {
+  max-width: 20ch;
+  margin: .9rem 0 1.5rem;
+  font: 600 clamp(2.9rem, 4.4vw, 5.1rem)/1.04 var(--font-display), Georgia, serif;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.brand-unified .epk-editorial-section > p:not(.eyebrow) {
+  max-width: 76ch;
+  color: var(--brand-muted);
+  font: 400 clamp(.95rem, 1.1vw, 1.1rem)/1.82 var(--font-sans), Arial, sans-serif;
+}
+.brand-unified .epk-release-card > p {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 760px) {
+  .brand-unified .links-hub-intro h1 {
+    font-size: clamp(3.2rem, 12vw, 5.3rem);
+  }
+  .brand-unified .links-hub-intro {
+    padding-top: 1.4rem;
+  }
+  .brand-unified .epk-editorial-title {
+    font-size: clamp(2.8rem, 10vw, 4.5rem);
+  }
+}
