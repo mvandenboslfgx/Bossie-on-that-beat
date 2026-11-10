@@ -60,7 +60,7 @@ test("home makes listening and commissioning discoverable", async ({ page }) => 
   await expect(page.locator("h1")).toContainText("Not just a beat.");
   await expect(page.locator(".atelier-feature")).toBeVisible();
   await expect(page.getByRole("link", { name: /Explore the music/i }).first()).toBeVisible();
-  await expect(page.getByRole("link", { name: /Create your song/i }).first()).toBeVisible();
+  await expect(page.locator(".atelier-actions").getByRole("link", { name: /Request a personal song/i })).toBeVisible();
 });
 
 test("music discovery filters titles and supports restoring all releases", async ({ page }) => {
