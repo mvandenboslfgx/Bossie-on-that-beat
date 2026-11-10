@@ -21,12 +21,10 @@ const songTypes = [
 ];
 
 const featuredSongTypes = [
-  { type: "Personal Song", description: "A unique song inspired by your own story." },
-  { type: "Birthday Song", description: "Celebrate someone with personalised music." },
-  { type: "Company Song", description: "Music for a brand, company or campaign." },
-  { type: "Custom Music", description: "A new track built to your creative brief." },
-  { type: "Cinematic Soundtrack", description: "Music for film, video or storytelling." },
-  { type: "Existing Track Licensing", description: "Ask to use a published Bossie recording." },
+  { type: "Personal Song", description: "A meaningful song for a person or special moment." },
+  { type: "Custom Music", description: "A new track created around your own creative brief." },
+  { type: "Company Song", description: "Music for a brand, organisation or campaign." },
+  { type: "Existing Track Licensing", description: "Discuss using an original, already released Bossie track." },
 ] as const;
 
 const extraSongTypes = songTypes.filter(
@@ -98,6 +96,10 @@ export default function RequestWizard() {
     const songType = type ? mapped[type] : undefined;
     const track = params.get("track")?.trim().slice(0, 160);
     if (songType || track) {
+      // A deep link must never silently select a hidden request type.
+      if (songType && !featuredSongTypes.some((option) => option.type === songType)) {
+        setShowMoreTypes(true);
+      }
       setForm((previous) => ({
         ...previous,
         ...(songType ? { songType, commercialUse: ["business", "brand", "licensing"].includes(type || "") } : {}),

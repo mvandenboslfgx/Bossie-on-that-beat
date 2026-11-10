@@ -529,3 +529,33 @@
     scroll-margin-top: 92px;
   }
 }
+
+/* Mobile conversion polish: keep the first request decision and the best
+   music samples within reach without disturbing the wider desktop layouts. */
+.studio-request-heading .studio-request-mobile-note {display:none;}
+@media (max-width:700px) {
+  .studio-request-header {
+    padding-top:82px!important;
+    padding-bottom:30px!important;
+    gap:1.25rem;
+  }
+  .studio-request-header .studio-request-side {display:none;}
+  .studio-request-heading .studio-request-mobile-note {
+    display:block;
+    margin-top:1.35rem;
+    max-width:36ch;
+    padding-top:1rem;
+    border-top:1px solid rgba(228,194,139,.22);
+    font-family:var(--font-sans),Arial,sans-serif;
+    font-size:.83rem!important;
+    line-height:1.7!important;
+    color:#d7c5a9!important;
+  }
+  .studio-request-body {padding-top:2.5rem!important;}
+  .studio-request-body .wizard-panel {padding:clamp(1.15rem,4.5vw,1.8rem);}
+}
+@media (max-width:600px) {
+  /* Three strong pieces are enough on a mobile landing page. The complete
+     catalogue remains one tap away through the permanent CTA beneath them. */
+  .atelier-release-grid .atelier-release:nth-child(n+4) {display:none;}
+}

@@ -25,6 +25,7 @@ export default function RequestPage() {
             <Link href="/music">Hear our music ↗</Link>
             <Link href="/industry">How licensing works ↗</Link>
           </div>
+          <p className="studio-request-mobile-note">A request is free. Pricing, delivery and usage rights are agreed before any commitment.</p>
         </div>
         <div className="studio-request-side">
           <p>WHAT HAPPENS NEXT?</p>
