@@ -164,6 +164,27 @@ jobs:
               all_ok=0
             fi
 
+            # Cinema is backed by Cloudflare D1, while the local test seed
+            # is intentionally empty. Assert the actual deployed catalogue
+            # and one real detail page rather than treating an empty stub as QA.
+            cinema_html=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' "https://bossieonthatbeat.com/cinema" || true)
+            if [[ "$cinema_html" != *"cinema-featured-heading"* ]] || [[ "$cinema_html" != *"BOSSIE CINEMA COLLECTION"* ]]; then
+              echo "Attempt ${attempt}/36: new Cinema category layout is not live."
+              all_ok=0
+            fi
+
+            cinema_detail_path=$(printf '%s' "$cinema_html" | grep -oE 'href="/cinema/[a-zA-Z0-9_-]+"' | head -n 1 | cut -d '"' -f2 || true)
+            if [ -z "$cinema_detail_path" ]; then
+              echo "Attempt ${attempt}/36: no public Cinema detail link found in live catalogue."
+              all_ok=0
+            else
+              cinema_detail_html=$(curl -L -sS --max-time 20 -H 'Cache-Control: no-cache' "https://bossieonthatbeat.com${cinema_detail_path}" || true)
+              if [[ "$cinema_detail_html" != *'aria-label="Breadcrumb"'* ]] || [[ "$cinema_detail_html" != *"Back to Cinema"* ]] || [[ "$cinema_detail_html" != *"Keep exploring"* ]]; then
+                echo "Attempt ${attempt}/36: Cinema detail is missing breadcrumb, related work or return navigation."
+                all_ok=0
+              fi
+            fi
+
             if [ "$all_ok" = "1" ]; then
               echo "BOSSIE_PRODUCTION_HEALTH=PASS"
               exit 0
