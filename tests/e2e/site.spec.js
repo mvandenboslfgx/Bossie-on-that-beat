@@ -218,3 +218,54 @@ test("admin route must discourage indexing", async ({ page }) => {
   await page.goto("/admin");
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
 });
+
+test("official release pages expose unique music metadata and structured data", async ({ page, request }) => {
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  const releases = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)]
+    .map((match) => new URL(match[1]).pathname)
+    .filter((path) => /^\/music\/[^/]+$/.test(path) && path !== "/music/upcoming");
+  expect(releases.length).toBeGreaterThan(0);
+
+  for (const path of releases.slice(0, 6)) {
+    const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+    expect(response?.status(), path).toBe(200);
+    const description = await page.locator('meta[name="description"]').getAttribute("content");
+    expect(description?.length ?? 0, path).toBeGreaterThan(35);
+    expect(description?.length ?? 0, path).toBeLessThanOrEqual(165);
+
+    const scripts = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const graphs = scripts.map((value) => JSON.parse(value)).flatMap((value) => value["@graph"] ?? [value]);
+    const music = graphs.find((node) => ["MusicRecording", "MusicAlbum"].includes(node["@type"]));
+    expect(music, `No musical entity for ${path}`).toBeTruthy();
+    expect(music.url, path).toBe(`https://bossieonthatbeat.com${path}`);
+    expect(music.name?.length ?? 0).toBeGreaterThan(0);
+    expect(music["@id"]).toContain(path);
+  }
+});
+
+test("genre pages show the actual catalog instead of an empty category", async ({ page }) => {
+  const response = await page.goto("/music/genre/metal", { waitUntil: "domcontentloaded" });
+  expect(response?.status()).toBe(200);
+  await expect(page.locator(".release-grid-v2").first()).toBeVisible();
+  expect(await page.locator(".release-grid-v2 a").count()).toBeGreaterThan(0);
+  await expect(page.getByText("No releases in this genre yet.")).toHaveCount(0);
+});
+
+test("security headers permit optional analytics only after active consent", async ({ page }) => {
+  // Stub the third party: no actual traffic or analytics data leaves QA.
+  await page.route("https://tracker.metricool.com/resources/be.js", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/javascript",
+      body: "window.__bossieMetricoolLoaded = true; window.beTracker = { t: function () {} };",
+    }),
+  );
+  const response = await page.goto("/", { waitUntil: "domcontentloaded" });
+  const csp = response?.headers()["content-security-policy"] ?? "";
+  expect(csp).toContain("script-src");
+  expect(csp).toContain("https://tracker.metricool.com");
+  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
+  await expect(page.locator('script[src*="tracker.metricool.com"]')).toHaveCount(0);
+  await page.getByRole("button", { name: "Allow analytics" }).click();
+  await expect.poll(() => page.evaluate(() => Boolean(window.__bossieMetricoolLoaded))).toBe(true);
+});
