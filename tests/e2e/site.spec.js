@@ -403,7 +403,14 @@ test("EPK Cinema thumbnails stay inside cards and never overlap at real viewport
   const widths = [390, 768, 1440];
   for (const width of widths) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/epk", { waitUntil: "domcontentloaded" });
+    await page.goto("/epk", { waitUntil: "networkidle" });
+    // Ensure Next.js has hydrated before injecting the test-only fixtures.
+    // Otherwise React can replace the injected media while reconciling SSR.
+    const menu = page.locator(".nav-menu-toggle");
+    await menu.click();
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(menu).toHaveAttribute("aria-expanded", "false");
 
     const grid = page.locator(".epk-cinema-grid");
     await expect(grid).toHaveCount(1);
