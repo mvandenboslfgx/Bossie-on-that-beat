@@ -88,12 +88,15 @@ export async function getLatestRelease(): Promise<ReleaseWithLinks | undefined> 
 }
 
 export async function getReleasesByGenre(genre: string) {
-  const slug = genre.toLowerCase();
+  const slug = slugifyGenre(genre);
+  if (!slug) return [];
   const all = await getPublicReleases();
+  // The genre page, sitemap and filter must use the exact same slug rules.
+  // Replacing only spaces broke names with punctuation, such as R&B.
   return all.filter(
     (r) =>
-      r.genres.some((g) => g.toLowerCase().replace(/\s+/g, "-") === slug) ||
-      r.subgenres?.some((g) => g.toLowerCase().replace(/\s+/g, "-") === slug),
+      r.genres.some((name) => slugifyGenre(name) === slug) ||
+      r.subgenres?.some((name) => slugifyGenre(name) === slug),
   );
 }
 
