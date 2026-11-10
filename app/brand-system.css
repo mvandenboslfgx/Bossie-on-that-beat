@@ -320,3 +320,136 @@ main.brand-unified {
     font-size: clamp(2.8rem, 10vw, 4.5rem);
   }
 }
+
+/* Cinema index and detail pages: one editorial hierarchy, with the
+   video's own artwork and atmosphere preserved. */
+.brand-unified .cinema-index-section {
+  border-top: 1px solid var(--brand-hairline);
+}
+.brand-unified .cinema-index-section .cinema-section-heading {
+  align-items: center;
+  gap: clamp(1rem,2vw,2rem);
+  margin-bottom: clamp(2rem,4vw,4rem);
+}
+.brand-unified .cinema-section-title {
+  margin: .7rem 0 1.65rem;
+  font: 600 clamp(2.6rem,5vw,5.2rem)/1.02 var(--font-display),Georgia,serif;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+  color: var(--brand-paper);
+}
+.brand-unified .cinema-section-title em {
+  color: var(--brand-gold);
+}
+.brand-unified .cinema-detail-hero {
+  max-width: var(--brand-max);
+  border-bottom: 1px solid var(--brand-hairline);
+}
+.brand-unified .cinema-detail-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin-bottom: clamp(2.5rem,5vw,4.5rem);
+  font: 700 .72rem/1.6 var(--font-sans),Arial,sans-serif;
+  letter-spacing: .055em;
+  color: var(--brand-muted);
+}
+.brand-unified .cinema-detail-breadcrumb a {
+  color: var(--brand-gold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.brand-unified .cinema-detail-breadcrumb span:last-child {
+  overflow-wrap: anywhere;
+}
+.brand-unified .cinema-detail-hero h1 {
+  max-width: 18ch;
+  margin: clamp(1rem,2.5vw,2rem) 0;
+  color: var(--brand-paper);
+  font: 600 clamp(3.15rem,7.2vw,8rem)/1 var(--font-display),Georgia,serif;
+  letter-spacing: -.046em;
+  text-wrap: balance;
+}
+.brand-unified .cinema-detail-hero .cinema-detail-visual {
+  max-width: min(100%,1100px);
+  margin: 0 0 clamp(2rem,4vw,3.5rem);
+  border: 1px solid var(--brand-hairline);
+  border-radius: var(--brand-radius);
+  overflow: hidden;
+}
+.brand-unified .cinema-detail-hero .cinema-editorial-quote {
+  max-width: 67ch;
+  margin: 0 0 2rem;
+  color: var(--brand-muted);
+  font: 400 clamp(1rem,1.4vw,1.22rem)/1.75 var(--font-sans),Arial,sans-serif;
+}
+.brand-unified .cinema-detail-hero .cinema-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .85rem;
+  margin-top: clamp(1.5rem,3vw,2.5rem);
+}
+.brand-unified .cinema-detail-related {
+  max-width: var(--brand-max);
+  margin-inline: auto;
+  border-top: 1px solid var(--brand-hairline);
+}
+.brand-unified .cinema-detail-related-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: clamp(2rem,4vw,3.5rem);
+}
+.brand-unified .cinema-detail-related-heading h2 {
+  margin: .8rem 0 0;
+  color: var(--brand-paper);
+  font: 600 clamp(2.8rem,5vw,5rem)/1.03 var(--font-display),Georgia,serif;
+  letter-spacing: -.044em;
+}
+.brand-unified .cinema-detail-related-heading h2 em {
+  color: var(--brand-gold);
+}
+.brand-unified .cinema-detail-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  align-items: start;
+  gap: clamp(1.5rem,3vw,3rem);
+}
+.brand-unified .cinema-detail-related .cinema-editorial-card {
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: minmax(0,1fr);
+  gap: 1.1rem;
+}
+.brand-unified .cinema-detail-related .cinema-editorial-body h3 {
+  margin: .6rem 0 .9rem;
+  font: 600 clamp(1.8rem,2.3vw,2.8rem)/1.1 var(--font-display),Georgia,serif;
+  letter-spacing: -.035em;
+}
+.brand-unified .cinema-detail-related .cinema-editorial-thumb {
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--brand-hairline);
+}
+.brand-unified .cinema-detail-return {
+  max-width: var(--brand-max);
+  margin-inline: auto;
+  padding: 1.5rem var(--brand-gutter) clamp(3rem,6vw,5rem);
+}
+@media (max-width: 760px) {
+  .brand-unified .cinema-detail-hero h1 {
+    font-size: clamp(2.8rem,10.3vw,5.1rem);
+  }
+  .brand-unified .cinema-detail-related-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+  .brand-unified .cinema-detail-related-heading h2 {
+    font-size: clamp(2.6rem,9vw,4.1rem);
+  }
+  .brand-unified .cinema-detail-hero .cinema-actions > * {
+    flex: 1 1 180px;
+  }
+}
