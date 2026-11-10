@@ -201,44 +201,6 @@ main.brand-unified {
   overflow-wrap: anywhere;
 }
 
-/* Standard supporting CTA used only for pages without an existing final
- * commission section: no duplicative sales blocks. */
-.brand-unified .brand-next-step {
-  margin: var(--brand-section-space) auto 0;
-  padding: clamp(3.3rem,6vw,6.5rem) var(--brand-gutter);
-  border-top: 1px solid var(--brand-hairline);
-  background: radial-gradient(ellipse at 78% 15%,rgba(213,161,81,.11),transparent 50%),var(--brand-surface);
-}
-.brand-unified .brand-next-step-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: end;
-  flex-wrap: wrap;
-  gap: 2rem;
-  max-width: var(--brand-max);
-  margin-inline: auto;
-}
-.brand-unified .brand-next-step h2 {
-  margin: .85rem 0 0;
-  font: 600 clamp(3rem,5.2vw,6rem)/1 var(--font-display),Georgia,serif;
-  letter-spacing: -.045em;
-  max-width: 13ch;
-}
-.brand-unified .brand-next-step h2 em {
-  color: var(--brand-gold);
-}
-.brand-unified .brand-next-step p:not(.eyebrow) {
-  margin: .85rem 0 0;
-  color: var(--brand-muted);
-  max-width: 46ch;
-  line-height: 1.75;
-}
-.brand-unified .brand-next-step-links {
-  display: flex;
-  gap: .8rem;
-  flex-wrap: wrap;
-}
-
 @media (max-width: 760px) {
   .brand-unified .brand-standard-hero {
     padding: 100px 22px 58px;
@@ -254,15 +216,6 @@ main.brand-unified {
     .business-hero h1
   ) {
     line-height: 1;
-  }
-  .brand-unified .brand-next-step-inner {
-    align-items: stretch;
-  }
-  .brand-unified .brand-next-step-links {
-    width: 100%;
-  }
-  .brand-unified .brand-next-step-links > a {
-    flex: 1 1 175px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
