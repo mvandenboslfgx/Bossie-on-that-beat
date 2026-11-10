@@ -51,7 +51,7 @@ export default function AboutPage() {
           <p className="studio-kicker">ABOUT THE ARTIST &amp; STUDIO</p>
           <h1>Behind the sound.<br /><em>Meet Bossie.</em></h1>
           <p>
-            Bossie on that beat is an independent music producer, composer and artist project.
+            Bossie on that beat is an independent music project led by a producer and composer in the Netherlands.
             We create original music, produce tracks from individual briefs and explore different
             styles without being tied to one genre.
           </p>
