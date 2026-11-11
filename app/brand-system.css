@@ -445,6 +445,9 @@ main.brand-unified {
   grid-template-columns: repeat(3,minmax(0,1fr));
 }
 .brand-unified .cinema-index-section .cinema-editorial-stack > .cinema-editorial-card {
+  /* Text and frames should paint consistently in long, screenshot-heavy film
+     galleries. Images remain lazy loaded by next/image. */
+  content-visibility: visible;
   min-width: 0;
   min-height: 0;
   display: flex;
@@ -522,6 +525,8 @@ main.brand-unified {
   white-space: nowrap;
 }
 .brand-unified .cinema-index-section .cinema-editorial-actions .button {
+  width: auto;
+  flex: 0 0 auto;
   padding-inline: 1.15rem;
   min-width: auto;
 }
