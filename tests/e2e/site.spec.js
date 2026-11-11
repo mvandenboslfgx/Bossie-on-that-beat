@@ -535,6 +535,66 @@ test("EPK Cinema thumbnails stay inside cards and never overlap at real viewport
   }
 });
 
+test("Cinema editorial cards stay compact with readable long titles and separate actions", async ({ page }) => {
+  for (const width of [390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/cinema", { waitUntil: "networkidle" });
+    await page.evaluate(() => {
+      const frame = '<a class="cinema-editorial-thumb-link" href="/cinema"><div class="cinema-editorial-thumb"></div></a>';
+      const copy = (title) => `<div class="cinema-editorial-body"><p class="cinema-editorial-meta">SHORT · 0:17</p><h3>${title}</h3><blockquote class="cinema-editorial-quote">A short film from the Bossie universe.</blockquote><div class="cinema-editorial-actions"><a class="button button-gold" href="/cinema">Watch →</a><a class="text-link" href="/cinema">Details ↗</a></div></div>`;
+      const featured = document.createElement("section");
+      featured.className = "section-pad cinema-index-section";
+      featured.innerHTML = `<article class="cinema-editorial-card cinema-editorial-featured">${frame}${copy("4:00 AM IN OVERASSELT — THE COMPLETE STORY")}</article>`;
+      const shorts = document.createElement("section");
+      shorts.className = "section-pad cinema-index-section cinema-collection-shorts";
+      shorts.innerHTML = `<div class="cinema-editorial-stack">${[
+        "4:00 AM IN OVERASSELT — THE COMPLETE STORY",
+        "GASOLINA",
+        "A DIFFERENT CINEMATIC STORY FROM BOSSIE ON THAT BEAT",
+      ].map((title) => `<article class="cinema-editorial-card">${frame}${copy(title)}</article>`).join("")}</div>`;
+      document.querySelector(".cinema-index-hero")?.after(featured, shorts);
+    });
+    const first = page.locator(".cinema-collection-shorts .cinema-editorial-card").first();
+    await first.scrollIntoViewIfNeeded();
+    const result = await page.evaluate(() => {
+      const cards = [...document.querySelectorAll(".cinema-collection-shorts .cinema-editorial-card")];
+      const bounds = cards.map((card) => card.getBoundingClientRect());
+      const headings = cards.map((card) => card.querySelector("h3"));
+      const buttons = cards[0].querySelectorAll(".cinema-editorial-actions a");
+      const a = buttons[0].getBoundingClientRect();
+      const b = buttons[1].getBoundingClientRect();
+      const featuredHeading = document.querySelector(".cinema-editorial-featured h3");
+      return {
+        documentWidth: document.documentElement.scrollWidth,
+        cardBounds: bounds.map((r) => ({ left: r.left, top: r.top, right: r.right, width: r.width })),
+        headingFonts: headings.map((h) => parseFloat(getComputedStyle(h).fontSize)),
+        headingFits: headings.every((h) => h.scrollWidth <= h.clientWidth + 2),
+        imageFits: cards.every((card) => card.querySelector(".cinema-editorial-thumb-link").getBoundingClientRect().right <= card.getBoundingClientRect().right + 2),
+        actionOverlap: Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2,
+        featuredFont: parseFloat(getComputedStyle(featuredHeading).fontSize),
+      };
+    });
+    expect(result.documentWidth, `Cinema must fit viewport ${width}px`).toBeLessThanOrEqual(width + 2);
+    expect(result.headingFits).toBe(true);
+    expect(result.imageFits).toBe(true);
+    expect(result.actionOverlap).toBe(false);
+    expect(Math.max(...result.headingFonts), `Card title should not resemble a page heading at ${width}px`).toBeLessThan(35);
+    expect(result.featuredFont).toBeLessThan(70);
+    if (width === 1440) {
+      expect(Math.abs(result.cardBounds[0].top - result.cardBounds[1].top)).toBeLessThan(2);
+      expect(Math.abs(result.cardBounds[1].top - result.cardBounds[2].top)).toBeLessThan(2);
+    }
+    if (width === 768) {
+      expect(Math.abs(result.cardBounds[0].top - result.cardBounds[1].top)).toBeLessThan(2);
+      expect(result.cardBounds[2].top).toBeGreaterThan(result.cardBounds[0].top + 30);
+    }
+    if (width === 390) {
+      expect(result.cardBounds[1].top).toBeGreaterThan(result.cardBounds[0].top + 30);
+      expect(result.cardBounds[2].top).toBeGreaterThan(result.cardBounds[1].top + 30);
+    }
+  }
+});
+
 test("Cinema index preserves its featured film and keeps every published category accessible", async ({ page }) => {
   const response = await page.goto("/cinema", { waitUntil: "domcontentloaded" });
   expect(response?.status()).toBe(200);
