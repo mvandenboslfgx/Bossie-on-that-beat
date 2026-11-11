@@ -410,6 +410,156 @@ main.brand-unified {
 .brand-unified .cinema-section-title em {
   color: var(--brand-gold);
 }
+
+/* Cinema index: curated feature plus compact editorial video cards.
+   Scope these rules to /cinema to preserve detail pages and EPK styling. */
+.brand-unified .cinema-index-section .cinema-editorial-featured {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0,1.2fr) minmax(0,.8fr);
+  align-items: center;
+  gap: clamp(1.5rem,3vw,3.25rem);
+  padding: clamp(1.5rem,3vw,3rem) 0;
+}
+.brand-unified .cinema-index-section .cinema-editorial-featured .cinema-editorial-body {
+  min-width: 0;
+}
+.brand-unified .cinema-index-section .cinema-editorial-featured .cinema-editorial-body h3 {
+  margin: .65rem 0 1.15rem;
+  font: 600 clamp(2.15rem,3.5vw,3.8rem)/1.09 var(--font-display),Georgia,serif;
+  letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.brand-unified .cinema-index-section .cinema-editorial-stack {
+  width: 100%;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: clamp(1.1rem,2.5vw,2rem);
+  align-items: stretch;
+  border-top: 0;
+}
+.brand-unified .cinema-collection-shorts .cinema-editorial-stack {
+  grid-template-columns: repeat(3,minmax(0,1fr));
+}
+.brand-unified .cinema-index-section .cinema-editorial-stack > .cinema-editorial-card {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0 !important;
+  align-items: stretch;
+  padding: 0;
+  border: 1px solid var(--brand-hairline);
+  border-radius: 12px;
+  background: #101214;
+  overflow: hidden;
+}
+.brand-unified .cinema-index-section .cinema-editorial-thumb-link {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.brand-unified .cinema-index-section .cinema-editorial-stack .cinema-editorial-thumb {
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.brand-unified .cinema-index-section .cinema-editorial-stack .cinema-editorial-body {
+  min-width: 0;
+  width: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: clamp(1rem,2vw,1.65rem);
+}
+.brand-unified .cinema-index-section .cinema-editorial-stack .cinema-editorial-body h3 {
+  width: 100%;
+  margin: .55rem 0 .8rem;
+  font: 600 clamp(1.55rem,2.15vw,2.15rem)/1.12 var(--font-display),Georgia,serif !important;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+.brand-unified .cinema-collection-shorts .cinema-editorial-body h3 {
+  font-size: clamp(1.4rem,1.8vw,1.85rem) !important;
+}
+.brand-unified .cinema-index-section .cinema-editorial-quote {
+  min-width: 0;
+  max-width: 60ch;
+  margin: 0 0 1.15rem;
+  padding: 0;
+  border: 0;
+  color: #bcb7ae;
+  font: 400 .9rem/1.55 var(--font-sans),Arial,sans-serif;
+  overflow-wrap: anywhere;
+}
+.brand-unified .cinema-index-section .cinema-editorial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .7rem 1rem;
+  margin-top: 1.1rem;
+}
+.brand-unified .cinema-index-section .cinema-editorial-stack .cinema-editorial-actions {
+  margin-top: auto;
+  padding-top: .75rem;
+}
+.brand-unified .cinema-index-section .cinema-editorial-actions :is(.button,.text-link) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin: 0;
+  white-space: nowrap;
+}
+.brand-unified .cinema-index-section .cinema-editorial-actions .button {
+  padding-inline: 1.15rem;
+  min-width: auto;
+}
+@media (max-width: 1050px) {
+  .brand-unified .cinema-collection-shorts .cinema-editorial-stack {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+@media (max-width: 900px) {
+  .brand-unified .cinema-index-section .cinema-editorial-featured {
+    grid-template-columns: minmax(0,1fr);
+  }
+  .brand-unified .cinema-index-section .cinema-editorial-featured .cinema-editorial-body h3 {
+    font-size: clamp(2.1rem,5.5vw,3rem) !important;
+  }
+}
+@media (max-width: 640px) {
+  .brand-unified .cinema-index-section .cinema-editorial-stack,
+  .brand-unified .cinema-collection-shorts .cinema-editorial-stack {
+    grid-template-columns: minmax(0,1fr);
+    gap: 1.2rem;
+  }
+  .brand-unified .cinema-index-section .cinema-editorial-featured {
+    gap: 1.2rem;
+    padding: 1.3rem 0 2rem;
+  }
+  .brand-unified .cinema-index-section .cinema-editorial-featured .cinema-editorial-body h3 {
+    font-size: clamp(2rem,8vw,2.6rem) !important;
+    line-height: 1.08;
+  }
+  .brand-unified .cinema-index-section .cinema-editorial-stack .cinema-editorial-body h3,
+  .brand-unified .cinema-collection-shorts .cinema-editorial-body h3 {
+    font-size: clamp(1.5rem,6vw,1.85rem) !important;
+  }
+  .brand-unified .cinema-index-section .cinema-editorial-stack .cinema-editorial-body {
+    padding: 1.15rem;
+  }
+}
 .brand-unified .cinema-detail-hero {
   max-width: var(--brand-max);
   border-bottom: 1px solid var(--brand-hairline);
