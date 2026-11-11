@@ -53,7 +53,7 @@ export default async function CinemaPage() {
         const filtered = items.filter((item) => item.id !== featured?.id && group.types.includes(item.type));
         if (!filtered.length) return null;
         return (
-          <section key={group.key} className="section-pad cinema-index-section" aria-labelledby={`cinema-${group.key}-heading`}>
+          <section key={group.key} className={`section-pad cinema-index-section cinema-collection-${group.key}`} aria-labelledby={`cinema-${group.key}-heading`}>
             <div className="cinema-section-heading">
               <BossieMark size="sm" />
               <div>
