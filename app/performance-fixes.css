@@ -103,7 +103,10 @@
 .upcoming-section,
 .cinema-editorial-card {
   content-visibility: auto;
-  contain-intrinsic-size: auto 720px;
+  /* Reserve estimated height only. The shorthand 'auto 720px' reserves
+     720px of width too, widening offscreen cards on mobile. */
+  contain-intrinsic-width: auto none;
+  contain-intrinsic-height: auto 720px;
 }
 
 /* Keep the fixed noise layer and decorative backdrop off the constrained mobile GPU/network path. */

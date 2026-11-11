@@ -399,6 +399,49 @@ test("editorial image cards are contained on the main public pages", async ({ pa
   }
 });
 
+test("offscreen Cinema cards reserve height without forcing mobile width", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/cinema", { waitUntil: "networkidle" });
+
+  const metrics = await page.evaluate(() => {
+    const section = document.createElement("section");
+    section.className = "section-pad cinema-index-section";
+    section.style.marginTop = "300vh";
+    const stack = document.createElement("div");
+    stack.className = "cinema-editorial-stack";
+    const card = document.createElement("article");
+    card.className = "cinema-editorial-card";
+    const cover = document.createElement("a");
+    cover.className = "cinema-editorial-thumb-link";
+    const thumb = document.createElement("div");
+    thumb.className = "cinema-editorial-thumb";
+    cover.append(thumb);
+    const copy = document.createElement("div");
+    copy.className = "cinema-editorial-body";
+    const title = document.createElement("h3");
+    title.textContent = "A test cinematic release";
+    copy.append(title);
+    card.append(cover, copy);
+    stack.append(card);
+    section.append(stack);
+    document.querySelector("main")?.append(section);
+
+    const box = card.getBoundingClientRect();
+    const container = stack.getBoundingClientRect();
+    return {
+      documentWidth: document.documentElement.scrollWidth,
+      cardWidth: box.width,
+      containerWidth: container.width,
+      intrinsicWidth: getComputedStyle(card).containIntrinsicWidth,
+      intrinsicHeight: getComputedStyle(card).containIntrinsicHeight,
+    };
+  });
+  expect(metrics.intrinsicWidth).toBe("auto none");
+  expect(metrics.intrinsicHeight).toBe("auto 720px");
+  expect(metrics.cardWidth).toBeLessThanOrEqual(metrics.containerWidth + 2);
+  expect(metrics.documentWidth).toBeLessThanOrEqual(392);
+});
+
 test("EPK Cinema thumbnails stay inside cards and never overlap at real viewports", async ({ page }) => {
   const widths = [390, 768, 1440];
   for (const width of widths) {
