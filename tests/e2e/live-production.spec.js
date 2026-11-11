@@ -51,11 +51,21 @@ test("live Bossie pages retain responsive media bounds and Cinema content", asyn
             const art = card.querySelector(".cinema-editorial-thumb-link");
             return art && art.getBoundingClientRect().right <= card.getBoundingClientRect().right + 2;
           });
-          return { count: all.length, compactTitles, framed };
+          const painted = all.every((card) => getComputedStyle(card).contentVisibility === "visible");
+          const actionsTogether = all.every((card) => {
+            const links = [...card.querySelectorAll(".cinema-editorial-actions a")];
+            if (links.length < 2) return true;
+            const first = links[0].getBoundingClientRect();
+            const second = links[1].getBoundingClientRect();
+            return Math.abs(first.top - second.top) < 2;
+          });
+          return { count: all.length, compactTitles, framed, painted, actionsTogether };
         });
         expect(cinemaLayout.count, "Live Cinema should display actual D1 video cards").toBeGreaterThan(0);
         expect(cinemaLayout.compactTitles, `Compact Cinema titles at ${width}px`).toBe(true);
         expect(cinemaLayout.framed, `Cinema artwork containment at ${width}px`).toBe(true);
+        expect(cinemaLayout.painted, `Cinema cards should paint at ${width}px`).toBe(true);
+        expect(cinemaLayout.actionsTogether, `Cinema Watch and Details alignment at ${width}px`).toBe(true);
         if (await shortCards.count() >= 2) {
           const layout = await shortCards.evaluateAll((cards) =>
             cards.map((card) => {
