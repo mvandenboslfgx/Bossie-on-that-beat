@@ -571,6 +571,8 @@ test("Cinema editorial cards stay compact with readable long titles and separate
         headingFits: headings.every((h) => h.scrollWidth <= h.clientWidth + 2),
         imageFits: cards.every((card) => card.querySelector(".cinema-editorial-thumb-link").getBoundingClientRect().right <= card.getBoundingClientRect().right + 2),
         actionOverlap: Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2,
+        actionSameRow: Math.abs(a.top - b.top) < 2,
+        cardsPainted: cards.every((card) => getComputedStyle(card).contentVisibility === "visible"),
         featuredFont: parseFloat(getComputedStyle(featuredHeading).fontSize),
       };
     });
@@ -578,6 +580,8 @@ test("Cinema editorial cards stay compact with readable long titles and separate
     expect(result.headingFits).toBe(true);
     expect(result.imageFits).toBe(true);
     expect(result.actionOverlap).toBe(false);
+    expect(result.actionSameRow, `Watch and Details should share a row at ${width}px`).toBe(true);
+    expect(result.cardsPainted, `Cinema cards should paint content at ${width}px`).toBe(true);
     expect(Math.max(...result.headingFonts), `Card title should not resemble a page heading at ${width}px`).toBeLessThan(35);
     expect(result.featuredFont).toBeLessThan(70);
     if (width === 1440) {
