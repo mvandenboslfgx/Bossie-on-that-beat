@@ -14,6 +14,7 @@ import "./business.css";
 import "./studio-2026.css";
 import "./atelier.css";
 import "./brand-system.css";
+import "./premium-finish.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
 import { siteSettings } from "@/lib/site-settings";
