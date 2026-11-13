@@ -27,7 +27,7 @@ export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; feat
               fill
               unoptimized
               priority={Boolean(featured)}
-              loading={featured ? "eager" : "lazy"}
+              loading={featured ? undefined : "lazy"}
               decoding="async"
               sizes={featured ? "(max-width: 900px) 100vw, 75vw" : "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 35vw"}
             />
