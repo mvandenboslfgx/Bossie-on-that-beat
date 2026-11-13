@@ -3,7 +3,6 @@ import Link from "next/link";
 import { BossieLogo } from "@/components/brand/BossieLogo";
 import { BossieMark } from "@/components/brand/BossieMark";
 import { FollowSocialBlock, ListenSocialBlock } from "@/components/brand/SocialLinks";
-import { getDownloadableBrandAssets } from "@/lib/brand/assets";
 import { getCatalog } from "@/lib/repository/catalog";
 import { getAllCinema } from "@/lib/repository/release-repository";
 import { ReleaseActions, ReleaseArtwork } from "@/components/release/ReleaseUI";
@@ -19,14 +18,13 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "EPK / Press",
   description:
-    "Official Bossie on that beat press kit: artist biography, verified releases, video, logos and contact for press, sync licensing and production enquiries.",
+    "Official Bossie on that beat press kit: artist biography, verified releases, video and contact for press, sync licensing and production enquiries.",
   alternates: { canonical: "/epk" },
 };
 
 export default async function EpkPage() {
   const { live, latest, refreshedAt, collections } = await getCatalog();
   const cinema = await getAllCinema();
-  const brandDownloads = getDownloadableBrandAssets();
 
   // Press selections should feature distinct recordings and covers.
   // Do not repeat the newest hero or fill the grid with tracks from one EP.
@@ -187,23 +185,6 @@ export default async function EpkPage() {
                 Watch film ↗
               </Link>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section-pad">
-        <p className="eyebrow">Brand assets</p>
-        <div className="epk-brand-grid">
-          {brandDownloads.map((asset) => (
-            <a key={asset.variant} className="epk-brand-asset" href={asset.src} download target="_blank" rel="noreferrer">
-              {asset.variant === "primary" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={asset.src} alt={asset.alt} className="epk-brand-preview" />
-              ) : (
-                <BossieMark size="lg" decorative={false} />
-              )}
-              <span>{asset.downloadLabel} ↗</span>
-            </a>
           ))}
         </div>
       </section>

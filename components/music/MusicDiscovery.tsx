@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import styles from "./MusicDiscovery.module.css";
+import { brandAssets } from "@/lib/brand/assets";
 
 export type MusicDiscoveryItem = {
   id: string;
@@ -145,7 +146,7 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
                   <div className={styles.artworkFallback}>
                     {/* Official asset, not a generic fabricated cover. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/brand/logo-mark.svg" alt="" width={70} height={70} />
+                    <img src={brandAssets.mark.src} alt="" width={70} height={70} />
                     <span>ARTWORK NOT AVAILABLE</span>
                   </div>
                 )}

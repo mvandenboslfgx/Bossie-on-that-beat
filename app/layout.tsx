@@ -14,6 +14,7 @@ import "./business.css";
 import "./studio-2026.css";
 import "./atelier.css";
 import "./brand-system.css";
+import "./brand-authentic.css";
 import "./premium-finish.css";
 import { getBrandAssetUrl } from "@/lib/brand/assets";
 import { getSameAsUrls } from "@/lib/brand/socials";
@@ -65,6 +66,11 @@ export const metadata: Metadata = {
   creator: "Bossie on that beat",
   publisher: "Bossie on that beat",
   applicationName: "Bossie on that beat",
+  icons: {
+    icon: [{ url: "/brand/logo-primary.jpg", type: "image/jpeg" }],
+    shortcut: "/brand/logo-primary.jpg",
+    apple: "/brand/logo-primary.jpg",
+  },
   category: "music",
   robots: {
     index: true,
