@@ -197,7 +197,7 @@ export default async function HomePage() {
                 <h2 id="atelier-cinema-title">Sound in<br /><em>motion.</em></h2>
                 <p className="atelier-cinema-feature-label">FEATURED VISUAL / {getPublicCinemaTitle(featuredFilm)}</p>
                 <p className="atelier-cinema-summary">{getPublicCinemaSummary(featuredFilm)}</p>
-                <Link className="atelier-action atelier-action-outline" href="/cinema">Step inside Cinema <span aria-hidden="true">↗</span></Link>
+                <div className="atelier-cinema-actions"><Link className="atelier-action atelier-action-outline" href={`/cinema/${featuredFilm.slug}`}>Explore this film <span aria-hidden="true">↗</span></Link><Link className="atelier-text-link" href="/cinema">All films <span aria-hidden="true">↗</span></Link></div>
               </div>
             </div>
           </section>
