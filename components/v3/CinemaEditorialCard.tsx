@@ -26,9 +26,10 @@ export function CinemaEditorialCard({ item, featured }: { item: CinemaItem; feat
               alt=""
               fill
               unoptimized
-              loading="lazy"
+              priority={Boolean(featured)}
+              loading={featured ? "eager" : "lazy"}
               decoding="async"
-              sizes="(max-width: 900px) 100vw, 62vw"
+              sizes={featured ? "(max-width: 900px) 100vw, 75vw" : "(max-width: 760px) 100vw, (max-width: 1200px) 50vw, 35vw"}
             />
             {canWatch && (
               <>
