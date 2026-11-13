@@ -289,3 +289,53 @@
   .artworkImage,.artworkArrow,.genreFilters button {transition:none;}
   .artwork:hover .artworkImage,.artwork:focus-visible .artworkImage,.artwork:hover .artworkArrow {transform:none;}
 }
+
+
+/* Functional catalogue toolbar — responsive without hiding controls. */
+.catalogueToolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin-top: 1.5rem;
+}
+.catalogueToolbar .resultCount { margin: 0; }
+.toolbarActions { display: flex; align-items: center; flex-wrap: wrap; gap: .8rem 1.2rem; }
+.resetFilters {
+  color: var(--metal);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  cursor: pointer;
+  padding: .5rem .1rem;
+  font: 750 .75rem/1.4 var(--font-sans),Arial,sans-serif;
+}
+.sortControl {
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  color: var(--muted);
+  font: 750 .7rem/1.4 var(--font-sans),Arial,sans-serif;
+}
+.sortControl select {
+  min-height: 44px;
+  max-width: 100%;
+  background: #15171a;
+  color: var(--paper);
+  border: 1px solid rgba(229,194,139,.4);
+  border-radius: 4px;
+  padding: .6rem 2rem .6rem .85rem;
+  font: 700 .75rem/1.4 var(--font-sans),Arial,sans-serif;
+}
+.sortControl select:focus-visible,
+.resetFilters:focus-visible {
+  outline: 2px solid var(--metal);
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .catalogueToolbar { align-items: start; }
+  .toolbarActions { width: 100%; justify-content: space-between; }
+  .sortControl { flex-wrap: wrap; }
+  .sortControl select { min-height: 48px; }
+}
