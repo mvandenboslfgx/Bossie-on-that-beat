@@ -139,3 +139,91 @@ body { -webkit-font-smoothing: antialiased; }
     transform: none;
   }
 }
+
+
+/* Homepage: move from decorative cover gallery to a usable listening experience. */
+.atelier .atelier-feature-card {
+  border-color: rgba(228,194,139,.32);
+  box-shadow: 0 32px 100px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.04);
+}
+.atelier .atelier-feature-bottom h2 {
+  overflow-wrap: anywhere;
+}
+.atelier .atelier-release {
+  display: flex;
+  flex-direction: column;
+}
+.atelier .atelier-release-art {
+  border: 1px solid var(--polish-stroke);
+}
+.atelier .atelier-release h3 {
+  overflow-wrap: anywhere;
+}
+.atelier .atelier-release-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .7rem 1.2rem;
+  padding-top: 1.1rem;
+  margin-top: auto;
+}
+.atelier .atelier-release-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+  color: var(--polish-gold);
+  font-size: .73rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(228,194,139,.38);
+}
+.atelier .atelier-release-actions a:last-child {
+  color: #e1dcd3;
+  border-bottom-color: rgba(225,220,211,.28);
+}
+.atelier .atelier-release-actions a:hover,
+.atelier .atelier-release-actions a:focus-visible {
+  border-bottom-color: currentColor;
+}
+.atelier .atelier-release>p {
+  margin-bottom: 1.1rem;
+}
+.atelier .atelier-release-open {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .atelier .atelier-release-open {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .atelier .atelier-release-art:hover .atelier-release-open,
+  .atelier .atelier-release-art:focus-visible .atelier-release-open {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 600px) {
+  /* Do not silently hide the fifth and sixth curated releases on phones. */
+  .atelier .atelier-release-grid .atelier-release:nth-child(n+5) {
+    display: flex;
+  }
+  .atelier .atelier-release-actions {
+    display: grid;
+    gap: .25rem;
+  }
+  .atelier .atelier-release-actions a {
+    width: fit-content;
+    font-size: .71rem;
+  }
+  .atelier .atelier-feature-top {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atelier .atelier-release-open {
+    transition: none;
+    transform: none;
+  }
+}
