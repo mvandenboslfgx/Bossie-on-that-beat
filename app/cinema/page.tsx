@@ -4,6 +4,7 @@ import { BossieMark } from "@/components/brand/BossieMark";
 import { CinemaEditorialCard } from "@/components/v3/CinemaEditorialCard";
 import { PageShell } from "@/components/SiteChrome";
 import type { CinemaCategory } from "@/lib/types/cinema";
+import { getYouTubeEmbedUrl } from "@/lib/seo/youtube";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
@@ -24,7 +25,16 @@ const SECTION_GROUPS: Array<{ key: string; label: string; types: CinemaCategory[
 ];
 
 export default async function CinemaPage() {
-  const items = await getAllCinema();
+  const catalogue = await getAllCinema();
+  // Keep separate edits of the same title, but never show an identical upload twice.
+  const seenVideos = new Set<string>();
+  const items = catalogue.filter((item) => {
+    const key = item.youtubeVideoId || getYouTubeEmbedUrl(item.youtubeUrl);
+    if (!key) return true;
+    if (seenVideos.has(key)) return false;
+    seenVideos.add(key);
+    return true;
+  });
   // Editorial selections take precedence; otherwise lead with a proper film
   // or music video rather than automatically promoting the newest Short.
   const featured =
