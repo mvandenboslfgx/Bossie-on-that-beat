@@ -1,0 +1,141 @@
+/* Premium finishing pass — scoped, additive and reversible.
+   Keeps authentic artwork and each World's own visual identity intact. */
+:root {
+  --polish-gold: #e4c28b;
+  --polish-ivory: #f7f2e8;
+  --polish-stroke: rgba(228,194,139,.24);
+  --polish-motion: cubic-bezier(.22,1,.36,1);
+}
+html { scroll-padding-top: 6.5rem; }
+body { -webkit-font-smoothing: antialiased; }
+:where(.atelier,.brand-unified) :where(h1,h2,h3) {
+  text-wrap: balance;
+}
+:where(.atelier,.brand-unified) :where(p,li,dd) {
+  overflow-wrap: break-word;
+}
+:where(.atelier,.brand-unified) :where(a,button,input,select,textarea,summary):focus-visible {
+  outline: 2px solid var(--polish-gold);
+  outline-offset: 4px;
+}
+:where(.atelier,.brand-unified) :where(button,a,summary) {
+  -webkit-tap-highlight-color: rgba(228,194,139,.14);
+}
+:where(.atelier,.brand-unified) :where(img,video) {
+  max-width: 100%;
+}
+:where(.atelier,.brand-unified) :where(section[id],header[id],div[id]) {
+  scroll-margin-top: 6.5rem;
+}
+/* Consistent, intentional interactions: no abrupt hover jumps. */
+.atelier :is(.atelier-action,.atelier-feature-link,.atelier-text-link),
+.brand-unified :is(.button,.studio-btn,.text-link,.back-link) {
+  transition: color .22s ease, border-color .22s ease,
+              background-color .22s ease, box-shadow .28s ease,
+              transform .28s var(--polish-motion);
+}
+.atelier :is(.atelier-action,.atelier-feature-link):focus-visible,
+.brand-unified :is(.button,.studio-btn):focus-visible {
+  box-shadow: 0 0 0 5px rgba(228,194,139,.12);
+}
+/* Release details: tighten long-form reading without obscuring real credits. */
+.brand-unified .release-story > p:last-child {
+  max-width: 72ch;
+  color: var(--brand-muted);
+  font-size: clamp(1rem,1.2vw,1.13rem);
+  line-height: 1.85;
+}
+.brand-unified .release-story > h2 {
+  max-width: 17ch;
+  font: 600 clamp(2.5rem,5vw,5.5rem)/1.05 var(--font-display),Georgia,serif;
+  letter-spacing: -.035em;
+}
+.brand-unified .credits-grid > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.brand-unified .related-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,230px),1fr));
+  gap: .75rem;
+}
+.brand-unified .related-list a {
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: .95rem 1.2rem;
+  border: 1px solid var(--polish-stroke);
+  background: linear-gradient(120deg,rgba(228,194,139,.055),transparent 70%);
+  color: var(--polish-ivory);
+  line-height: 1.45;
+  text-decoration: none;
+  transition: border-color .2s ease,background-color .2s ease,transform .25s ease;
+}
+.brand-unified .related-list a:hover,
+.brand-unified .related-list a:focus-visible {
+  border-color: rgba(228,194,139,.7);
+  background-color: rgba(228,194,139,.07);
+}
+.brand-unified .lyrics-block {
+  border: 1px solid var(--polish-stroke);
+  background: rgba(255,255,255,.018);
+}
+.brand-unified .lyrics-block summary {
+  cursor: pointer;
+  padding: 1.15rem 1.4rem;
+  color: var(--polish-ivory);
+}
+.brand-unified .lyrics-block pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 75ch;
+  padding: 0 1.4rem 1.5rem;
+  line-height: 1.8;
+}
+/* Cinema thumbnails keep consistent frames regardless of source dimensions. */
+.brand-unified .epk-cinema-thumb-link {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--polish-stroke);
+}
+.brand-unified .epk-cinema-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s var(--polish-motion);
+}
+.brand-unified .epk-cinema-thumb-link:hover .epk-cinema-thumb {
+  transform: scale(1.035);
+}
+/* Avoid narrow viewport overflow in the commercial and release flows. */
+@media (max-width: 760px) {
+  html { scroll-padding-top: 5rem; }
+  :where(.atelier,.brand-unified) :where(section[id],header[id],div[id]) {
+    scroll-margin-top: 5rem;
+  }
+  .brand-unified .related-list { grid-template-columns: minmax(0,1fr); }
+  .brand-unified .release-story > h2 { font-size: clamp(2.35rem,10vw,4.25rem); }
+  .brand-unified :is(.studio-music-header-actions,.studio-hero-actions,.cinema-actions) > * {
+    max-width: 100%;
+  }
+  .atelier .atelier-actions > * { max-width: 100%; }
+}
+@media (max-width: 390px) {
+  .atelier .atelier-action { width: 100%; gap: 1rem; }
+  .brand-unified .epk-card-links { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.atelier,.brand-unified) *,
+  :where(.atelier,.brand-unified) *::before,
+  :where(.atelier,.brand-unified) *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .brand-unified .epk-cinema-thumb-link:hover .epk-cinema-thumb {
+    transform: none;
+  }
+}
