@@ -68,14 +68,19 @@
   background: #000;
   border-radius: 0 !important;
 }
-.bossie-mark > img {
-  position: absolute !important;
-  width: 165.16% !important;
-  height: 165.16% !important;
-  max-width: none !important;
-  left: -32.26% !important;
-  top: -3.23% !important;
-  object-fit: fill !important;
+.bossie-mark::before {
+  /* Genuine crowned B JPG, cropped inside the component without an overflowed <img>. */
+  content: "";
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  width: 165.16%;
+  height: 165.16%;
+  left: -32.26%;
+  top: -3.23%;
+  background-image: url("/brand/logo-primary.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 @media (max-width: 760px) {
   .site-nav .bossie-authentic-lockup { max-width: min(170px, 47vw) !important; }

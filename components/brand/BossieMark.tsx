@@ -17,9 +17,7 @@ export function BossieMark({
       role={decorative ? undefined : "img"}
       aria-label={decorative ? undefined : brandAssets.mark.alt}
     >
-      {/* This asset is the original gold crowned B artwork, not a substitute vector. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={brandAssets.mark.src} alt="" width={64} height={64} loading="eager" />
+      {/* The original JPG is cropped using a CSS background: no false vector or overflowing img box. */}
     </span>
   );
 }
