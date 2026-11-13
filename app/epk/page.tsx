@@ -179,7 +179,7 @@ export default async function EpkPage() {
                     decoding="async"
                   />
                 ) : (
-                  <span className="epk-cinema-placeholder" aria-hidden="true">B</span>
+                  <span className="epk-cinema-placeholder" aria-hidden="true"><BossieMark size="lg" /></span>
                 )}
               </Link>
               <h3>{getPublicCinemaTitle(item)}</h3>
