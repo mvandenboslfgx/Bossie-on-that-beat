@@ -227,3 +227,23 @@ body { -webkit-font-smoothing: antialiased; }
     transform: none;
   }
 }
+
+/* Featured film: a direct action plus a clear archive path. */
+.atelier .atelier-cinema-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.2rem 2rem;
+}
+.atelier .atelier-cinema-actions .atelier-text-link {
+  color: #735329;
+  border-bottom-color: #735329;
+  min-height: 44px;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .atelier .atelier-cinema-actions {
+    display: grid;
+    align-items: stretch;
+  }
+}
