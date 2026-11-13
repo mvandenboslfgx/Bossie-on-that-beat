@@ -1,6 +1,6 @@
 import { brandAssets } from "@/lib/brand/assets";
 
-/** Official Bossie symbol — used for section marks, watermarks and decorative brand signatures. */
+/** The crowned B is cropped from the original approved Bossie logo image. */
 export function BossieMark({
   size = "md",
   className,
@@ -17,7 +17,7 @@ export function BossieMark({
       role={decorative ? undefined : "img"}
       aria-label={decorative ? undefined : brandAssets.mark.alt}
     >
-      {/* Local canonical SVG: no external request and no synthetic placeholder letter. */}
+      {/* This asset is the original gold crowned B artwork, not a substitute vector. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={brandAssets.mark.src} alt="" width={64} height={64} loading="eager" />
     </span>

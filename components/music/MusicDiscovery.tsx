@@ -119,7 +119,7 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
                   <div className={styles.artworkFallback}>
                     {/* Official asset, not a generic fabricated cover. */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/brand/logo-mark.svg" alt="" width={70} height={70} />
+                    <img src="/brand/logo-primary.jpg" alt="" width={70} height={70} />
                     <span>ARTWORK NOT AVAILABLE</span>
                   </div>
                 )}

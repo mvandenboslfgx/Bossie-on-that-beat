@@ -1,89 +1,67 @@
-/**
- * Central Bossie brand asset registry.
- * Components must import paths from here — never hardcode /brand/* elsewhere.
- *
- * INVENTORY (2026-08-26):
- * ✅ logo-horizontal.svg  — current official high-contrast horizontal studio logo
- * ✅ logo-primary.jpg     — archived original logo, retained for legacy social-sharing fallback
- * ✅ logo-mark.svg        — current official vector B monogram
- * ✅ favicon.svg          — browser/app icon
- * ✅ horizontal wordmark available through logo-horizontal.svg
- * ⬜ logo-light.*         — not yet exported
- * ⬜ logo-dark.*          — not yet exported
- * ⬜ logo-horizontal.*    — not yet exported
- * ⬜ social-share.png     — dedicated OG card not yet exported (falls back to logo-primary)
- */
-
-export type BrandAssetVariant =
-  | "primary"
-  | "mark"
-  | "wordmark"
-  | "favicon"
-  | "socialShare";
+/** Canonical Bossie brand registry: only original approved artwork is displayed. */
+export type BrandAssetVariant = "primary" | "mark" | "wordmark" | "favicon" | "socialShare";
 
 export interface BrandAsset {
   variant: BrandAssetVariant;
   src: string;
   alt: string;
-  /** File exists in public/ — only these appear in EPK downloads. */
   available: boolean;
   downloadLabel?: string;
   mimeType?: string;
 }
 
+/** Original approved gold crown/B/palm logo, not the fabricated B vectors. */
+const ORIGINAL_BOSSIE_LOGO = "/brand/logo-primary.jpg";
+
 export const brandAssets = {
   primary: {
     variant: "primary",
-    src: "/brand/logo-horizontal.svg",
-    alt: "Bossie on that beat — official gold and ivory horizontal logo",
+    src: ORIGINAL_BOSSIE_LOGO,
+    alt: "Bossie on that beat — original gold crowned B logo and artist wordmark",
     available: true,
-    downloadLabel: "Primary Logo (SVG)",
-    mimeType: "image/svg+xml",
+    downloadLabel: "Original Bossie Logo (JPG)",
+    mimeType: "image/jpeg",
   },
   mark: {
     variant: "mark",
-    src: "/brand/logo-mark.svg",
-    alt: "Bossie mark",
+    src: ORIGINAL_BOSSIE_LOGO,
+    alt: "Bossie on that beat original crowned B emblem",
     available: true,
-    downloadLabel: "Symbol / B Mark (SVG)",
-    mimeType: "image/svg+xml",
+    mimeType: "image/jpeg",
   },
   favicon: {
     variant: "favicon",
-    src: "/brand/favicon.svg",
-    alt: "Bossie favicon",
+    src: ORIGINAL_BOSSIE_LOGO,
+    alt: "Bossie on that beat original logo",
     available: true,
-    downloadLabel: "Favicon (SVG)",
-    mimeType: "image/svg+xml",
+    mimeType: "image/jpeg",
   },
   wordmark: {
     variant: "wordmark",
-    src: "",
-    alt: "Bossie wordmark",
-    available: false,
-    downloadLabel: "Wordmark",
+    src: ORIGINAL_BOSSIE_LOGO,
+    alt: "Bossie on that beat official wordmark",
+    available: true,
+    mimeType: "image/jpeg",
   },
   socialShare: {
     variant: "socialShare",
-    src: "/brand/logo-primary.jpg",
+    src: ORIGINAL_BOSSIE_LOGO,
     alt: "Bossie on that beat",
     available: true,
     mimeType: "image/jpeg",
   },
 } as const satisfies Record<string, BrandAsset>;
 
-/** Assets safe to list on EPK / press download section. */
 export function getDownloadableBrandAssets() {
   return (Object.values(brandAssets) as BrandAsset[]).filter(
-    (a) => a.available && a.src && a.variant !== "socialShare" && "downloadLabel" in a && a.downloadLabel,
+    (asset) => asset.available && asset.downloadLabel && asset.src,
   );
 }
 
 export function getBrandAsset(variant: BrandAssetVariant): BrandAsset | undefined {
-  return Object.values(brandAssets).find((a) => a.variant === variant && a.available);
+  return Object.values(brandAssets).find((asset) => asset.variant === variant && asset.available);
 }
 
-/** Absolute URL for OpenGraph / JSON-LD. */
 export function getBrandAssetUrl(variant: BrandAssetVariant, siteUrl: string): string | undefined {
   const asset = getBrandAsset(variant);
   if (!asset?.src) return undefined;
