@@ -12,6 +12,8 @@ export type MusicDiscoveryItem = {
   title: string;
   type: string;
   year: string | null;
+  /** Actual ISO release date; sorting by year alone misorders same-year music. */
+  releaseDate: string | null;
   genres: string[];
   artworkUrl: string | null;
   canListen: boolean;
@@ -51,8 +53,12 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
       return matchesGenre && matchesQuery;
     }).sort((a, b) => {
       if (sort === "title") return a.title.localeCompare(b.title);
-      const byYear = (b.year ?? "").localeCompare(a.year ?? "");
-      return (sort === "newest" ? byYear : -byYear) || a.title.localeCompare(b.title);
+      // Catalog dates are ISO yyyy-mm-dd, so lexical ordering is chronological.
+      // Keep the server's original priority order for equal/unknown dates.
+      const aDate = a.releaseDate || a.year || "";
+      const bDate = b.releaseDate || b.year || "";
+      const byDate = bDate.localeCompare(aDate);
+      return sort === "newest" ? byDate : -byDate;
     });
   }, [releases, genre, query, sort]);
 
@@ -129,7 +135,7 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
       {visibleReleases.length > 0 ? (
         <div id="bossie-releases" className={styles.grid}>
           {visibleReleases.map((release, index) => (
-            <article className={styles.release} key={release.id}>
+            <article className={styles.release} key={release.id} data-release-date={release.releaseDate ?? ""}>
               <Link className={styles.artwork} href={`/music/${release.slug}`} aria-label={`Discover ${release.title}`}>
                 {release.artworkUrl ? (
                   <Image
