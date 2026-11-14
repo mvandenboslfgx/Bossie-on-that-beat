@@ -30,7 +30,11 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const [catalog, cinema] = await Promise.all([getCatalog(), getAllCinema()]);
-  const featuredFilm = cinema.find((item) => item.thumbnailUrl && isVerifiedListenUrl(item.thumbnailUrl));
+  const visualFilms = cinema.filter((item) => item.thumbnailUrl && isVerifiedListenUrl(item.thumbnailUrl));
+  const featuredFilm =
+    visualFilms.find((item) => item.featured) ??
+    visualFilms.find((item) => ["film", "short-film", "music-video"].includes(item.type)) ??
+    visualFilms[0];
   const sectionTotal = featuredFilm ? "05" : "04";
   const { live, latest, featured, refreshedAt, trackCount, collections } = catalog;
   const headline = latest ?? featured;
@@ -146,6 +150,16 @@ export default async function HomePage() {
                   </div>
                   <h3><Link href={"/music/" + release.slug}>{release.title}</Link></h3>
                   <p>{release.genres.slice(0, 2).join(" / ") || "Original release"}</p>
+                  <div className="atelier-release-actions">
+                    {getPrimaryListenLink(release) && (
+                      <Link href={"/go/" + release.slug} aria-label={"Listen to " + release.title}>
+                        Listen now <span aria-hidden="true">↗</span>
+                      </Link>
+                    )}
+                    <Link href={"/music/" + release.slug} aria-label={"Explore release details for " + release.title}>
+                      Release details <span aria-hidden="true">↗</span>
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>
@@ -183,7 +197,7 @@ export default async function HomePage() {
                 <h2 id="atelier-cinema-title">Sound in<br /><em>motion.</em></h2>
                 <p className="atelier-cinema-feature-label">FEATURED VISUAL / {getPublicCinemaTitle(featuredFilm)}</p>
                 <p className="atelier-cinema-summary">{getPublicCinemaSummary(featuredFilm)}</p>
-                <Link className="atelier-action atelier-action-outline" href="/cinema">Step inside Cinema <span aria-hidden="true">↗</span></Link>
+                <div className="atelier-cinema-actions"><Link className="atelier-action atelier-action-outline" href={`/cinema/${featuredFilm.slug}`}>Explore this film <span aria-hidden="true">↗</span></Link><Link className="atelier-text-link" href="/cinema">All films <span aria-hidden="true">↗</span></Link></div>
               </div>
             </div>
           </section>

@@ -48,7 +48,15 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
     getCatalog(),
     r.worldSlug ? getReleasesByWorld(r.worldSlug) : Promise.resolve([]),
   ]);
-  const related = relatedWorld.filter((item) => item.slug !== r.slug && item.status === "live");
+  // Prefer other recordings from the same world; otherwise suggest real
+  // published tracks sharing a genre. Never show the current release twice.
+  const sameWorld = relatedWorld.filter((item) => item.slug !== r.slug && item.status === "live");
+  const selectedIds = new Set([r.id, ...sameWorld.map((item) => item.id)]);
+  const sameGenre = catalog.live.filter((item) => {
+    if (selectedIds.has(item.id) || item.status !== "live") return false;
+    return item.genres.some((genre) => r.genres.includes(genre));
+  });
+  const related = [...sameWorld, ...sameGenre].slice(0, 4);
   const watch = getWatchLink(r);
 
   const sameAs = r.links.map((l) => l.url).filter((url) => url && isVerifiedListenUrl(url));

@@ -677,3 +677,192 @@ main.brand-unified {
     flex: 1 1 180px;
   }
 }
+
+
+/* Editorial shell / footer consolidation.
+   This belongs in the shared brand system, not in another legacy stylesheet. */
+.site-footer {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) minmax(390px, 1.5fr) minmax(260px, .95fr) !important;
+  gap: clamp(1.8rem, 3.5vw, 4.5rem) !important;
+  align-items: start;
+  padding: clamp(3.25rem, 5.5vw, 5.5rem) clamp(22px, 4.6vw, 82px) 1.65rem;
+}
+.site-footer > * { min-width: 0; }
+.site-footer .footer-brand-block {
+  max-width: 340px;
+  justify-self: start;
+}
+.site-footer .footer-social-grid {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: clamp(.8rem,2.2vw,2.4rem);
+  width: 100%;
+}
+.site-footer .footer-acc {
+  min-width: 0;
+  margin: 0;
+}
+.site-footer .footer-acc > summary {
+  color: var(--brand-gold);
+  cursor: default;
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  padding: .3rem 0 1rem;
+}
+.site-footer .footer-acc .social-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .2rem;
+  margin: 0;
+  padding: 0;
+}
+.site-footer .footer-acc .social-links li {
+  list-style: none;
+  width: 100%;
+  min-width: 0;
+}
+.site-footer .footer-acc .social-links a {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 38px;
+  gap: .5rem;
+  color: #ddd5c8;
+  font-size: .72rem;
+  letter-spacing: .04em;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.site-footer .footer-acc .social-links a:is(:hover,:focus-visible) {
+  color: var(--brand-gold);
+}
+.site-footer .footer-proof-column {
+  align-self: start;
+  justify-self: stretch;
+  grid-column: auto;
+  grid-template-columns: minmax(0,1fr);
+}
+.site-footer .footer-action-card {
+  min-height: 0;
+  padding: clamp(1.15rem, 2vw, 1.75rem);
+}
+.site-footer .vdb-credit {
+  min-height: 70px;
+}
+.site-footer .footer-copy {
+  grid-column: 1 / -1 !important;
+  margin-top: clamp(.25rem,1.5vw,1.4rem);
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--brand-hairline);
+}
+.site-footer .footer-business-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem 1.5rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.site-footer .footer-legal-note {
+  max-width: 94ch;
+  line-height: 1.7;
+}
+/* EPK's last section has a purposeful ending instead of several floating
+   labels separated from the main content by large blank areas. */
+.brand-unified .epk-contact-section {
+  display: grid;
+  grid-template-columns: minmax(0,1.3fr) minmax(260px,.7fr);
+  gap: clamp(2rem,6vw,7rem);
+  align-items: center;
+  padding-block: clamp(3.5rem,6vw,6rem);
+  border-top: 1px solid var(--brand-hairline);
+}
+.brand-unified .epk-contact-intro h2 {
+  max-width: 13ch;
+  margin: .9rem 0 1.3rem;
+  color: var(--brand-paper);
+  font: 600 clamp(3rem,5.7vw,6rem)/1.01 var(--font-display),Georgia,serif;
+  letter-spacing: -.04em;
+  text-wrap: balance;
+}
+.brand-unified .epk-contact-intro h2 em { color: var(--brand-gold); }
+.brand-unified .epk-contact-intro > p:not(.eyebrow),
+.brand-unified .epk-contact-action > p {
+  max-width: 58ch;
+  color: var(--brand-muted);
+  font-size: clamp(.94rem,1.15vw,1.08rem);
+  line-height: 1.8;
+}
+.brand-unified .epk-contact-email {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .6rem;
+  margin-top: 1rem;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--brand-gold);
+  color: var(--brand-gold);
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+.brand-unified .epk-contact-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: clamp(1.5rem,3vw,2.4rem);
+  border: 1px solid var(--brand-hairline);
+  background: linear-gradient(135deg,rgba(228,194,139,.085),transparent 67%),#121416;
+}
+.brand-unified .epk-contact-action > p { margin: 0 0 .75rem; }
+.brand-unified .epk-contact-action .button { width: 100%; }
+@media (max-width: 1100px) {
+  .site-footer {
+    grid-template-columns: minmax(0,1fr) minmax(0,1.4fr) !important;
+  }
+  .site-footer .footer-proof-column {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+@media (max-width: 760px) {
+  .site-footer {
+    grid-template-columns: minmax(0,1fr) !important;
+    gap: 2rem !important;
+    padding: 3rem 20px 1.5rem !important;
+  }
+  .site-footer .footer-social-grid {
+    grid-template-columns: minmax(0,1fr) !important;
+    gap: .15rem;
+  }
+  .site-footer .footer-acc {
+    padding-block: .45rem;
+    border-top: 1px solid var(--brand-hairline);
+  }
+  .site-footer .footer-acc > summary {
+    cursor: pointer;
+    padding: .6rem 0;
+  }
+  .site-footer .footer-acc .social-links {
+    padding-bottom: .65rem;
+  }
+  .site-footer .footer-proof-column {
+    grid-column: auto;
+    grid-template-columns: minmax(0,1fr) !important;
+  }
+  .site-footer .footer-copy { grid-column: 1 / -1 !important; }
+  .brand-unified .epk-contact-section {
+    grid-template-columns: minmax(0,1fr);
+    gap: 2rem;
+    padding-block: 3rem;
+  }
+  .brand-unified .epk-contact-intro h2 {
+    font-size: clamp(2.8rem,11vw,4.3rem);
+  }
+}

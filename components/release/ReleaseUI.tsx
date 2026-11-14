@@ -5,6 +5,7 @@ import { getPrimaryListenLink, getWatchLink } from "@/lib/repository/release-rep
 import { platformDisplayNames } from "@/lib/site-settings";
 import { isVerifiedListenUrl } from "@/lib/links/url";
 import { TrackedLink } from "@/components/analytics/TrackedLink";
+import { BossieMark } from "@/components/brand/BossieMark";
 
 const platformOrder = [
   "spotify",
@@ -37,8 +38,8 @@ export function ReleaseArtwork({
           fill
           unoptimized
           priority={priority}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
+          loading={priority ? undefined : "lazy"}
+          fetchPriority={priority ? "high" : undefined}
           decoding="async"
           sizes={large ? "(max-width: 900px) 92vw, 50vw" : "(max-width: 760px) 92vw, 32vw"}
         />
@@ -47,8 +48,8 @@ export function ReleaseArtwork({
     );
   }
   return (
-    <div className={className} aria-label={`${release.title} artwork placeholder`}>
-      <span className="artwork-monogram">B</span>
+    <div className={className} aria-label={`Official artwork unavailable for ${release.title}`}>
+      <BossieMark size="lg" className="artwork-monogram" />
       <span className="artwork-title">{release.title}</span>
     </div>
   );

@@ -86,12 +86,12 @@ export function FooterSocialGrid() {
         </details>
       )}
       {follow.length > 0 && (
-        <details className="footer-acc footer-acc-collapsible">
+        <details className="footer-acc footer-acc-collapsible" open>
           <summary className="footer-social-heading">Follow</summary>
           <SocialList items={follow} />
         </details>
       )}
-      <details className="footer-acc footer-acc-collapsible">
+      <details className="footer-acc footer-acc-collapsible" open>
         <summary className="footer-social-heading">Explore</summary>
         <ul className="social-links">
           {explore.map(({ href, label }) => (

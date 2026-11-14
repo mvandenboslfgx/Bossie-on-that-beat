@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import styles from "./MusicDiscovery.module.css";
+import { BossieMark } from "@/components/brand/BossieMark";
 
 export type MusicDiscoveryItem = {
   id: string;
@@ -11,6 +12,8 @@ export type MusicDiscoveryItem = {
   title: string;
   type: string;
   year: string | null;
+  /** Actual ISO release date; sorting by year alone misorders same-year music. */
+  releaseDate: string | null;
   genres: string[];
   artworkUrl: string | null;
   canListen: boolean;
@@ -26,6 +29,7 @@ const PAGE_SIZE = 12;
 export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] }) {
   const [query, setQuery] = useState("");
   const [genre, setGenre] = useState("all");
+  const [sort, setSort] = useState<"newest" | "oldest" | "title">("newest");
   const [visible, setVisible] = useState(PAGE_SIZE);
 
   const genres = useMemo(() => {
@@ -44,13 +48,22 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
       const matchesGenre = genre === "all" || release.genres.includes(genre);
       const matchesQuery =
         !needle ||
-        [release.title, release.type, ...release.genres]
+        [release.title, release.type, release.year ?? "", ...release.genres]
           .some((part) => part.toLocaleLowerCase().includes(needle));
       return matchesGenre && matchesQuery;
+    }).sort((a, b) => {
+      if (sort === "title") return a.title.localeCompare(b.title);
+      // Catalog dates are ISO yyyy-mm-dd, so lexical ordering is chronological.
+      // Keep the server's original priority order for equal/unknown dates.
+      const aDate = a.releaseDate || a.year || "";
+      const bDate = b.releaseDate || b.year || "";
+      const byDate = bDate.localeCompare(aDate);
+      return sort === "newest" ? byDate : -byDate;
     });
-  }, [releases, genre, query]);
+  }, [releases, genre, query, sort]);
 
   const visibleReleases = filtered.slice(0, visible);
+  const hasActiveFilters = Boolean(query.trim() || genre !== "all" || sort !== "newest");
 
   function updateSearch(value: string) {
     setQuery(value);
@@ -94,15 +107,35 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
             </button>
           ))}
         </div>
-        <p className={styles.resultCount} role="status" aria-live="polite">
-          {filtered.length} {filtered.length === 1 ? "release" : "releases"} found
-        </p>
+        <div className={styles.catalogueToolbar}>
+          <p className={styles.resultCount} role="status" aria-live="polite">
+            Showing {Math.min(visible, filtered.length)} of {filtered.length} {filtered.length === 1 ? "release" : "releases"}
+          </p>
+          <div className={styles.toolbarActions}>
+            {hasActiveFilters && (
+              <button type="button" className={styles.resetFilters} onClick={() => {
+                setQuery(""); setGenre("all"); setSort("newest"); setVisible(PAGE_SIZE);
+              }}>Clear filters</button>
+            )}
+            <label className={styles.sortControl}>
+              <span>Sort by</span>
+              <select value={sort} onChange={(event) => {
+                setSort(event.target.value as "newest" | "oldest" | "title");
+                setVisible(PAGE_SIZE);
+              }}>
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="title">Title A–Z</option>
+              </select>
+            </label>
+          </div>
+        </div>
       </div>
 
       {visibleReleases.length > 0 ? (
         <div id="bossie-releases" className={styles.grid}>
           {visibleReleases.map((release, index) => (
-            <article className={styles.release} key={release.id}>
+            <article className={styles.release} key={release.id} data-release-date={release.releaseDate ?? ""}>
               <Link className={styles.artwork} href={`/music/${release.slug}`} aria-label={`Discover ${release.title}`}>
                 {release.artworkUrl ? (
                   <Image
@@ -118,8 +151,7 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
                 ) : (
                   <div className={styles.artworkFallback}>
                     {/* Official asset, not a generic fabricated cover. */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="/brand/logo-primary.jpg" alt="" width={70} height={70} />
+                    <BossieMark size="lg" />
                     <span>ARTWORK NOT AVAILABLE</span>
                   </div>
                 )}
@@ -142,7 +174,7 @@ export function MusicDiscovery({ releases }: { releases: MusicDiscoveryItem[] })
         <div id="bossie-releases" className={styles.empty}>
           <strong>No releases match that search.</strong>
           <p>Try another title or explore all Bossie sounds.</p>
-          <button type="button" onClick={() => { updateSearch(""); chooseGenre("all"); }}>
+          <button type="button" onClick={() => { setQuery(""); setGenre("all"); setSort("newest"); setVisible(PAGE_SIZE); }}>
             Show all releases ↗
           </button>
         </div>

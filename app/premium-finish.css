@@ -1,0 +1,291 @@
+/* Premium finishing pass — scoped, additive and reversible.
+   Keeps authentic artwork and each World's own visual identity intact. */
+:root {
+  --polish-gold: #e4c28b;
+  --polish-ivory: #f7f2e8;
+  --polish-stroke: rgba(228,194,139,.24);
+  --polish-motion: cubic-bezier(.22,1,.36,1);
+}
+html { scroll-padding-top: 6.5rem; }
+body { -webkit-font-smoothing: antialiased; }
+:where(.atelier,.brand-unified) :where(h1,h2,h3) {
+  text-wrap: balance;
+}
+:where(.atelier,.brand-unified) :where(p,li,dd) {
+  overflow-wrap: break-word;
+}
+:where(.atelier,.brand-unified) :where(a,button,input,select,textarea,summary):focus-visible {
+  outline: 2px solid var(--polish-gold);
+  outline-offset: 4px;
+}
+:where(.atelier,.brand-unified) :where(button,a,summary) {
+  -webkit-tap-highlight-color: rgba(228,194,139,.14);
+}
+:where(.atelier,.brand-unified) :where(img,video) {
+  max-width: 100%;
+}
+:where(.atelier,.brand-unified) :where(section[id],header[id],div[id]) {
+  scroll-margin-top: 6.5rem;
+}
+/* Consistent, intentional interactions: no abrupt hover jumps. */
+.atelier :is(.atelier-action,.atelier-feature-link,.atelier-text-link),
+.brand-unified :is(.button,.studio-btn,.text-link,.back-link) {
+  transition: color .22s ease, border-color .22s ease,
+              background-color .22s ease, box-shadow .28s ease,
+              transform .28s var(--polish-motion);
+}
+.atelier :is(.atelier-action,.atelier-feature-link):focus-visible,
+.brand-unified :is(.button,.studio-btn):focus-visible {
+  box-shadow: 0 0 0 5px rgba(228,194,139,.12);
+}
+/* Release details: tighten long-form reading without obscuring real credits. */
+.brand-unified .release-story > p:last-child {
+  max-width: 72ch;
+  color: var(--brand-muted);
+  font-size: clamp(1rem,1.2vw,1.13rem);
+  line-height: 1.85;
+}
+.brand-unified .release-story > h2 {
+  max-width: 17ch;
+  font: 600 clamp(2.5rem,5vw,5.5rem)/1.05 var(--font-display),Georgia,serif;
+  letter-spacing: -.035em;
+}
+.brand-unified .credits-grid > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.brand-unified .related-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(min(100%,230px),1fr));
+  gap: .75rem;
+}
+.brand-unified .related-list a {
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: .95rem 1.2rem;
+  border: 1px solid var(--polish-stroke);
+  background: linear-gradient(120deg,rgba(228,194,139,.055),transparent 70%);
+  color: var(--polish-ivory);
+  line-height: 1.45;
+  text-decoration: none;
+  transition: border-color .2s ease,background-color .2s ease,transform .25s ease;
+}
+.brand-unified .related-list a:hover,
+.brand-unified .related-list a:focus-visible {
+  border-color: rgba(228,194,139,.7);
+  background-color: rgba(228,194,139,.07);
+}
+.brand-unified .lyrics-block {
+  border: 1px solid var(--polish-stroke);
+  background: rgba(255,255,255,.018);
+}
+.brand-unified .lyrics-block summary {
+  cursor: pointer;
+  padding: 1.15rem 1.4rem;
+  color: var(--polish-ivory);
+}
+.brand-unified .lyrics-block pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-width: 75ch;
+  padding: 0 1.4rem 1.5rem;
+  line-height: 1.8;
+}
+/* Cinema thumbnails keep consistent frames regardless of source dimensions. */
+.brand-unified .epk-cinema-thumb-link {
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--polish-stroke);
+}
+.brand-unified .epk-cinema-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s var(--polish-motion);
+}
+.brand-unified .epk-cinema-thumb-link:hover .epk-cinema-thumb {
+  transform: scale(1.035);
+}
+/* Avoid narrow viewport overflow in the commercial and release flows. */
+@media (max-width: 760px) {
+  html { scroll-padding-top: 5rem; }
+  :where(.atelier,.brand-unified) :where(section[id],header[id],div[id]) {
+    scroll-margin-top: 5rem;
+  }
+  .brand-unified .related-list { grid-template-columns: minmax(0,1fr); }
+  .brand-unified .release-story > h2 { font-size: clamp(2.35rem,10vw,4.25rem); }
+  .brand-unified :is(.studio-music-header-actions,.studio-hero-actions,.cinema-actions) > * {
+    max-width: 100%;
+  }
+  .atelier .atelier-actions > * { max-width: 100%; }
+}
+@media (max-width: 390px) {
+  .atelier .atelier-action { width: 100%; gap: 1rem; }
+  .brand-unified .epk-card-links { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.atelier,.brand-unified) *,
+  :where(.atelier,.brand-unified) *::before,
+  :where(.atelier,.brand-unified) *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+  .brand-unified .epk-cinema-thumb-link:hover .epk-cinema-thumb {
+    transform: none;
+  }
+}
+
+
+/* Homepage: move from decorative cover gallery to a usable listening experience. */
+.atelier .atelier-feature-card {
+  border-color: rgba(228,194,139,.32);
+  box-shadow: 0 32px 100px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.04);
+}
+.atelier .atelier-feature-bottom h2 {
+  overflow-wrap: anywhere;
+}
+.atelier .atelier-release {
+  display: flex;
+  flex-direction: column;
+}
+.atelier .atelier-release-art {
+  border: 1px solid var(--polish-stroke);
+}
+.atelier .atelier-release h3 {
+  overflow-wrap: anywhere;
+}
+.atelier .atelier-release-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: .7rem 1.2rem;
+  padding-top: 1.1rem;
+  margin-top: auto;
+}
+.atelier .atelier-release-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  min-height: 44px;
+  color: var(--polish-gold);
+  font-size: .73rem;
+  font-weight: 800;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(228,194,139,.38);
+}
+.atelier .atelier-release-actions a:last-child {
+  color: #e1dcd3;
+  border-bottom-color: rgba(225,220,211,.28);
+}
+.atelier .atelier-release-actions a:hover,
+.atelier .atelier-release-actions a:focus-visible {
+  border-bottom-color: currentColor;
+}
+.atelier .atelier-release>p {
+  margin-bottom: 1.1rem;
+}
+.atelier .atelier-release-open {
+  opacity: 1;
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .atelier .atelier-release-open {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  .atelier .atelier-release-art:hover .atelier-release-open,
+  .atelier .atelier-release-art:focus-visible .atelier-release-open {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 600px) {
+  /* Do not silently hide the fifth and sixth curated releases on phones. */
+  .atelier .atelier-release-grid .atelier-release:nth-child(n+5) {
+    display: flex;
+  }
+  .atelier .atelier-release-actions {
+    display: grid;
+    gap: .25rem;
+  }
+  .atelier .atelier-release-actions a {
+    width: fit-content;
+    font-size: .71rem;
+  }
+  .atelier .atelier-feature-top {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .atelier .atelier-release-open {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Featured film: a direct action plus a clear archive path. */
+.atelier .atelier-cinema-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.2rem 2rem;
+}
+.atelier .atelier-cinema-actions .atelier-text-link {
+  color: #735329;
+  border-bottom-color: #735329;
+  min-height: 44px;
+  align-items: center;
+}
+@media (max-width: 600px) {
+  .atelier .atelier-cinema-actions {
+    display: grid;
+    align-items: stretch;
+  }
+}
+
+
+/* Missing cover treatment: only the actual licensed brand asset is displayed,
+   never a synthetic lettermark misrepresented as release artwork. */
+.release-artwork:has(> .artwork-monogram) {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.6rem,2vw,1.35rem);
+  padding: clamp(1rem,4vw,2.25rem);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 28%,rgba(228,194,139,.13),transparent 60%),
+    linear-gradient(155deg,#151719,#090b0d);
+  border: 1px solid rgba(228,194,139,.25);
+}
+.release-artwork > .artwork-monogram.bossie-mark {
+  display: inline-grid;
+  place-items: center;
+  width: clamp(54px,20%,100px);
+  height: auto;
+  aspect-ratio: 1;
+  font-size: inherit;
+  flex: 0 0 auto;
+}
+.release-artwork > .artwork-monogram.bossie-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.release-artwork > .artwork-title {
+  display: block;
+  max-width: 22ch;
+  font-family: var(--font-display),Georgia,serif;
+  font-size: clamp(1rem,2.4vw,1.7rem);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  color: #f7f2e8;
+}

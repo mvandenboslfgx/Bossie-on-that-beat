@@ -31,6 +31,7 @@ export default async function MusicPage() {
     title: release.title,
     type: release.type,
     year: release.releaseDate?.slice(0, 4) ?? null,
+    releaseDate: release.releaseDate ?? null,
     genres: release.genres,
     artworkUrl: release.artworkUrl && isVerifiedListenUrl(release.artworkUrl) ? release.artworkUrl : null,
     canListen: Boolean(getPrimaryListenLink(release)),

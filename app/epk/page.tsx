@@ -192,22 +192,24 @@ export default async function EpkPage() {
       <ListenSocialBlock title="Official links — Listen" />
       <FollowSocialBlock title="Official links — Follow" />
 
-      <section className="section-pad">
-        <p className="eyebrow">Website</p>
-        <a className="text-link" href={siteSettings.siteUrl}>
-          {siteSettings.domain} ↗
-        </a>
-      </section>
-      <section className="section-pad">
-        <p className="eyebrow">Contact</p>
-        <p>For press, sync licensing, music production and collaboration enquiries. Licensing and usage rights are reviewed and agreed per project.</p>
-        <p><a className="text-link" href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20press%20or%20licensing">Contact: algemeen@vdbdigital.nl ↗</a></p>
-        <div className="cta-row">
+      <section className="section-pad epk-contact-section" aria-labelledby="epk-contact-heading">
+        <div className="epk-contact-intro">
+          <p className="eyebrow">PRESS / LICENSING / COLLABORATIONS</p>
+          <h2 id="epk-contact-heading">Let's make <em>something happen.</em></h2>
+          <p>Looking for original music, a licensing conversation or press information?
+            Share your project and we'll discuss the appropriate next steps and rights.</p>
+          <a className="epk-contact-email" href="mailto:algemeen@vdbdigital.nl?subject=Bossie%20press%20or%20licensing">
+            algemeen@vdbdigital.nl <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div className="epk-contact-action">
+          <span className="eyebrow">START A CONVERSATION</span>
+          <p>Send a concise brief with the intended use, timeline and contact details. Enquiries are free; scope and pricing are agreed before any work starts.</p>
           <Link className="button button-gold" href="/request?type=business">
             Submit a project brief ↗
           </Link>
           <Link className="button button-ghost" href="/industry">
-            Services &amp; licensing ↗
+            Music licensing &amp; services ↗
           </Link>
         </div>
       </section>

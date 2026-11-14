@@ -68,6 +68,9 @@
   background: #000;
   border-radius: 0 !important;
 }
+/* The source JPG is presented through the precise crown crop above the image.
+   Keep the original img in the DOM but do not paint its uncropped square. */
+.bossie-mark > img { opacity: 0 !important; pointer-events: none; }
 .bossie-mark::before {
   /* Genuine crowned B JPG, cropped inside the component without an overflowed <img>. */
   content: "";
