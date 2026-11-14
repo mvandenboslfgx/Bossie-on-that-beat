@@ -84,6 +84,31 @@ test("music discovery filters titles and supports restoring all releases", async
   await filters.getByRole("button", { name: "All sounds" }).click();
 });
 
+test("catalogue sorting respects full release dates, not just release years", async ({ page }) => {
+  await page.goto("/music", { waitUntil: "networkidle" });
+  const sort = page.getByLabel("Sort by");
+  await expect(sort).toBeVisible();
+
+  async function visibleDates() {
+    return page.locator("#bossie-releases article").evaluateAll((items) =>
+      items.map((node) => node.getAttribute("data-release-date") || "").filter(Boolean),
+    );
+  }
+
+  const newest = await visibleDates();
+  expect(newest.length).toBeGreaterThan(1);
+  expect(newest).toEqual([...newest].sort((a, b) => b.localeCompare(a)));
+
+  await sort.selectOption("oldest");
+  const oldest = await visibleDates();
+  expect(oldest.length).toBeGreaterThan(1);
+  expect(oldest).toEqual([...oldest].sort((a, b) => a.localeCompare(b)));
+
+  await sort.selectOption("title");
+  const titles = await page.locator("#bossie-releases article h3").allTextContents();
+  expect(titles).toEqual([...titles].sort((a, b) => a.localeCompare(b)));
+});
+
 test("mobile navigation is keyboard accessible and dismissible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   // Wait for Next.js hydration; a click on prerendered but unhydrated
