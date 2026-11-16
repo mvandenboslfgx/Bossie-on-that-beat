@@ -1,3 +1,4 @@
+import Script from "next/script";
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
@@ -142,6 +143,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeJsonLd(siteSchema) }} />
         {children}
         <MetricoolTracker />
+        <Script src="https://vdbdigital.nl/vdb-ai-widget.js" data-vdb-ai-brand="bossie" data-vdb-ai-whatsapp="31628600727" strategy="afterInteractive" />
       </body>
     </html>
   );
